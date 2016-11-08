@@ -1,6 +1,6 @@
 FROM aldryn/base:3.19
 
-ENV RAPIDPRO_VERSION=1d00704b116b54c52f346a28147bc3341a74a023 \
+ENV RAPIDPRO_VERSION=v2.0.478 \
     NODE_VERSION=7.0.0 \
     PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
@@ -11,10 +11,11 @@ COPY stack/ /stack/
 RUN /stack/node.sh
 RUN npm install -g coffee-script less bower
 
-RUN curl -fsSL "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" | \
-    tar -xzC /tmp/ && \
-    mv /tmp/rapidpro-${RAPIDPRO_VERSION} /rapidpro && \
-    rm -rf /tmp/rapidpro-${RAPIDPRO_VERSION}
+WORKDIR /rapidpro
+
+RUN wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+    tar -xvf ${RAPIDPRO_VERSION}.tar.gz --strip 1 && \
+    rm ${RAPIDPRO_VERSION}.tar.gz
 
 # workaround for broken dependency to old Pillow version from django-quickblocks
 RUN sed -i '/Pillow/c\Pillow==3.4.2' /rapidpro/pip-freeze.txt
@@ -24,7 +25,6 @@ RUN sed -i '/Pillow/c\Pillow==3.4.2' /rapidpro/pip-freeze.txt
 RUN sed -i '/dj-database-url/c\dj-database-url==0.4.1' /rapidpro/pip-freeze.txt
 
 
-WORKDIR /rapidpro
 COPY requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
