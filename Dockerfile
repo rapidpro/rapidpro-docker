@@ -35,3 +35,5 @@ RUN DJANGO_MODE=build python manage.py collectstatic --noinput
 
 # TODO: enable compress once the setup works
 #RUN DJANGO_MODE=build python manage.py compress
+EXPOSE 80
+CMD python manage.py runserver 0.0.0.0:80
