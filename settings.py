@@ -20,6 +20,7 @@ if DJANGO_MODE == 'build':
     REDIS_URL = ''
     CACHE_URL = 'locmem://'
     BROKER_URL = ''
+    CELERY_RESULT_BACKEND = ''
 else:
     SECRET_KEY = env('SECRET_KEY', required=True)
     DATABASE_URL = env('DATABASE_URL', required=True)
@@ -29,6 +30,7 @@ else:
     DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
     REDIS_URL = env('REDIS_URL', required=True)
     BROKER_URL = env('BROKER_URL', REDIS_URL)
+    CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', REDIS_URL)
     CACHE_URL = env('CACHE_URL', REDIS_URL)
     CACHES = {'default': django_cache_url.parse(CACHE_URL)}
     if CACHES['default']['BACKEND'] == 'django_redis.cache.RedisCache':
