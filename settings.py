@@ -10,6 +10,10 @@ import dj_database_url
 import django_cache_url
 
 from temba.settings_common import *  # noqa
+
+GEOS_LIBRARY_PATH = '/usr/local/lib/libgeos_c.so'
+GDAL_LIBRARY_PATH = '/usr/local/lib/libgdal.so'
+
 DJANGO_MODE = env('DJANGO_MODE')
 if DJANGO_MODE == 'build':
     # While building the docker image we need fake values for some things so
@@ -34,6 +38,8 @@ else:
     CACHE_URL = env('CACHE_URL', REDIS_URL)
     CACHES = {'default': django_cache_url.parse(CACHE_URL)}
     if CACHES['default']['BACKEND'] == 'django_redis.cache.RedisCache':
+        if 'OPTIONS' not in CACHES['default']:
+            CACHES['default']['OPTIONS'] = {}
         CACHES['default']['OPTIONS']['CLIENT_CLASS'] = 'django_redis.client.DefaultClient'
 
 
