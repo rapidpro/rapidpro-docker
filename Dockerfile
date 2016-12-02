@@ -83,9 +83,9 @@ RUN cd /rapidpro && bower install --allow-root
 ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_WORKERS=8 UWSGI_HTTP_AUTO_CHUNKED=1 UWSGI_KEEPALIVE=1 UWSGI_HARAKIRI=20
 
 COPY settings.py /rapidpro/temba/
+# TODO: Only run these if not hosting static media externally (they add ~140MB to image size)
 RUN DJANGO_MODE=build /venv/bin/python manage.py collectstatic --noinput
+RUN DJANGO_MODE=build /venv/bin/python manage.py compress --extension=".haml" --settings=temba.settings_travis
 
-# TODO: enable compress once the setup works
-#RUN DJANGO_MODE=build python manage.py compress
 EXPOSE 8000
 CMD ["/venv/bin/uwsgi"]
