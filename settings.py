@@ -41,16 +41,20 @@ TEMBA_HOST = env('TEMBA_HOST', HOSTNAME)
 INTERNAL_IPS = ('*',)
 ALLOWED_HOSTS = env('ALLOWED_HOSTS', HOSTNAME).split(';')
 
-LOGGING['root']['level'] = 'INFO'
+LOGGING['root']['level'] = env('DJANGO_LOG_LEVEL', 'INFO')
 
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', '')
+CDN_DOMAIN_NAME = env('CDN_DOMAIN_NAME', '')
 
 if AWS_STORAGE_BUCKET_NAME:
     # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
     # it simple - just use this domain plus the path. (If this isn't set, things get complicated).
     # This controls how the `static` template tag from `staticfiles` gets expanded, if you're using it.
     # We also use it in the next setting.
-    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    if CDN_DOMAIN_NAME:
+        AWS_S3_CUSTOM_DOMAIN = CDN_DOMAIN_NAME
+    else:
+        AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
     # This is used by the `static` template tag from `static`, if you're using that. Or if anything else
     # refers directly to STATIC_URL. So it's safest to always set it.
@@ -64,11 +68,18 @@ else:
     STATIC_URL = '/sitestatic/'
 
 COMPRESS_ENABLED = env('DJANGO_COMPRESSOR', 'on') == 'on'
-COMPRESS_OFFLINE = COMPRESS_ENABLED
+COMPRESS_OFFLINE = False  # TODO figure out why offline compression is broken (disabled for now)
 
 COMPRESS_URL = STATIC_URL
 # Use MEDIA_ROOT rather than STATIC_ROOT because it already exists and is
 # writable on the server. It's also the directory where other cached files
 # (e.g., translations) are stored
 COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_OFFLINE_MANIFEST = 'manifest.json'
+COMPRESS_CSS_HASHING_METHOD = 'content'
+COMPRESS_OFFLINE_CONTEXT = dict(
+    STATIC_URL=STATIC_URL,
+    base_template='frame.html',
+    debug=False,
+    testing=False,
+)
+COMPRESS_OFFLINE_MANIFEST = 'manifest-%s.json' % env('RAPIDPRO_VERSION', required=True)
