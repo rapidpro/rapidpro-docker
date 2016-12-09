@@ -1,18 +1,6 @@
-FROM python:2.7-alpine
-
-# Build geo libraries. Run this separately and first since it takes a long time.
-COPY stack/geolibs.sh /
-RUN set -ex \
-        && apk add --no-cache --virtual .build-deps \
-                gcc \
-                g++ \
-                make \
-                libc-dev \
-                musl-dev \
-                linux-headers \
-        && sh /geolibs.sh \
-        && apk del .build-deps
-
+# python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
+# because it takes a long time to build)
+FROM rapidpro/rapidpro-base
 
 ENV RAPIDPRO_VERSION=v2.0.496-nexmo_voice_with_new_api \
     PIP_RETRIES=120 \
