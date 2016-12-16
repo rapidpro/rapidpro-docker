@@ -41,13 +41,13 @@ script:
   # staggering these so postgresql is up and running by the time
   # the rapidpro migrations run
   - docker-compose run -d postgresql
-  - if [[ -e ~/docker/postgresql-db-dump.sql ]]; then docker-compose exec --user postgres psql rapidpro < ~/docker/postgresql-db-dump.sql; fi
+  - if [[ -e ~/docker/postgresql-db-dump.sql ]]; then docker-compose exec --user postgres postgresql psql rapidpro < ~/docker/postgresql-db-dump.sql; fi
   - docker-compose run -d redis
   - docker-compose run -d rapidpro
   - ./test.py
   - mkdir -p ~/docker; docker save rapidpro/rapidpro-base > ~/docker/rapidpro-docker-base-cache.tar
   - mkdir -p ~/docker; docker save "$image" > ~/docker/rapidpro-docker-cache.tar
-  - docker-compose exec --user postgres pg_dump rapidpro > ~/docker/postgresql-db-dump.sql
+  - docker-compose exec --user postgres postgresql pg_dump rapidpro > ~/docker/postgresql-db-dump.sql
 
 after_script:
   - docker-compoe logs --tail=500 rapidpro
