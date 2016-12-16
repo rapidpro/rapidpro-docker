@@ -33,8 +33,10 @@ before_script:
   - echo "$version" > RAPIDPRO_VERSION
   # NOTE: caching rapidpro docker images to speed up the builds
   - if [[ -e ~/docker/rapidpro-docker-cache.tar ]]; then docker load -i ~/docker/rapidpro-docker-cache.tar; fi
+  - if [[ -e ~/docker/rapidpro-docker-base-cache.tar ]]; then docker load -i ~/docker/rapidpro-docker-base-cache.tar; fi
 
 script:
+  - docker pull rapidpro/rapidpro-base
   - docker build --tag "$image" .
   # staggering these so postgresql is up and running by the time
   # the rapidpro migrations run
@@ -43,6 +45,7 @@ script:
   - docker-compose run -d redis
   - docker-compose run -d rapidpro
   - ./test.py
+  - mkdir -p ~/docker; docker save rapidpro/rapidpro-base > ~/docker/rapidpro-docker-base-cache.tar
   - mkdir -p ~/docker; docker save "$image" > ~/docker/rapidpro-docker-cache.tar
   - docker-compose exec --user postgres pg_dump rapidpro > ~/docker/postgresql-db-dump.sql
 
