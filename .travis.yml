@@ -43,12 +43,11 @@ script:
   - docker-compose run -d redis
   - docker-compose run -d rapidpro
   - ./test.py
-
-after_success:
   - mkdir -p ~/docker; docker save "$image" > ~/docker/rapidpro-docker-cache.tar
   - pg_dump -U postgres -h postgresql rapidpro > ~/docker/postgresql-db-dump.sql
 
 after_script:
+  - docker logs --tail=500 rapidpro
   - docker images
 
 before_deploy:
