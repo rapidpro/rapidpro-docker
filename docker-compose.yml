@@ -12,7 +12,7 @@ services:
       - postgresql
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
-      - REDIS_URL=redis://redis/0
+      - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=super-secret-key
       - MANAGEPY_COLLECTSTATIC=on
       # NOTE: Compress is currently failing, need to look into the
