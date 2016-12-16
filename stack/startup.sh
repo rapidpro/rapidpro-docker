@@ -1,4 +1,5 @@
 #!/bin/sh
+export RAPIDPRO_VERSION=`cat /rapidpro/RAPIDPRO_VERSION`
 set -ex # fail on any error & print commands as they're run
 if [ "x$MANAGEPY_COLLECTSTATIC" = "xon" ]; then
 	/venv/bin/python manage.py collectstatic --noinput

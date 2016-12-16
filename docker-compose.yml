@@ -1,0 +1,28 @@
+version: '2'
+services:
+  rapidpro:
+    image: sdehaan/rapidpro
+    depends_on:
+      - redis
+      - postgresql
+    ports:
+      - '8000:8000'
+    links:
+      - redis
+      - postgresql
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
+      - REDIS_URL=redis://redis/0
+      - SECRET_KEY=super-secret-key
+      - MANAGEPY_COLLECTSTATIC=on
+      # NOTE: Compress is currently failing, need to look into the
+      #       COMPRESS_OFFLINE setting
+      # - MANAGEPY_COMPRESS=on
+      - MANAGEPY_INIT_DB=on
+      - MANAGEPY_MIGRATE=on
+  redis:
+    image: redis:alpine
+  postgresql:
+    image: mdillon/postgis:9.6
+    environment:
+      - POSTGRES_DB=rapidpro

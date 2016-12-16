@@ -2,8 +2,7 @@
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
 
-ENV RAPIDPRO_VERSION=v2.0.496-nexmo_voice_with_new_api \
-    PIP_RETRIES=120 \
+ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
     C_FORCE_ROOT=1
@@ -16,7 +15,9 @@ RUN set -ex \
 
 WORKDIR /rapidpro
 
-RUN wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+COPY ./RAPIDPRO_VERSION RAPIDPRO_VERSION
+RUN RAPIDPRO_VERSION=`cat RAPIDPRO_VERSION` && \
+    wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     tar -xvf ${RAPIDPRO_VERSION}.tar.gz --strip-components=1 && \
     rm ${RAPIDPRO_VERSION}.tar.gz
 

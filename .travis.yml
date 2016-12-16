@@ -1,0 +1,47 @@
+sudo: required
+services:
+  - docker
+language: python
+python:
+  - '3.5'
+env:
+  global:
+    - REGISTRY_USER=rapidproautomation
+    # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
+    #       which is decrypted by Travis CI and set as environment variables
+    - secure: "ffYdrH1sxDNP+KrE3cnP2r5lYsRGOmPUwlBON60GsYKwMQDg8Of5vt9fK5FzW9p5SWTpcAhCHeuJjbQ8qB0i4Uh5HtAs2focQdH13CQSQ5RZroNP60gV4WQENmxHqCaLuMQ4zgLQjKdu2R1PkEaUwm/HdHOzQ1Gwt+QEivPgCxtxdvfMFoebffzunpISSoOxSA7DJLWfuWqhszOF2oa+KxrMp/DAVnjwKhyepqSbdxOfuYiKyEdmoiic8S4TLgeDcYSxJnZgGzDP8p3HRahGmXsosMeg2eNghohKZ+c2tiD7DBHbRIrikC1da6/XnsXpcz+ugHuMTw5QTvZcgqKfGkoOchg9/ae5vXWCNQL4b7CPPxgnuxO0jeNUgbeQLnbqrkyxgudCSrTRKlCdmE5G6QijzwyWYOy2BV7+8Ybs17EfqFtSnzn6J6D4+prbklQGy8zB3oyZZXPSPgTFdImyrYAL96Ag1jI6EbwfodzY7himEnquvmcpC9sDoEdX/Z9JWWRKAxqeADzDx/IXiVfT4M155Np8cq8pWFypKOy03DE8KsHnOwaPz0qxgl/imvXW198SUe9qmiavOCY0h+taHK50JK7mKzokCDI25OYbei91iW+0GSuQ4ZR78NeTDO4ktKDZkA9oYMHzi9oKoBCSe8SbZffkRGe6bK45MXvvfEo="
+
+# Update Docker Engine
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine
+
+install:
+  - pip install docker-compose requests
+
+before_script:
+  - image="sdehaan/rapidpro"
+  - version="$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r .[].name | sort | tail -n1)"
+  # NOTE: writing the version to a file so it can be copied to the docker
+  #       container during the build
+  - echo "$version" > RAPIDPRO_VERSION
+
+script:
+  - docker build --tag "$image" .
+  # staggering these so postgresql is up and running by the time
+  # the rapidpro migrations run
+  - docker-compose run -d postgresql
+  - docker-compose run -d redis
+  - docker-compose run -d rapidpro
+  - ./test.py
+
+after_script:
+  - docker images
+
+before_deploy:
+  - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
+deploy:
+  provider: script
+  script: docker tag "$image":"$version" && docker push "$image":"$version"
+  on:
+    branch: develop
