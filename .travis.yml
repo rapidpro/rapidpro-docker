@@ -7,6 +7,7 @@ python:
 cache:
   directories:
     - ~/docker
+    - ~/.cache
 env:
   global:
     - REGISTRY_USER=rapidproautomation
@@ -43,9 +44,11 @@ script:
   - docker-compose run -d rapidpro
   - ./test.py
 
-after_script:
+after_success:
   - mkdir -p ~/docker; docker save "$image" > ~/docker/rapidpro-docker-cache.tar
   - pg_dump -U postgres -h postgresql rapidpro > ~/docker/postgresql-db-dump.sql
+
+after_script:
   - docker images
 
 before_deploy:
