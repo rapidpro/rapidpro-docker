@@ -4,6 +4,9 @@ services:
 language: python
 python:
   - '3.5'
+cache:
+  directories:
+    - ~/docker
 env:
   global:
     - REGISTRY_USER=rapidproautomation
@@ -25,6 +28,8 @@ before_script:
   # NOTE: writing the version to a file so it can be copied to the docker
   #       container during the build
   - echo "$version" > RAPIDPRO_VERSION
+  # NOTE: caching rapidpro docker images to speed up the builds
+  - if [[ -e ~/docker/rapidpro-docker-cache.tar ]]; then docker load -i ~/docker/rapidpro-docker-cache.tar; fi
 
 script:
   - docker build --tag "$image" .
@@ -36,6 +41,7 @@ script:
   - ./test.py
 
 after_script:
+  - mkdir -p ~/docker; docker save "$image" > ~/docker/rapidpro-docker-cache.tar
   - docker images
 
 before_deploy:
