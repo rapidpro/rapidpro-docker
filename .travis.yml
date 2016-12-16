@@ -24,12 +24,15 @@ install:
 
 before_script:
   - image="sdehaan/rapidpro"
+  - echo "*:*:*:postgres:postgres" > $HOME/.pgpass
+  - chmod 0600 $HOME/.pgpass
   - version="$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r .[].name | sort | tail -n1)"
   # NOTE: writing the version to a file so it can be copied to the docker
   #       container during the build
   - echo "$version" > RAPIDPRO_VERSION
   # NOTE: caching rapidpro docker images to speed up the builds
   - if [[ -e ~/docker/rapidpro-docker-cache.tar ]]; then docker load -i ~/docker/rapidpro-docker-cache.tar; fi
+  - if [[ -e ~/docker/postgresql-db-dump.sql ]]; then psql -U postgres -h postgresql rapidpro < ~/docker/postgresql-db-dump.sql; fi
 
 script:
   - docker build --tag "$image" .
@@ -42,6 +45,7 @@ script:
 
 after_script:
   - mkdir -p ~/docker; docker save "$image" > ~/docker/rapidpro-docker-cache.tar
+  - pg_dump -U postgres -h postgresql rapidpro > ~/docker/postgresql-db-dump.sql
   - docker images
 
 before_deploy:
