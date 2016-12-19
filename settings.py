@@ -68,7 +68,7 @@ if AWS_STORAGE_BUCKET_NAME:
 else:
     STATIC_URL = '/sitestatic/'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    MIDDLEWARE_CLASSES.append('whitenoise.middleware.WhiteNoiseMiddleware')
+    MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['whitenoise.middleware.WhiteNoiseMiddleware']
 
 COMPRESS_ENABLED = env('DJANGO_COMPRESSOR', 'on') == 'on'
 
