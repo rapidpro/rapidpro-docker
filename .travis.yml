@@ -47,7 +47,7 @@ script:
   - docker-compose run -d rapidpro
   - python wait-for.py --service=rapidpro --find="static files copied" --verbose
   # Massive timeout because massive migration history taking ages
-  - python wait-for.py --service=rapidpro --find="Running migrations" --verbose --timeout=600
+  - python wait-for.py --service=rapidpro --find="Running migrations" --verbose 
   - python wait-for.py --service=rapidpro --find="spawned uWSGI http 1" --verbose
 
 after_script:
