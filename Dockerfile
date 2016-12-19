@@ -11,7 +11,35 @@ ENV PIP_RETRIES=120 \
 # TODO extract openssl and tar to their own upgrade/install line
 RUN set -ex \
   && apk add --no-cache nodejs-lts openssl tar \
-  && npm install -g coffee-script less bower
+  && npm install -g coffee-script less bower \
+  && apk add --no-cache --virtual .build-deps \
+          bash \
+          patch \
+          git \
+          gcc \
+          g++ \
+          make \
+          libc-dev \
+          musl-dev \
+          linux-headers \
+          postgresql-dev \
+          libjpeg-turbo-dev \
+          libpng-dev \
+          freetype-dev \
+          libxslt-dev \
+          libxml2-dev \
+          zlib-dev \
+          libffi-dev \
+          readline \
+          readline-dev \
+          ncurses \
+          ncurses-dev \
+          libzmq \
+  && pip install -U virtualenv \
+  && virtualenv /venv
+
+# Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
+RUN apk add --no-cache postgresql-client
 
 WORKDIR /rapidpro
 
@@ -30,31 +58,6 @@ RUN sed -i '/dj-database-url/c\dj-database-url==0.4.1' /rapidpro/pip-freeze.txt
 # Build Python virtualenv
 COPY requirements.txt /app/requirements.txt
 RUN set -ex \
-        && apk add --no-cache --virtual .build-deps \
-                bash \
-                patch \
-                git \
-                gcc \
-                g++ \
-                make \
-                libc-dev \
-                musl-dev \
-                linux-headers \
-                postgresql-dev \
-                libjpeg-turbo-dev \
-                libpng-dev \
-                freetype-dev \
-                libxslt-dev \
-                libxml2-dev \
-                zlib-dev \
-                libffi-dev \
-                readline \
-                readline-dev \
-                ncurses \
-                ncurses-dev \
-                libzmq \
-        && pip install -U virtualenv \
-        && virtualenv /venv \
         && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install -r /app/requirements.txt" \
         && runDeps="$( \
                 scanelf --needed --nobanner --recursive /venv \
@@ -68,9 +71,6 @@ RUN set -ex \
 
 # TODO should this be in startup.sh?
 RUN cd /rapidpro && bower install --allow-root
-
-# Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
-RUN apk add --no-cache postgresql-client
 
 RUN sed -i 's/sitestatic\///' /rapidpro/static/brands/rapidpro/less/style.less
 
