@@ -26,10 +26,8 @@ install:
   - pip install docker-compose
 
 before_cache:
-  # Save tagged docker images
-  - >
-    mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
-    | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
+  - docker save rapidpro/rapidpro-base | gzip -2 > $HOME/docker/rapidpro-base.tar.gz
+  - docker save sdehaan/rapidpro | gzip -2 > $HOME/docker/rapidpro.tar.gz
 
 before_script:
   - image="sdehaan/rapidpro"
