@@ -7,6 +7,7 @@ python:
 cache:
   directories:
     - $HOME/docker
+    - $HOME/postgresql
     - $HOME/.cache
 env:
   global:
@@ -23,11 +24,12 @@ before_install:
   - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
 install:
-  - pip install docker-compose
+  - pip install docker-compose "click>=6.0,<=7.0"
 
 before_cache:
   - docker save rapidpro/rapidpro-base | gzip -2 > $HOME/docker/rapidpro-base.tar.gz
   - docker save sdehaan/rapidpro | gzip -2 > $HOME/docker/rapidpro.tar.gz
+  - docker-compose exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
   - image="sdehaan/rapidpro"
@@ -37,9 +39,16 @@ script:
   - docker pull rapidpro/rapidpro-base
   - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
   - docker-compose run -d postgresql
+  - python wait-for.py --service=postgresql --find='PostgreSQL init process complete; ready for start up.'
+  # Load the cached postgresql dump to speed up migrations
+  - if [[ -d $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker-compose exec --user=postgres postgresql psql rapidpro; fi
   - docker-compose run -d redis
+  - python wait-for.py --service=redis --find='The server is now ready to accept connections on port 6379'
   - docker-compose run -d rapidpro
-  - docker-compose logs --tail=500 rapidpro
+  - python wait-for.py --service=rapidpro --find="static files copied"
+  # Massive timeout because massive migration history taking ages
+  - python wait-for.py --service=rapidpro --find="Running migrations" --timeout=600
+  - python wait-for.py --service=rapidpro --find="spawned uWSGI http 1"
 
 after_script:
   - docker images
