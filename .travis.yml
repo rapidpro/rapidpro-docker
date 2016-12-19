@@ -41,7 +41,7 @@ script:
   - docker run -d --name postgresql -e POSTGRES_DB=rapidpro mdillon/postgis:9.6
   - python wait-for.py --name=postgresql 'PostgreSQL init process complete; ready for start up.'
   # Load the cached postgresql dump to speed up migrations
-  - if [[ -f $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker exec -it --user=postgres postgresql psql rapidpro; fi
+  - if [[ -f $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker exec -i --user=postgres postgresql psql rapidpro; fi
 
   # Setup redis
   - docker pull redis:alpine
