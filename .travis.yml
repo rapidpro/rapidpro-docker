@@ -70,6 +70,7 @@ script:
     docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
 after_script:
+  - docker logs rapidpro
   - docker images
 
 before_deploy:
