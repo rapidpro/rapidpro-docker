@@ -10,6 +10,7 @@ import dj_database_url
 import django_cache_url
 
 from temba.settings_common import *  # noqa
+from temba.settings_common import MIDDLEWARE_CLASSES
 
 DEBUG = env('DJANGO_DEBUG', 'off') == 'on'
 
@@ -66,9 +67,10 @@ if AWS_STORAGE_BUCKET_NAME:
     COMPRESS_STORAGE = STATICFILES_STORAGE
 else:
     STATIC_URL = '/sitestatic/'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    MIDDLEWARE_CLASSES.append('whitenoise.middleware.WhiteNoiseMiddleware')
 
 COMPRESS_ENABLED = env('DJANGO_COMPRESSOR', 'on') == 'on'
-COMPRESS_OFFLINE = False  # TODO figure out why offline compression is broken (disabled for now)
 
 COMPRESS_URL = STATIC_URL
 # Use MEDIA_ROOT rather than STATIC_ROOT because it already exists and is

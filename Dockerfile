@@ -1,8 +1,9 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
-ARG RAPIDPRO_VERSION=master
-ENV PIP_RETRIES=120 \
+ARG RAPIDPRO_VERSION
+ENV RAPIDPRO_VERSION ${RAPIDPRO_VERSION:-master} \
+    PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
     C_FORCE_ROOT=1
@@ -35,7 +36,7 @@ RUN set -ex \
           ncurses \
           ncurses-dev \
           libzmq \
-  && pip install -U virtualenv \
+  && pip install -U virtualenv whitenoise \
   && virtualenv /venv
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
