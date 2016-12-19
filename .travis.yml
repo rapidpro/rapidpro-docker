@@ -6,8 +6,8 @@ python:
   - '3.5'
 cache:
   directories:
-    - ~/docker
-    - ~/.cache
+    - $HOME/docker
+    - $HOME/.cache
 env:
   global:
     - REGISTRY_USER=rapidproautomation
@@ -19,38 +19,34 @@ env:
 before_install:
   - sudo apt-get update
   - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine
+  # Load cached docker images
+  - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
 install:
-  - pip install docker-compose requests
+  - pip install docker-compose
+
+before_cache:
+  # Save tagged docker images
+  - >
+    mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
+    | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
 
 before_script:
   - image="sdehaan/rapidpro"
-  - echo "*:*:*:postgres:postgres" > $HOME/.pgpass
-  - chmod 0600 $HOME/.pgpass
   - version="$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r .[].name | sort | tail -n1)"
   # NOTE: writing the version to a file so it can be copied to the docker
   #       container during the build
   - echo "$version" > RAPIDPRO_VERSION
-  # NOTE: caching rapidpro docker images to speed up the builds
-  - if [[ -e ~/docker/rapidpro-docker-cache.tar ]]; then docker load -i ~/docker/rapidpro-docker-cache.tar; fi
-  - if [[ -e ~/docker/rapidpro-docker-base-cache.tar ]]; then docker load -i ~/docker/rapidpro-docker-base-cache.tar; fi
 
 script:
   - docker pull rapidpro/rapidpro-base
   - docker build --tag "$image" .
-  # staggering these so postgresql is up and running by the time
-  # the rapidpro migrations run
   - docker-compose run -d postgresql
-  - if [[ -e ~/docker/postgresql-db-dump.sql ]]; then docker-compose exec --user postgres postgresql psql rapidpro < ~/docker/postgresql-db-dump.sql; fi
   - docker-compose run -d redis
   - docker-compose run -d rapidpro
-  - ./test.py
-  - mkdir -p ~/docker; docker save rapidpro/rapidpro-base > ~/docker/rapidpro-docker-base-cache.tar
-  - mkdir -p ~/docker; docker save "$image" > ~/docker/rapidpro-docker-cache.tar
-  - docker-compose exec --user postgres postgresql pg_dump rapidpro > ~/docker/postgresql-db-dump.sql
+  - docker-compose logs --tail=500 rapidpro
 
 after_script:
-  - docker-compoe logs --tail=500 rapidpro
   - docker images
 
 before_deploy:
