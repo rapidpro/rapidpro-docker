@@ -39,16 +39,16 @@ script:
   - docker pull rapidpro/rapidpro-base
   - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
   - docker-compose run -d postgresql
-  - python wait-for.py --service=postgresql --find='PostgreSQL init process complete; ready for start up.'
+  - python wait-for.py --service=postgresql --find='PostgreSQL init process complete; ready for start up.' --verbose
   # Load the cached postgresql dump to speed up migrations
   - if [[ -d $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker-compose exec --user=postgres postgresql psql rapidpro; fi
   - docker-compose run -d redis
-  - python wait-for.py --service=redis --find='The server is now ready to accept connections on port 6379'
+  - python wait-for.py --service=redis --find='The server is now ready to accept connections on port 6379' --verbose
   - docker-compose run -d rapidpro
-  - python wait-for.py --service=rapidpro --find="static files copied"
+  - python wait-for.py --service=rapidpro --find="static files copied" --verbose
   # Massive timeout because massive migration history taking ages
-  - python wait-for.py --service=rapidpro --find="Running migrations" --timeout=600
-  - python wait-for.py --service=rapidpro --find="spawned uWSGI http 1"
+  - python wait-for.py --service=rapidpro --find="Running migrations" --verbose --timeout=600
+  - python wait-for.py --service=rapidpro --find="spawned uWSGI http 1" --verbose
 
 after_script:
   - docker images
