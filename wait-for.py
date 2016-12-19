@@ -5,16 +5,19 @@ import docker
 from docker.errors import NotFound
 
 
-def wait_for(output, pattern, timeout=60, sleep=1, verbose=False):
+def wait_for(container, pattern, timeout=60, sleep=1, verbose=False):
     time_spent = 0
-    while not re.findall(pattern, output.decode('utf-8')):
+    while True:
+        logs = container.logs()
+        if re.findall(pattern, logs.decode('utf-8')):
+            break
         time.sleep(sleep)
         time_spent += sleep
         if time_spent > timeout:
             if verbose:
-                print(output)
+                print(logs)
             raise click.ClickException(
-                'Timeout of %s reached for %s' % (timeout, ' '.join(cmd)))
+                'Timeout of %s reached for %s' % (timeout, logs))
     return True
 
 
@@ -40,8 +43,7 @@ def cmd(name, timeout, sleep, verbose, find):
             name,))
 
     if find:
-        logs = container.logs()
-        return wait_for(logs, find, timeout=timeout, verbose=verbose)
+        return wait_for(container, find, timeout=timeout, verbose=verbose)
 
 
 if __name__ == '__main__':

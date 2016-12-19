@@ -29,7 +29,7 @@ install:
 before_cache:
   - docker save rapidpro/rapidpro-base | gzip -2 > $HOME/docker/rapidpro-base.tar.gz
   - docker save sdehaan/rapidpro | gzip -2 > $HOME/docker/rapidpro.tar.gz
-  - docker-compose exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
+  - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
   - image="sdehaan/rapidpro"
@@ -40,7 +40,7 @@ script:
   - docker run -d --name postgresql -e POSTGRES_DB=rapidpro mdillon/postgis:9.6
   - python wait-for.py --name=postgresql 'PostgreSQL init process complete; ready for start up.'
   # Load the cached postgresql dump to speed up migrations
-  - if [[ -d $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker-compose exec --user=postgres postgresql psql rapidpro; fi
+  - if [[ -d $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker exec --user=postgres postgresql psql rapidpro; fi
 
   - docker pull redis:alpine
   - docker run -d --name redis redis:alpine
