@@ -34,13 +34,10 @@ before_cache:
 before_script:
   - image="sdehaan/rapidpro"
   - version="$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r .[].name | sort | tail -n1)"
-  # NOTE: writing the version to a file so it can be copied to the docker
-  #       container during the build
-  - echo "$version" > RAPIDPRO_VERSION
 
 script:
   - docker pull rapidpro/rapidpro-base
-  - docker build --tag "$image" .
+  - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
   - docker-compose run -d postgresql
   - docker-compose run -d redis
   - docker-compose run -d rapidpro

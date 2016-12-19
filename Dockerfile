@@ -1,7 +1,7 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
-
+ARG RAPIDPRO_VERSION=master
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
@@ -15,8 +15,7 @@ RUN set -ex \
 
 WORKDIR /rapidpro
 
-COPY ./RAPIDPRO_VERSION RAPIDPRO_VERSION
-RUN RAPIDPRO_VERSION=`cat RAPIDPRO_VERSION` && \
+RUN echo "Downloading RapidPro $RAPIDPRO_VERSION" && \
     wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     tar -xvf ${RAPIDPRO_VERSION}.tar.gz --strip-components=1 && \
     rm ${RAPIDPRO_VERSION}.tar.gz
