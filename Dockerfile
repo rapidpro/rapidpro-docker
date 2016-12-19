@@ -36,8 +36,9 @@ RUN set -ex \
           ncurses \
           ncurses-dev \
           libzmq \
-  && pip install -U virtualenv whitenoise \
-  && virtualenv /venv
+  && pip install -U virtualenv \
+  && virtualenv /venv \
+  && /venv/bin/pip install whitenoise
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
 RUN apk add --no-cache postgresql-client
