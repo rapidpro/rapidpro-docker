@@ -12,12 +12,14 @@ def wait_for(container, pattern, timeout=60, sleep=1, verbose=False):
         if re.findall(pattern, logs.decode('utf-8')):
             break
         time.sleep(sleep)
+        click.secho(".", fg="green", nl=False)
         time_spent += sleep
         if time_spent > timeout:
+            click.secho(".", fg="red")
             if verbose:
-                print(logs)
+                click.echo(logs, err=True)
             raise click.ClickException(
-                'Timeout of %s reached for %s' % (timeout, logs))
+                'Timeout of %s reached for %s' % (timeout, container.name,))
     return True
 
 
@@ -43,7 +45,8 @@ def cmd(name, timeout, sleep, verbose, find):
             name,))
 
     if find:
-        return wait_for(container, find, timeout=timeout, verbose=verbose)
+        return wait_for(container, find,
+                        timeout=timeout, sleep=sleep, verbose=verbose)
 
 
 if __name__ == '__main__':
