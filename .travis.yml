@@ -59,7 +59,7 @@ script:
 
   - python wait-for.py --name=rapidpro "static files copied"
   - python wait-for.py --name=rapidpro "Running migrations"
-  - python wait-for.py --name=rapidpro "spawned uWSGI http 1"
+  - python wait-for.py --name=rapidpro "spawned uWSGI http 1" --timeout=360
 
 after_script:
   - docker images
