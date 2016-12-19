@@ -14,7 +14,7 @@ def wait_for(container, pattern, timeout=60, sleep=1, verbose=False):
         time.sleep(sleep)
         click.secho(".", fg="green", nl=False)
         time_spent += sleep
-        if time_spent > timeout:
+        if timeout > 0 and time_spent > timeout:
             click.secho(".", fg="red")
             if verbose:
                 click.echo(logs, err=True)

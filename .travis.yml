@@ -63,7 +63,8 @@ script:
   # Test the output
   - python wait-for.py --name=rapidpro "static files copied"
   - python wait-for.py --name=rapidpro "Running migrations"
-  - python wait-for.py --name=rapidpro "Rendering model states... DONE" --timeout=600 --sleep=60
+  # Disable timeout because rendering the models takes a ridiculour amount of time
+  - python wait-for.py --name=rapidpro "Rendering model states... DONE" --timeout=0 --sleep=60
   - python wait-for.py --name=rapidpro "spawned uWSGI http 1"
 
 after_script:
