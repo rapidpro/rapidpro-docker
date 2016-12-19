@@ -61,11 +61,12 @@ script:
       "$image"
 
   # Test the output
-  - python wait-for.py --name=rapidpro "static files copied"
-  # Disable timeout because rendering the models takes a ridiculous amount of time
-  - python wait-for.py --name=rapidpro "Running migrations" --timeout=0 --sleep=60
-  - python wait-for.py --name=rapidpro "spawned uWSGI http 1"
-  - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
+  - >
+    python wait-for.py --name=rapidpro "static files copied" && \
+    # Disable timeout because rendering the models takes a ridiculous amount of time
+    python wait-for.py --name=rapidpro "Running migrations" --timeout=0 --sleep=60 && \
+    python wait-for.py --name=rapidpro "spawned uWSGI http 1" && \
+    docker exec rapidpro /venv/bin/python /rapidpro/manage.py check &&
 
 after_script:
   - docker images
