@@ -1,5 +1,7 @@
 DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
 REDIS_URL=redis://redis:6379/0
 SECRET_KEY=super-secret-key
+MANAGEPY_COLLECTSTATIC=on
+MANAGEPY_COMPRESS=on
 MANAGEPY_INIT_DB=on
 MANAGEPY_MIGRATE=on
