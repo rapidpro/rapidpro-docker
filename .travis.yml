@@ -6,7 +6,6 @@ python:
   - '3.5'
 cache:
   directories:
-    - $HOME/docker
     - $HOME/postgresql
     - $HOME/.cache
 env:
@@ -20,15 +19,11 @@ env:
 before_install:
   - sudo apt-get update
   - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine
-  # Load cached docker images
-  - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
 install:
   - pip install "click>=6.0,<=7.0" docker
 
 before_cache:
-  - docker save rapidpro/rapidpro-base | gzip -2 > $HOME/docker/rapidpro-base.tar.gz
-  - docker save sdehaan/rapidpro | gzip -2 > $HOME/docker/rapidpro.tar.gz
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
