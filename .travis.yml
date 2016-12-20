@@ -80,4 +80,4 @@ deploy:
   provider: script
   script: docker tag "$image":"$version" && docker push "$image":"$version"
   on:
-    branch: develop
+    branch: master
