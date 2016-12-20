@@ -58,7 +58,7 @@ script:
   # Test the output
   # Disable timeout for migrations because rendering the models and running
   # migrations takes a ridiculous amount of time
-  - python wait-for.py --name=rapidpro --timeout=0 \
+  - python wait-for.py --name=rapidpro --timeout=0 --monitor \
       "static files copied" \
       "Compressing... done" \
       "Running migrations" \
