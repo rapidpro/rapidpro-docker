@@ -1,3 +1,25 @@
+"""
+Hacky script to connect to a named docker container that's running some
+process and track its log output for things. Helps to sequence services
+that take some time to boot/provision.
+
+..
+
+    $ python wait-for.py --help
+    $ python wait-for.py \
+        --name="my-container"
+        --timeout=60 \
+        --sleep=1 \
+        --verbose \
+        "this thing I'm looking for"
+
+Will fail if "this thing I'm looking for" isn't spotted in the container logs
+within 60 seconds of starting, it'll check every 1 second. If it fails
+it will dump the captured log output to stdout for inspection.
+
+Timeouts can be disabled by setting it to zero or lower.
+
+"""
 import click
 import re
 import time

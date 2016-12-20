@@ -10,7 +10,6 @@ import dj_database_url
 import django_cache_url
 
 from temba.settings_common import *  # noqa
-from temba.settings_common import MIDDLEWARE_CLASSES
 
 DEBUG = env('DJANGO_DEBUG', 'off') == 'on'
 
