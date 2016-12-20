@@ -71,12 +71,6 @@ RUN set -ex \
         && apk add --virtual .python-rundeps $runDeps \
         && apk del .build-deps
 
-# TODO should this be in startup.sh?
-RUN cd /rapidpro \
-    && bower install --allow-root \
-    && /venv/bin/python manage.py collectstatic --noinput --no-post-process \
-    && /venv/bin/python manage.py compress --extension=".haml"
-
 RUN sed -i 's/sitestatic\///' /rapidpro/static/brands/rapidpro/less/style.less
 
 ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_WORKERS=8 UWSGI_HARAKIRI=20
@@ -92,6 +86,10 @@ COPY settings.py /rapidpro/temba/
 # 500.html needed to keep the missing template from causing an exception during error handling
 COPY stack/500.html /rapidpro/templates/
 COPY stack/init_db.sql /rapidpro/
+RUN cd /rapidpro \
+    && bower install --allow-root \
+    && /venv/bin/python manage.py collectstatic --noinput --no-post-process \
+    && /venv/bin/python manage.py compress --extension=".haml"
 
 EXPOSE 8000
 COPY stack/startup.sh /
