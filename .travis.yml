@@ -62,7 +62,7 @@ script:
     python wait-for.py --name=rapidpro "static files copied" --timeout=0 &&
     python wait-for.py --name=rapidpro "Compressing... done" --timeout=0 &&
     python wait-for.py --name=rapidpro "Running migrations" --timeout=0 &&
-    python wait-for.py --name=rapidpro "spawned uWSGI http 1" &&
+    python wait-for.py --name=rapidpro "spawned uWSGI http 1" --timeout=0 &&
     docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
 after_script:
