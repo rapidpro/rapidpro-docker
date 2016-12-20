@@ -2,8 +2,7 @@
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
 ARG RAPIDPRO_VERSION
-ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master} \
-    PIP_RETRIES=120 \
+ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
     C_FORCE_ROOT=1
@@ -45,6 +44,7 @@ RUN apk add --no-cache postgresql-client
 
 WORKDIR /rapidpro
 
+ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
 RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     tar -xvf ${RAPIDPRO_VERSION}.tar.gz --strip-components=1 && \

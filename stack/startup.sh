@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ex # fail on any error & print commands as they're run
 if [ "x$MANAGEPY_COLLECTSTATIC" = "xon" ]; then
-	/venv/bin/python manage.py collectstatic --noinput
+	/venv/bin/python manage.py collectstatic --noinput --no-post-process
 fi
 if [ "x$MANAGEPY_COMPRESS" = "xon" ]; then
 	/venv/bin/python manage.py compress --extension=".haml"

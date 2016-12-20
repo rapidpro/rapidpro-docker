@@ -78,6 +78,7 @@ COMPRESS_URL = STATIC_URL
 # (e.g., translations) are stored
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_CSS_HASHING_METHOD = 'content'
+COMPRESS_OFFLINE = True
 COMPRESS_OFFLINE_CONTEXT = dict(
     STATIC_URL=STATIC_URL,
     base_template='frame.html',
