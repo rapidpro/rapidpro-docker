@@ -11,7 +11,9 @@ that take some time to boot/provision.
         --timeout=60 \
         --sleep=1 \
         --verbose \
-        "this thing I'm looking for"
+        "this thing I'm looking for" \
+        "this other things I'm looking for"
+
 
 Will fail if "this thing I'm looking for" isn't spotted in the container logs
 within 60 seconds of starting, it'll check every 1 second. If it fails
