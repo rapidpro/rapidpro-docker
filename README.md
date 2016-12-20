@@ -19,11 +19,11 @@ Running RapidPro in Docker
 
 To run the latest cutting edge version:
 
-> $ docker run rapidpro/rapidpro
+> $ docker run --publish 8000:8000 rapidpro/rapidpro
 
 To run a specific version:
 
-> $ docker run rapidpro/rapidpro:v2.0.478
+> $ docker run --publish 8000:8000 rapidpro/rapidpro:v2.0.478
 
 Environment variables
 ---------------------
@@ -94,10 +94,6 @@ Environment variables
 
 *UWSGI_WSGI_FILE*
   Defaults to `temba/wsgi.py`
-
-*UWSGI_HTTP*
-  Defaults to `8000`. Updating this will also update the port number that is
-  exposed by the docker container.
 
 *UWSGI_MASTER*
   Defaults to `1`

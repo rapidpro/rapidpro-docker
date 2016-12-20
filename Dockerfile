@@ -91,6 +91,6 @@ COPY settings.py /rapidpro/temba/
 COPY stack/500.html /rapidpro/templates/
 COPY stack/init_db.sql /rapidpro/
 
-EXPOSE $UWSGI_HTTP
+EXPOSE 8000
 COPY stack/startup.sh /
 CMD ["/startup.sh"]
