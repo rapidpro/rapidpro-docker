@@ -29,6 +29,7 @@ from docker.errors import NotFound
 
 def wait_for(container, pattern, timeout=60, sleep=1, verbose=False):
     time_spent = 0
+    click.secho("\n%s: " % (pattern,), fg='blue', nl=False)
     while True:
         logs = container.logs()
         if re.findall(pattern, logs.decode('utf-8')):
@@ -57,8 +58,8 @@ def wait_for(container, pattern, timeout=60, sleep=1, verbose=False):
 @click.option("--verbose/--no-verbose",
               help="Log the stdout captured on timeout.",
               default=False)
-@click.argument("find", type=click.STRING)
-def cmd(name, timeout, sleep, verbose, find):
+@click.argument("patterns", type=click.STRING, nargs=-1)
+def cmd(name, timeout, sleep, verbose, patterns):
     client = docker.from_env()
     try:
         container = client.containers.get(name)
@@ -66,9 +67,9 @@ def cmd(name, timeout, sleep, verbose, find):
         raise click.ClickException('Container %s does not exist.' % (
             name,))
 
-    if find:
-        return wait_for(container, find,
-                        timeout=timeout, sleep=sleep, verbose=verbose)
+    for pattern in patterns:
+        wait_for(container, pattern,
+                 timeout=timeout, sleep=sleep, verbose=verbose)
 
 
 if __name__ == '__main__':

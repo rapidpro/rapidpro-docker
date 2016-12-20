@@ -46,8 +46,7 @@ script:
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
   - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
-  - >
-    docker run --name rapidpro \
+  - docker run --name rapidpro \
       --env-file docker.envfile \
       --link redis \
       --link postgresql \
@@ -58,12 +57,12 @@ script:
   # Test the output
   # Disable timeout for migrations because rendering the models and running
   # migrations takes a ridiculous amount of time
-  - >
-    python wait-for.py --name=rapidpro "static files copied" --timeout=0 &&
-    python wait-for.py --name=rapidpro "Compressing... done" --timeout=0 &&
-    python wait-for.py --name=rapidpro "Running migrations" --timeout=0 &&
-    python wait-for.py --name=rapidpro "spawned uWSGI http 1" --timeout=0 &&
-    docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
+  - python wait-for.py --name=rapidpro --timeout=0 \
+      "static files copied" \
+      "Compressing... done" \
+      "Running migrations" \
+      "spawned uWSGI http 1"
+  - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
 after_script:
   - docker logs rapidpro
