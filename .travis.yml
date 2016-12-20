@@ -46,7 +46,8 @@ script:
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
   - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
-  - docker run --name rapidpro \
+  - >
+    docker run --name rapidpro \
       --env-file docker.envfile \
       --link redis \
       --link postgresql \
