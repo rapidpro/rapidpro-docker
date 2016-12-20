@@ -37,7 +37,7 @@ def wait_for(container, pattern, timeout=60, sleep=1,
     time_spent = 0
     click.secho("\n%s: " % (pattern,), fg='blue', nl=False)
     while True:
-        logs = container.logs().rstrip().decode('utf-8')
+        logs = container.logs().decode('utf-8').rstrip()
         if re.findall(pattern, logs):
             break
         time.sleep(sleep)
