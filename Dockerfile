@@ -13,7 +13,6 @@ RUN set -ex \
   && apk add --no-cache nodejs-lts openssl tar \
   && npm install -g coffee-script less bower
 
-
 WORKDIR /rapidpro
 
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}

@@ -70,6 +70,7 @@ else:
     MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['whitenoise.middleware.WhiteNoiseMiddleware']
 
 COMPRESS_ENABLED = env('DJANGO_COMPRESSOR', 'on') == 'on'
+COMPRESS_OFFLINE = False
 
 COMPRESS_URL = STATIC_URL
 # Use MEDIA_ROOT rather than STATIC_ROOT because it already exists and is
@@ -77,7 +78,6 @@ COMPRESS_URL = STATIC_URL
 # (e.g., translations) are stored
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_CSS_HASHING_METHOD = 'content'
-COMPRESS_OFFLINE = False
 COMPRESS_OFFLINE_CONTEXT = dict(
     STATIC_URL=STATIC_URL,
     base_template='frame.html',
