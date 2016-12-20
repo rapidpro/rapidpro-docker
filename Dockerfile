@@ -72,7 +72,10 @@ RUN set -ex \
         && apk del .build-deps
 
 # TODO should this be in startup.sh?
-RUN cd /rapidpro && bower install --allow-root
+RUN cd /rapidpro \
+    && bower install --allow-root \
+    && /venv/bin/python manage.py collectstatic --noinput --no-post-process \
+    && /venv/bin/python manage.py compress --extension=".haml"
 
 RUN sed -i 's/sitestatic\///' /rapidpro/static/brands/rapidpro/less/style.less
 
@@ -83,8 +86,6 @@ ENV STARTUP_CMD="/venv/bin/uwsgi --http-auto-chunked --http-keepalive"
 
 # ENV MANAGEPY_INIT_DB=on
 # ENV MANAGEPY_MIGRATE=on
-# ENV MANAGEPY_COLLECTSTATIC=on
-# ENV MANAGEPY_COMPRESS=on
 # ENV DJANGO_DEBUG=on
 
 COPY settings.py /rapidpro/temba/
