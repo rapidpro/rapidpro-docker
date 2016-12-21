@@ -56,10 +56,9 @@ script:
       --detach \
       "$image"
 
-  # Test the output
-  # Disable timeout for migrations because rendering the models and running
-  # migrations takes a ridiculous amount of time
-  - python wait-for.py --name=rapidpro --timeout=0 --monitor \
+  # Set ridiculous timeout for migrations because rendering the models
+  # and running migrations takes a ridiculous amount of time
+  - python wait-for.py --name=rapidpro --timeout=600 --monitor \
       "static files copied" \
       "Compressing... done" \
       "Running migrations" \
