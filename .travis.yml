@@ -22,7 +22,7 @@ before_install:
   - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine
 
 install:
-  - pip install "click>=6.0,<=7.0" docker
+  - pip install "click>=6.0,<=7.0"
 
 before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql

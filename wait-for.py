@@ -27,8 +27,8 @@ Timeouts can be disabled by setting it to zero or lower.
 """
 import click
 import time
-import docker
-from docker.errors import NotFound
+import sys
+import subprocess
 
 
 def wait_for(container, pattern, timeout=60, sleep=1,
@@ -36,7 +36,11 @@ def wait_for(container, pattern, timeout=60, sleep=1,
     time_spent = 0
     click.secho("\n%s: " % (pattern,), fg='blue', nl=False)
     while True:
-        logs = container.logs().decode('utf-8').rstrip()
+        process = subprocess.run(['docker', 'logs', container],
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 stdin=subprocess.PIPE)
+        logs = process.stdout.decode(sys.stdout.encoding).rstrip()
         if monitor:
             click.secho('\n'.join(logs.split('\n')[-2:]), fg='yellow')
         else:
@@ -73,15 +77,8 @@ def wait_for(container, pattern, timeout=60, sleep=1,
               default=False)
 @click.argument("patterns", type=click.STRING, nargs=-1)
 def cmd(name, timeout, sleep, verbose, monitor, patterns):
-    client = docker.from_env()
-    try:
-        container = client.containers.get(name)
-    except NotFound:
-        raise click.ClickException('Container %s does not exist.' % (
-            name,))
-
     for pattern in patterns:
-        wait_for(container, pattern,
+        wait_for(name, pattern,
                  timeout=timeout, sleep=sleep,
                  verbose=verbose, monitor=monitor)
 
