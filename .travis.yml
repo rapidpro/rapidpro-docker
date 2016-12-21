@@ -63,6 +63,7 @@ before_deploy:
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
-  script: ./deploy.sh
+  skip_cleanup: true
+  script: ./deploy.sh "$image" "$version"
   on:
     branch: master
