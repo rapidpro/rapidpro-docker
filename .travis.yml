@@ -29,14 +29,14 @@ script:
   # Setup postgresql and load sql dump if exists
   - docker pull mdillon/postgis:9.6
   - docker run -d --name postgresql -e POSTGRES_DB=rapidpro mdillon/postgis:9.6
-  - timeout $GREP_TIMEOUT grep 'PostgreSQL init process complete; ready for start up.' <(docker logs --follow postgresql)
+  - timeout $GREP_TIMEOUT docker logs --follow postgresql | grep -m 1 'PostgreSQL init process complete; ready for start up.'
   # Load the cached postgresql dump to speed up migrations
   - if [[ -f $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker exec -i --user=postgres postgresql psql rapidpro; fi
 
   # Setup redis
   - docker pull redis:alpine
   - docker run -d --name redis redis:alpine
-  - timeout $GREP_TIMEOUT grep 'The server is now ready to accept connections on port 6379' <(docker logs --follow redis)
+  - timeout $GREP_TIMEOUT docker logs --follow redis | grep -m 1 'The server is now ready to accept connections on port 6379'
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
