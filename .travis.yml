@@ -21,7 +21,7 @@ before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - image="smn/rapidpro-docker"
+  - image="sdehaan/rapidpro-docker"
   - version="$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r .[].name | sort | tail -n1)"
 
 script:
