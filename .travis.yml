@@ -21,7 +21,7 @@ before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - image="sdehaan/rapidpro"
+  - image="$TRAVIS_REPO_SLUG"
   - version="$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r .[].name | sort | tail -n1)"
 
 script:
@@ -63,6 +63,6 @@ before_deploy:
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
-  script: docker tag "$image":"$version" && docker push "$image":"$version"
+  script: ./deploy.sh
   on:
     branch: master
