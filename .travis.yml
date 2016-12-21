@@ -10,7 +10,7 @@ cache:
     - $HOME/.cache
 env:
   global:
-    - DJANGO_COLORS=nocolor
+    - GREP_TIMEOUT=360
     - REGISTRY_USER=rapidproautomation
     # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
     #       which is decrypted by Travis CI and set as environment variables
@@ -19,10 +19,7 @@ env:
 # Update Docker Engine
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine
-
-install:
-  - pip install "click>=6.0,<=7.0"
+  - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine timeout
 
 before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
@@ -56,13 +53,10 @@ script:
       --detach \
       "$image"
 
-  # Set ridiculous timeout for migrations because rendering the models
-  # and running migrations takes a ridiculous amount of time
-  - python wait-for.py --name=rapidpro --timeout=600 --monitor \
-      "static files copied" \
-      "Compressing... done" \
-      "Running migrations" \
-      "spawned uWSGI http 1"
+  - timeout $GREP_TIMEOUT grep 'static files copied' <(docker logs rapidpro)
+  - timeout $GREP_TIMEOUT grep 'Compressing... done' <(docker logs rapidpro)
+  - timeout $GREP_TIMEOUT grep 'Running migrations' <(docker logs rapidpro)
+  - timeout $GREP_TIMEOUT grep 'spawned uWSGI http 1' <(docker logs rapidpro)
   - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
 after_script:
