@@ -10,6 +10,7 @@ cache:
     - $HOME/.cache
 env:
   global:
+    - DJANGO_COLORS=nocolor
     - REGISTRY_USER=rapidproautomation
     # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
     #       which is decrypted by Travis CI and set as environment variables
