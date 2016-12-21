@@ -4,7 +4,6 @@ services:
 cache:
   directories:
     - $HOME/postgresql
-    - $HOME/.cache
 env:
   global:
     - GREP_TIMEOUT=360
