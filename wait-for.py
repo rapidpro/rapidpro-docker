@@ -26,7 +26,6 @@ Timeouts can be disabled by setting it to zero or lower.
 
 """
 import click
-import re
 import time
 import docker
 from docker.errors import NotFound
@@ -38,7 +37,7 @@ def wait_for(container, pattern, timeout=60, sleep=1,
     click.secho("\n%s: " % (pattern,), fg='blue', nl=False)
     while True:
         logs = container.logs().decode('utf-8').rstrip()
-        if re.findall(pattern, logs):
+        if pattern in logs:
             break
         time.sleep(sleep)
         if monitor:
