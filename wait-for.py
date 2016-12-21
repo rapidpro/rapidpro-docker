@@ -37,13 +37,15 @@ def wait_for(container, pattern, timeout=60, sleep=1,
     click.secho("\n%s: " % (pattern,), fg='blue', nl=False)
     while True:
         logs = container.logs().decode('utf-8').rstrip()
-        if pattern in logs:
-            break
-        time.sleep(sleep)
         if monitor:
             click.secho('\n'.join(logs.split('\n')[-2:]), fg='yellow')
         else:
             click.secho(".", fg="green", nl=False)
+
+        if pattern in logs:
+            break
+
+        time.sleep(sleep)
         time_spent += sleep
         if timeout > 0 and time_spent > timeout:
             click.secho(".", fg="red")
