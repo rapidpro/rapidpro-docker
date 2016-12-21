@@ -50,10 +50,10 @@ script:
       --detach \
       "$image"
 
-  - timeout $GREP_TIMEOUT grep 'static files copied' <(docker logs --follow rapidpro)
-  - timeout $GREP_TIMEOUT grep 'Compressing... done' <(docker logs  --follow rapidpro)
-  - timeout $GREP_TIMEOUT grep 'Running migrations' <(docker logs  --follow rapidpro)
-  - timeout $GREP_TIMEOUT grep 'spawned uWSGI http 1' <(docker logs  --follow rapidpro)
+  - timeout $GREP_TIMEOUT docker logs --follow rapidpro | grep -m 1 'static files copied'
+  - timeout $GREP_TIMEOUT docker logs --follow rapidpro | grep -m 1 'Compressing... done'
+  - timeout $GREP_TIMEOUT docker logs --follow rapidpro | grep -m 1 'Running migrations'
+  - timeout $GREP_TIMEOUT docker logs --follow rapidpro | grep -m 1 'spawned uWSGI http 1'
   - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
 after_script:
