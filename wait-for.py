@@ -34,19 +34,28 @@ import subprocess
 def wait_for(container, pattern, timeout=60, sleep=1,
              verbose=False, monitor=False):
     time_spent = 0
+    timestamp = ''
     click.secho("\n%s: " % (pattern,), fg='blue', nl=False)
     while True:
-        process = subprocess.run(['docker', 'logs', container],
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 stdin=subprocess.PIPE)
-        logs = process.stdout.decode(sys.stdout.encoding).rstrip()
-        if monitor:
-            click.secho('\n'.join(logs.split('\n')[-2:]), fg='yellow')
+        cmd = ['docker', 'logs',
+               '--since', timestamp,
+               '--timestamps',
+               container]
+        process = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE)
+        logs = process.stdout.decode(sys.stdout.encoding).rstrip().split('\n')
+        # the timestamp is the first bit in the log output
+        timestamp = logs[-1].split(' ')[0]
+
+        if timestamp and monitor:
+            click.secho('\n'.join(logs), fg='yellow')
         else:
             click.secho(".", fg="green", nl=False)
 
-        if pattern in logs:
+        if pattern in '\n'.join(logs):
             break
 
         time.sleep(sleep)
@@ -56,7 +65,7 @@ def wait_for(container, pattern, timeout=60, sleep=1,
             if verbose:
                 click.echo(logs, err=True)
             raise click.ClickException(
-                'Timeout of %s reached for %s' % (timeout, container.name,))
+                'Timeout of %s reached for %s' % (timeout, container,))
     return True
 
 
