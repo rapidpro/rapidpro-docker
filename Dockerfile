@@ -1,9 +1,8 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
-
-ENV RAPIDPRO_VERSION=v2.0.496-nexmo_voice_with_new_api \
-    PIP_RETRIES=120 \
+ARG RAPIDPRO_VERSION
+ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
     C_FORCE_ROOT=1
@@ -16,8 +15,10 @@ RUN set -ex \
 
 WORKDIR /rapidpro
 
-RUN wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    tar -xvf ${RAPIDPRO_VERSION}.tar.gz --strip-components=1 && \
+ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
+RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+    wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+    tar -xf ${RAPIDPRO_VERSION}.tar.gz --strip-components=1 && \
     rm ${RAPIDPRO_VERSION}.tar.gz
 
 # workaround for broken dependency to old Pillow version from django-quickblocks

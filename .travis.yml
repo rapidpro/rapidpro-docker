@@ -1,0 +1,68 @@
+sudo: required
+services:
+  - docker
+cache:
+  directories:
+    - $HOME/postgresql
+env:
+  global:
+    - GREP_TIMEOUT=360
+    - REGISTRY_USER=rapidproautomation
+    # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
+    #       which is decrypted by Travis CI and set as environment variables
+    - secure: "ffYdrH1sxDNP+KrE3cnP2r5lYsRGOmPUwlBON60GsYKwMQDg8Of5vt9fK5FzW9p5SWTpcAhCHeuJjbQ8qB0i4Uh5HtAs2focQdH13CQSQ5RZroNP60gV4WQENmxHqCaLuMQ4zgLQjKdu2R1PkEaUwm/HdHOzQ1Gwt+QEivPgCxtxdvfMFoebffzunpISSoOxSA7DJLWfuWqhszOF2oa+KxrMp/DAVnjwKhyepqSbdxOfuYiKyEdmoiic8S4TLgeDcYSxJnZgGzDP8p3HRahGmXsosMeg2eNghohKZ+c2tiD7DBHbRIrikC1da6/XnsXpcz+ugHuMTw5QTvZcgqKfGkoOchg9/ae5vXWCNQL4b7CPPxgnuxO0jeNUgbeQLnbqrkyxgudCSrTRKlCdmE5G6QijzwyWYOy2BV7+8Ybs17EfqFtSnzn6J6D4+prbklQGy8zB3oyZZXPSPgTFdImyrYAL96Ag1jI6EbwfodzY7himEnquvmcpC9sDoEdX/Z9JWWRKAxqeADzDx/IXiVfT4M155Np8cq8pWFypKOy03DE8KsHnOwaPz0qxgl/imvXW198SUe9qmiavOCY0h+taHK50JK7mKzokCDI25OYbei91iW+0GSuQ4ZR78NeTDO4ktKDZkA9oYMHzi9oKoBCSe8SbZffkRGe6bK45MXvvfEo="
+
+# Update Docker Engine
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine coreutils
+
+before_cache:
+  - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
+
+before_script:
+  - image="sdehaan/rapidpro"
+  - version="$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r .[].name | sort | tail -n1)"
+
+script:
+  # Setup postgresql and load sql dump if exists
+  - docker pull mdillon/postgis:9.6
+  - docker run -d --name postgresql -e POSTGRES_DB=rapidpro mdillon/postgis:9.6
+  - timeout $GREP_TIMEOUT grep -m 1 'PostgreSQL init process complete; ready for start up.' <(docker logs --follow postgresql 2>&1)
+  # Load the cached postgresql dump to speed up migrations
+  - if [[ -f $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker exec -i --user=postgres postgresql psql rapidpro; fi
+
+  # Setup redis
+  - docker pull redis:alpine
+  - docker run -d --name redis redis:alpine
+  - timeout $GREP_TIMEOUT grep -m 1 'The server is now ready to accept connections on port 6379' <(docker logs --follow redis 2>&1)
+
+  # Build RapidPro and run it
+  - docker pull rapidpro/rapidpro-base
+  - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
+  - >
+    docker run --name rapidpro \
+      --env-file docker.envfile \
+      --link redis \
+      --link postgresql \
+      --publish 8000:8000 \
+      --detach \
+      "$image"
+
+  - timeout $GREP_TIMEOUT grep -m 1 'static files copied' <(docker logs --follow rapidpro 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Compressing... done' <(docker logs --follow rapidpro 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Running migrations' <(docker logs --follow rapidpro 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'spawned uWSGI http 1' <(docker logs --follow rapidpro 2>&1)
+  - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
+
+after_script:
+  - docker logs rapidpro
+  - docker images
+
+before_deploy:
+  - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
+deploy:
+  provider: script
+  script: docker tag "$image":"$version" && docker push "$image":"$version"
+  on:
+    branch: master
