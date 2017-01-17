@@ -22,7 +22,7 @@ before_cache:
 
 before_script:
   - image="sdehaan/rapidpro-docker"
-  - version="$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r .[0].name)"
+  - version=$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
 
 script:
   # Setup postgresql and load sql dump if exists
