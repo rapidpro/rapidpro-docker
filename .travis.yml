@@ -10,7 +10,7 @@ env:
     - REGISTRY_USER=rapidproautomation
     # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
     #       which is decrypted by Travis CI and set as environment variables
-    - secure: "ffYdrH1sxDNP+KrE3cnP2r5lYsRGOmPUwlBON60GsYKwMQDg8Of5vt9fK5FzW9p5SWTpcAhCHeuJjbQ8qB0i4Uh5HtAs2focQdH13CQSQ5RZroNP60gV4WQENmxHqCaLuMQ4zgLQjKdu2R1PkEaUwm/HdHOzQ1Gwt+QEivPgCxtxdvfMFoebffzunpISSoOxSA7DJLWfuWqhszOF2oa+KxrMp/DAVnjwKhyepqSbdxOfuYiKyEdmoiic8S4TLgeDcYSxJnZgGzDP8p3HRahGmXsosMeg2eNghohKZ+c2tiD7DBHbRIrikC1da6/XnsXpcz+ugHuMTw5QTvZcgqKfGkoOchg9/ae5vXWCNQL4b7CPPxgnuxO0jeNUgbeQLnbqrkyxgudCSrTRKlCdmE5G6QijzwyWYOy2BV7+8Ybs17EfqFtSnzn6J6D4+prbklQGy8zB3oyZZXPSPgTFdImyrYAL96Ag1jI6EbwfodzY7himEnquvmcpC9sDoEdX/Z9JWWRKAxqeADzDx/IXiVfT4M155Np8cq8pWFypKOy03DE8KsHnOwaPz0qxgl/imvXW198SUe9qmiavOCY0h+taHK50JK7mKzokCDI25OYbei91iW+0GSuQ4ZR78NeTDO4ktKDZkA9oYMHzi9oKoBCSe8SbZffkRGe6bK45MXvvfEo="
+    - secure: "qvNYcLcVgZ5tV/pTgttWOAR6pOmFEAUEGdsZMiVJUf5dBVA8FoGC/YVIh78BJT1YiwGSzPVplymCZuYN57fDCRddHvVv1yvSQsk1VES3N3eC3dAmXHLBnMwY5MshLAL8CZ5Rc/jcGF+PHDJBr5cFK7aYstPU6pWAaytrWtg0itd+uvJ963VnyFSRvnqVpiKb4G/CYpvn8OcXMD5rFqGCwpmyiOUi3eKSdJtogwq2IOvokO/rGcgwYPGsMJf8/K282oix5TFCsuMU6twKdXhHJEEhtXVuoLaU7LlqC3Uz2SN+SwR4qF4diHXYmqJZwXMctYGWXhEuEn8AHpvN0+5tZzoSHrmIvrEGVA2PAaeGF6Fnpz4ODMzbLIbbV7THghHTGdDgSb/7lzJ9zfZuOoTpgKfUOj4JscVjL2UMb81ouJ7Wq7V2Feyzf22OymyzAgTjE3Bxaj/hz/aIYcvV6LjTyERhKej68YqeqXNfLtF2Tm9w97xiW8UPlfe3KAmZS7VaJ9txJt+p0HqefI3/A1/ibyhRipcguYH3OpO+D08wLP5zK6GtqnVtI+9+eKfBB8WnATRQI9l/Zv3hk6uz+CJyrfpqz7OPxNLeoZ3bt6p9i7y+KrRu+fQmisFzCR6sKLbhEW/7UCqJZDv/x0Ua+oFcxC6w4QNVbVZKRnGFFlTjWeE="
 
 # Update Docker Engine
 before_install:
@@ -21,7 +21,7 @@ before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - image="sdehaan/rapidpro-docker"
+  - image="rapidpro/rapidpro"
   - version=$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
 
 script:
