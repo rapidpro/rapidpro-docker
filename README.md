@@ -1,15 +1,16 @@
 RapidPro Docker
 ===============
 
+[![Build Status](https://travis-ci.org/rapidpro/rapidpro-docker.svg?branch=master)](https://travis-ci.org/rapidpro/rapidpro-docker)
+
 This repository's sole purpose is to build docker images versioned off of
 git tags published in nyaruka/rapidpro and upload them to Docker Hub.
 
 The idea is:
 
-  1. Set up a GitHub commit webhook from nyaruka/rapidpro
-  2. Kick off a Travis build when the webhook fires.
+  1. Set up Travis Cron job to run every 24 hours
   3. The Travis build script should download the latest nyaruka/rapidpro
-     tagged release
+     tagged release matching `^v[0-9\.]$`
   4. Build the docker image and tag with the latest git tag.
   5. Push the docker image to Docker hub using credentials stored in
      Travis' secrets vault.
@@ -19,7 +20,7 @@ Running RapidPro in Docker
 
 To run the latest cutting edge version:
 
-> $ docker run --publish 8000:8000 rapidpro/rapidpro
+> $ docker run --publish 8000:8000 rapidpro/rapidpro:latest
 
 To run a specific version:
 
