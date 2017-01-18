@@ -2,6 +2,7 @@ RapidPro Docker
 ===============
 
 [![Build Status](https://travis-ci.org/rapidpro/rapidpro-docker.svg?branch=master)](https://travis-ci.org/rapidpro/rapidpro-docker)
+[![Docker Version](https://images.microbadger.com/badges/version/rapidpro/rapidpro.svg)](https://microbadger.com/images/rapidpro/rapidpro "Get the latest version from Docker Hub")
 
 This repository's sole purpose is to build docker images versioned off of
 git tags published in nyaruka/rapidpro and upload them to Docker Hub.
