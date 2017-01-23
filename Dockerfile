@@ -49,6 +49,7 @@ RUN set -ex \
                 libxml2-dev \
                 zlib-dev \
                 libffi-dev \
+                pcre-dev \
                 readline \
                 readline-dev \
                 ncurses \
