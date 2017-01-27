@@ -70,6 +70,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./deploy.sh "$image" "$version"
+  script: ./deploy.sh "$image" $(echo "$version" | sed 's/\//-/')
   on:
     branch: master
