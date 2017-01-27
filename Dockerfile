@@ -59,6 +59,7 @@ RUN set -ex \
                 libzmq \
         && pip install -U virtualenv \
         && virtualenv /venv \
+        && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.1.1" \
         && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install -r /app/requirements.txt" \
         && runDeps="$( \
                 scanelf --needed --nobanner --recursive /venv \
