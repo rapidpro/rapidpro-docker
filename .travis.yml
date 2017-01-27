@@ -22,6 +22,7 @@ before_cache:
 
 before_script:
   - image="sdehaan/rapidpro-docker"
+  - repository="smn/rapidpro"
   - # version=$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
   - version="feature/junebug-channel"
 
@@ -40,7 +41,7 @@ script:
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
-  - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
+  - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version RAPIDPRO_REPOSITORY=$repository .
   - >
     docker run --name rapidpro \
       --env-file docker.envfile \

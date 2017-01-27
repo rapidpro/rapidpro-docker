@@ -2,6 +2,7 @@
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
 ARG RAPIDPRO_VERSION
+ARG RAPIDPRO_REPOSITORY
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
@@ -16,8 +17,9 @@ RUN set -ex \
 WORKDIR /rapidpro
 
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
-RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/smn/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    wget -O rapidpro.tar.gz "https://github.com/smn/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+ENV RAPIDPRO_REPOSITORY=${RAPIDPRO_REPOSITORY:-nyaruka/rapidpro}
+RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/${RAPIDPRO_REPOSITORY}/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+    wget -O rapidpro.tar.gz "https://github.com/${RAPIDPRO_REPOSITORY}/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     tar -xf rapidpro.tar.gz --strip-components=1 && \
     rm rapidpro.tar.gz
 
