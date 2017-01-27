@@ -16,8 +16,8 @@ RUN set -ex \
 WORKDIR /rapidpro
 
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
-RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/smn/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+    wget "https://github.com/smn/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     tar -xf ${RAPIDPRO_VERSION}.tar.gz --strip-components=1 && \
     rm ${RAPIDPRO_VERSION}.tar.gz
 
