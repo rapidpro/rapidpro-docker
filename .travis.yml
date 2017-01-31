@@ -10,7 +10,7 @@ env:
     - REGISTRY_USER=rapidproautomation
     # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
     #       which is decrypted by Travis CI and set as environment variables
-    - secure: "ftzg9S+hYbPRWVoXmhaZiOTqed4u63Lw90okq6w2AOs5T9LKuf1PVtvjGj7cfJCJqd/nANxedgxTvPeQXRc37rwLnJIikCA/D4e7XfQVOx66SbdyQxDwGtDxaWzR+cZw5yMc3pi4bl53/rXE3Gq0Hsetg7N/6YGBuxVPqIzidRHHo9zbSvb9gwB96bCPWOdtBDsZITHlxS0fNiWhuWi4m4qHlGtDUVaA47ZGfz3heXCnC79kjmJCLuSQvP+wNTOWeFSZ+Ajn0eE5RxqD4nfBRFkdhVJw52RfJqwvJdjnp4gTbHUtZ8fKQIbh+SXdBIXb7KSzhIVGsSl3ixzBvExgAnI6YxtLuzCfDi9D1uZQHWLne2Iexa2za7Y01OaQsLGedU0y5ioigXGayx9wirPCHMKTtzdWZ6G5E5i/DAAHciGW6BM0u/Vk9/Wf3ACxwdbe+pe7hsfPgCxb7KZ8mZmtH9Zx6qjWpqup69hMNaUYIIIY1hDJanO/rC4+6Zpznk/c3YF/AOwpkOsoT/uudnSWTauaDc6nw0PDMTHKdtPm6yjBN+T52Jb7YowlAjVneS+Ej9WHcSXoxjMeuK/RbFWCULX7ywGW0wqOLSD1qmR21A2ur6YRd9aSWVYCirDBHm2dEHEwl8by/Cs6P0oVXF+DA01VA1tBcT+xLCGbwFuNrMo="
+    - secure: "ffYdrH1sxDNP+KrE3cnP2r5lYsRGOmPUwlBON60GsYKwMQDg8Of5vt9fK5FzW9p5SWTpcAhCHeuJjbQ8qB0i4Uh5HtAs2focQdH13CQSQ5RZroNP60gV4WQENmxHqCaLuMQ4zgLQjKdu2R1PkEaUwm/HdHOzQ1Gwt+QEivPgCxtxdvfMFoebffzunpISSoOxSA7DJLWfuWqhszOF2oa+KxrMp/DAVnjwKhyepqSbdxOfuYiKyEdmoiic8S4TLgeDcYSxJnZgGzDP8p3HRahGmXsosMeg2eNghohKZ+c2tiD7DBHbRIrikC1da6/XnsXpcz+ugHuMTw5QTvZcgqKfGkoOchg9/ae5vXWCNQL4b7CPPxgnuxO0jeNUgbeQLnbqrkyxgudCSrTRKlCdmE5G6QijzwyWYOy2BV7+8Ybs17EfqFtSnzn6J6D4+prbklQGy8zB3oyZZXPSPgTFdImyrYAL96Ag1jI6EbwfodzY7himEnquvmcpC9sDoEdX/Z9JWWRKAxqeADzDx/IXiVfT4M155Np8cq8pWFypKOy03DE8KsHnOwaPz0qxgl/imvXW198SUe9qmiavOCY0h+taHK50JK7mKzokCDI25OYbei91iW+0GSuQ4ZR78NeTDO4ktKDZkA9oYMHzi9oKoBCSe8SbZffkRGe6bK45MXvvfEo="
 
 # Update Docker Engine
 before_install:
@@ -21,8 +21,10 @@ before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - image="rapidpro/rapidpro"
-  - version=$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
+  - image="sdehaan/rapidpro-docker"
+  - repository="smn/rapidpro"
+  - # version=$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
+  - version="feature/junebug-channel"
 
 script:
   # Setup postgresql and load sql dump if exists
@@ -39,7 +41,11 @@ script:
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
-  - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
+  - >
+    docker build --tag "$image" \
+      --build-arg RAPIDPRO_VERSION=$version \
+      --build-arg RAPIDPRO_REPOSITORY=$repository \
+      .
   - >
     docker run --name rapidpro \
       --env-file docker.envfile \
@@ -64,6 +70,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./deploy.sh "$image" "$version"
+  script: ./deploy.sh "$image" $(echo "$version" | sed 's/\//-/')
   on:
     branch: master
