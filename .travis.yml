@@ -22,7 +22,7 @@ before_cache:
 
 before_script:
   - image="rapidpro/rapidpro"
-  - version=$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
+  - version=$(curl -s https://api.github.com/repos/rapidpro/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
 
 script:
   # Setup postgresql and load sql dump if exists
@@ -39,7 +39,12 @@ script:
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
-  - docker build --tag "$image" --build-arg RAPIDPRO_VERSION=$version .
+  - >
+    docker build --tag "$image" \
+      --build-arg RAPIDPRO_VERSION=$version \
+      --build-arg VCS_REF=$TRAVIS_COMMIT \
+      --build-arg BUILD_DATE=$(date -Iseconds) \
+      .
   - >
     docker run --name rapidpro \
       --env-file docker.envfile \
