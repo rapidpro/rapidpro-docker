@@ -78,10 +78,4 @@ COMPRESS_URL = STATIC_URL
 # (e.g., translations) are stored
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_CSS_HASHING_METHOD = 'content'
-COMPRESS_OFFLINE_CONTEXT = dict(
-    STATIC_URL=STATIC_URL,
-    base_template='frame.html',
-    debug=False,
-    testing=False,
-)
 COMPRESS_OFFLINE_MANIFEST = 'manifest-%s.json' % env('RAPIDPRO_VERSION', required=True)

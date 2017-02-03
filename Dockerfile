@@ -2,10 +2,22 @@
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
 ARG RAPIDPRO_VERSION
+ARG VCS_REF
+ARG BUILD_DATE
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
     C_FORCE_ROOT=1
+
+LABEL org.label-schema.build-date=$BUILD_DATE \
+        org.label-schema.name="RapidPro" \
+        org.label-schema.description="RapidPro allows organizations to visually build scalable interactive messaging applications." \
+        org.label-schema.url="https://www.rapidpro.io/" \
+        org.label-schema.vcs-ref=$VCS_REF \
+        org.label-schema.vcs-url="https://github.com/rapidpro/rapidpro" \
+        org.label-schema.vendor="Nyaruka, UNICEF" \
+        org.label-schema.version=$RAPIDPRO_VERSION \
+        org.label-schema.schema-version="1.0"
 
 # TODO determine if a more recent version of Node is needed
 # TODO extract openssl and tar to their own upgrade/install line
@@ -16,10 +28,10 @@ RUN set -ex \
 WORKDIR /rapidpro
 
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
-RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    wget "https://github.com/nyaruka/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    tar -xf ${RAPIDPRO_VERSION}.tar.gz --strip-components=1 && \
-    rm ${RAPIDPRO_VERSION}.tar.gz
+RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/rapidpro/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+    wget -O rapidpro.tar.gz "https://github.com/rapidpro/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+    tar -xf rapidpro.tar.gz --strip-components=1 && \
+    rm rapidpro.tar.gz
 
 # workaround for broken dependency to old Pillow version from django-quickblocks
 RUN sed -i '/Pillow/c\Pillow==3.4.2' /rapidpro/pip-freeze.txt
@@ -57,6 +69,7 @@ RUN set -ex \
                 libzmq \
         && pip install -U virtualenv \
         && virtualenv /venv \
+        && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.1.1" \
         && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install -r /app/requirements.txt" \
         && runDeps="$( \
                 scanelf --needed --nobanner --recursive /venv \
