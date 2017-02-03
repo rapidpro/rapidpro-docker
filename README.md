@@ -5,12 +5,12 @@ RapidPro Docker
 [![Docker Version](https://images.microbadger.com/badges/version/rapidpro/rapidpro.svg)](https://hub.docker.com/r/rapidpro/rapidpro/tags/ "Get the latest version from Docker Hub")
 
 This repository's sole purpose is to build docker images versioned off of
-git tags published in nyaruka/rapidpro and upload them to Docker Hub.
+git tags published in rapidpro/rapidpro and upload them to Docker Hub.
 
 The idea is:
 
   1. Set up Travis Cron job to run every 24 hours
-  3. The Travis build script should download the latest nyaruka/rapidpro
+  3. The Travis build script should download the latest rapidpro/rapidpro
      tagged release matching `^v[0-9\.]$`
   4. Build the docker image and tag with the latest git tag.
   5. Push the docker image to Docker hub using credentials stored in
@@ -90,7 +90,7 @@ Environment variables
 
 *RAPIDPRO_VERSION*
   This is a build argument, use it to build a specific version of RapidPro.
-  `docker build rapidpro/rapidpro --built-arg RAPIDPRO_VERSION=X.Y.Z`.
+  `docker build rapidpro/rapidpro --build-arg RAPIDPRO_VERSION=X.Y.Z`.
   This environment variable is available at run time but is only used for
   namespacing the django compressor manifest.
 
