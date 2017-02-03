@@ -21,7 +21,7 @@ Running RapidPro in Docker
 
 To run the latest cutting edge version:
 
-> $ docker run --publish 8000:8000 rapidpro/rapidpro:latest
+> $ docker run --publish 8000:8000 rapidpro/rapidpro:master
 
 To run a specific version:
 
