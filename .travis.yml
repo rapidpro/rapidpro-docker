@@ -6,6 +6,7 @@ cache:
     - $HOME/postgresql
 env:
   global:
+    - VERSION=$(curl -s https://api.github.com/repos/rapidpro/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
     - IMAGE="rapidpro/rapidpro"
     - GREP_TIMEOUT=360
     - REGISTRY_USER=rapidproautomation
@@ -13,7 +14,6 @@ env:
     #       which is decrypted by Travis CI and set as environment variables
     - secure: "ftzg9S+hYbPRWVoXmhaZiOTqed4u63Lw90okq6w2AOs5T9LKuf1PVtvjGj7cfJCJqd/nANxedgxTvPeQXRc37rwLnJIikCA/D4e7XfQVOx66SbdyQxDwGtDxaWzR+cZw5yMc3pi4bl53/rXE3Gq0Hsetg7N/6YGBuxVPqIzidRHHo9zbSvb9gwB96bCPWOdtBDsZITHlxS0fNiWhuWi4m4qHlGtDUVaA47ZGfz3heXCnC79kjmJCLuSQvP+wNTOWeFSZ+Ajn0eE5RxqD4nfBRFkdhVJw52RfJqwvJdjnp4gTbHUtZ8fKQIbh+SXdBIXb7KSzhIVGsSl3ixzBvExgAnI6YxtLuzCfDi9D1uZQHWLne2Iexa2za7Y01OaQsLGedU0y5ioigXGayx9wirPCHMKTtzdWZ6G5E5i/DAAHciGW6BM0u/Vk9/Wf3ACxwdbe+pe7hsfPgCxb7KZ8mZmtH9Zx6qjWpqup69hMNaUYIIIY1hDJanO/rC4+6Zpznk/c3YF/AOwpkOsoT/uudnSWTauaDc6nw0PDMTHKdtPm6yjBN+T52Jb7YowlAjVneS+Ej9WHcSXoxjMeuK/RbFWCULX7ywGW0wqOLSD1qmR21A2ur6YRd9aSWVYCirDBHm2dEHEwl8by/Cs6P0oVXF+DA01VA1tBcT+xLCGbwFuNrMo="
   matrix:
-    - VERSION=$(curl -s https://api.github.com/repos/rapidpro/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
     - VERSION="master"
 
 matrix:
