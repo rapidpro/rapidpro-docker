@@ -79,3 +79,12 @@ COMPRESS_URL = STATIC_URL
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_CSS_HASHING_METHOD = 'content'
 COMPRESS_OFFLINE_MANIFEST = 'manifest-%s.json' % env('RAPIDPRO_VERSION', required=True)
+
+MAGE_AUTH_TOKEN = env('MAGE_AUTH_TOKEN', None)
+MAGE_API_URL = env('MAGE_API_URL', 'http://localhost:8026/api/v1')
+SEND_MESSAGES = env('SEND_MESSAGES', 'off') == 'on'
+SEND_WEBHOOKS = env('SEND_WEBHOOKS', 'off') == 'on'
+SEND_EMAILS = env('SEND_EMAILS', 'off') == 'on'
+SEND_AIRTIME = env('SEND_AIRTIME', 'off') == 'on'
+SEND_CALLS = env('SEND_CALLS', 'off') == 'on'
+IP_ADDRESSES = tuple(filter(None, env('IP_ADDRESSES', '').split(',')))
