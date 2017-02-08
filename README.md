@@ -105,3 +105,46 @@ Environment variables
 
 *UWSGI_HARAKIRI*
   Defaults to `20`
+
+*MAGE_AUTH_TOKEN*
+  The Auth token for Mage
+
+*MAGE_API_URL*
+  The URL for Mage, defaults to http://localhost:8026/api/v1
+
+*SEND_MESSAGES*
+  Set to ``on`` to enable, defaults to ``off``
+
+*SEND_WEBHOOKS*
+  Set to ``on`` to enable, defaults to ``off``
+
+*SEND_EMAILS*
+  Set to ``on`` to enable, defaults to ``off``
+
+*SEND_AIRTIME*
+  Set to ``on`` to enable, defaults to ``off``
+
+*SEND_CALLS*
+  Set to ``on`` to enable, defaults to ``off``
+
+*IP_ADDRESSES*
+  Comma separate list of IP addresses to white list for 3rd party channel
+  integrations
+
+*EMAIL_HOST*
+  Defaults to ``smtp.gmail.com``
+
+*EMAIL_HOST_USER*
+  Defaults to ``server@temba.io``
+
+*DEFAULT_FROM_EMAIL*
+  Defaults to ``server@temba.io``
+
+*EMAIL_HOST_PASSWORD*
+  Defaults to ``mypassword``
+
+*EMAIL_USE_TLS*
+  Set to ``off`` to disable, defaults to ``on``
+
+*SECURE_PROXY_SSL_HEADER*
+  Defaults to ``HTTP_X_FORWARDED_PROTO``
