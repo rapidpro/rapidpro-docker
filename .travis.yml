@@ -28,6 +28,7 @@ before_cache:
 before_script:
   - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
   - VERSION=${VERSION:-$LATEST_TAG}
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then PR_TAG="pr-$TRAVIS_PULL_REQUEST"; else PR_TAG=""; fi;
 
 script:
   # Setup postgresql and load sql dump if exists
@@ -75,6 +76,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./deploy.sh "$IMAGE" "$VERSION"
+  script: ./deploy.sh "${IMAGE}" "${VERSION}${PR_TAG}"
   on:
-    branch: master
+    all_branches: true
