@@ -2,19 +2,21 @@
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
 ARG RAPIDPRO_VERSION
+ARG RAPIDPRO_REPO
 ARG VCS_REF
 ARG BUILD_DATE
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
     C_FORCE_ROOT=1
+ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
         org.label-schema.name="RapidPro" \
         org.label-schema.description="RapidPro allows organizations to visually build scalable interactive messaging applications." \
         org.label-schema.url="https://www.rapidpro.io/" \
         org.label-schema.vcs-ref=$VCS_REF \
-        org.label-schema.vcs-url="https://github.com/rapidpro/rapidpro" \
+        org.label-schema.vcs-url="https://github.com/$RAPIDPRO_REPO" \
         org.label-schema.vendor="Nyaruka, UNICEF" \
         org.label-schema.version=$RAPIDPRO_VERSION \
         org.label-schema.schema-version="1.0"
@@ -27,9 +29,9 @@ RUN set -ex \
 
 WORKDIR /rapidpro
 
-ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
-RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/rapidpro/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    wget -O rapidpro.tar.gz "https://github.com/rapidpro/rapidpro/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-rapidpro/rapidpro}
+RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+    wget -O rapidpro.tar.gz "https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     tar -xf rapidpro.tar.gz --strip-components=1 && \
     rm rapidpro.tar.gz
 
