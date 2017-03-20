@@ -67,6 +67,7 @@ RUN set -ex \
                 ncurses \
                 ncurses-dev \
                 libzmq \
+                libmagic \
         && pip install -U virtualenv \
         && virtualenv /venv \
         && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.1.1" \
