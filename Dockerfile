@@ -79,14 +79,14 @@ RUN set -ex \
                         | sort -u \
         )" \
         && apk add --virtual .python-rundeps $runDeps \
-        && apk del .build-deps \
-        && apk add libmagic  # For some reason apk purges libmagic as it thinks it is not needed, installing separately here.
+        && apk del .build-deps
 
 # TODO should this be in startup.sh?
 RUN cd /rapidpro && bower install --allow-root
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
-RUN apk add --no-cache postgresql-client
+# Install `libmagic` (needed by rapidpro since v3.0.64)
+RUN apk add --no-cache postgresql-client libmagic
 
 RUN sed -i 's/sitestatic\///' /rapidpro/static/brands/rapidpro/less/style.less
 
