@@ -25,7 +25,7 @@ services:
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
   celery:
-    image: rapidpro/rapidpro
+    image: rapidpro/rapidpro:master
     depends_on:
       - rapidpro
     links:
@@ -35,7 +35,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=super-secret-key
-    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,msgs,flows,handler"]
+    command: ["celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,msgs,flows,handler"]
   redis:
     image: redis:alpine
   postgresql:
@@ -43,13 +43,13 @@ services:
     environment:
       - POSTGRES_DB=rapidpro
   mage:
-    image: rapidpro/mage
-    depends_on:
-      - rapidpro
-    links:
-      - redis
-      - postgresql
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
-      - REDIS_URL=redis://redis/
-      - REDIS_DATABASE=8
+   image: rapidpro/mage
+   depends_on:
+     - rapidpro
+   links:
+     - redis
+     - postgresql
+   environment:
+     - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
+     - REDIS_URL=redis://redis/
+     - REDIS_DATABASE=8
