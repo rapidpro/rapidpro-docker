@@ -67,7 +67,6 @@ RUN set -ex \
                 ncurses \
                 ncurses-dev \
                 libzmq \
-                libmagic \
         && pip install -U virtualenv \
         && virtualenv /venv \
         && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.1.1" \
@@ -80,7 +79,8 @@ RUN set -ex \
                         | sort -u \
         )" \
         && apk add --virtual .python-rundeps $runDeps \
-        && apk del .build-deps
+        && apk del .build-deps \
+        && apk add libmagic  # For some reason apk purges libmagic as it thinks it is not needed, installing separately here.
 
 # TODO should this be in startup.sh?
 RUN cd /rapidpro && bower install --allow-root
