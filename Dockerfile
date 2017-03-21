@@ -67,12 +67,10 @@ RUN set -ex \
                 ncurses \
                 ncurses-dev \
                 libzmq \
-        && pip install -U virtualenv \
-        && virtualenv /venv \
-        && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.1.1" \
-        && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install -r /app/requirements.txt" \
+        && pip install setuptools==33.1.1 \
+        && LIBRARY_PATH=/lib:/usr/lib pip install -r /app/requirements.txt \
         && runDeps="$( \
-                scanelf --needed --nobanner --recursive /venv \
+                scanelf --needed --nobanner --recursive /usr/local/ \
                         | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
                         | sort -u \
                         | xargs -r apk info --installed \
@@ -85,14 +83,15 @@ RUN set -ex \
 RUN cd /rapidpro && bower install --allow-root
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
-RUN apk add --no-cache postgresql-client
+# Install `libmagic` (needed since rapidpro v3.0.64)
+RUN apk add --no-cache postgresql-client libmagic
 
 RUN sed -i 's/sitestatic\///' /rapidpro/static/brands/rapidpro/less/style.less
 
-ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_WORKERS=8 UWSGI_HARAKIRI=20
+ENV UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_WORKERS=8 UWSGI_HARAKIRI=20
 # Enable HTTP 1.1 Keep Alive options for uWSGI (http-auto-chunked needed when ConditionalGetMiddleware not installed)
 # These options don't appear to be configurable via environment variables, so pass them in here instead
-ENV STARTUP_CMD="/venv/bin/uwsgi --http-auto-chunked --http-keepalive"
+ENV STARTUP_CMD="/usr/local/bin/uwsgi --http-auto-chunked --http-keepalive"
 
 # ENV MANAGEPY_INIT_DB=on
 # ENV MANAGEPY_MIGRATE=on
