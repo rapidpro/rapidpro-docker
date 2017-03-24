@@ -26,7 +26,7 @@ before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
+  - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r '.[0].name'
   - VERSION=${VERSION:-$LATEST_TAG}
 
 script:
