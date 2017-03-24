@@ -110,6 +110,4 @@ COPY stack/init_db.sql /rapidpro/
 
 EXPOSE 8000
 COPY stack/startup.sh /
-RUN /venv/bin/python manage.py collectstatic --noinput --no-post-process && \
-    /venv/bin/python manage.py compress --extension=".haml" --force -v0
 CMD ["/startup.sh"]
