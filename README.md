@@ -153,3 +153,8 @@ Environment variables
   Sometimes after a redeploy the compressor cache needs to be cleared
   to make sure the static assets are rebuilt. Not set by default, set to ``on``
   if you want to clear the cache every redeploy.
+
+*MANAGE_IMPORT_GEOJSON*
+  List of OSM relation ID's to import. This requires the use of the larger
+  ``-posm`` Docker image that has the posm-extracts included. The list should
+  be formatted as comma separated values.

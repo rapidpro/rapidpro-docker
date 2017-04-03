@@ -20,4 +20,19 @@ fi
 if [ "x$MANAGEPY_MIGRATE" = "xon" ]; then
 	/venv/bin/python manage.py migrate
 fi
+if [ -n "$MANAGE_IMPORT_GEOJSON" ]; then
+	# NOTE: This file is only part of the `-posm` docker image.
+  tar -xf posm-extracts.tar.gz --strip-components=1 && rm posm-extracts.tar.gz
+	for i in $(echo $MANAGE_IMPORT_GEOJSON | sed "s/,/ /g")
+	do
+	    echo "Importing GeoJSON for $i"
+			if [ -d "./geojson/" ]; then
+				/venv/bin/python manage.py import_geojson "./geojson/R{$i}*_simplified.json"
+			else
+				echo "Unable to import $i, make sure to use the `-posm` docker image."
+			fi
+	done
+	echo "Import done, Clearing GeoJSON"
+	rm -rf ./geojson/
+fi
 $STARTUP_CMD
