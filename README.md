@@ -148,3 +148,8 @@ Environment variables
 
 *SECURE_PROXY_SSL_HEADER*
   Defaults to ``HTTP_X_FORWARDED_PROTO``
+
+*CLEAR_COMPRESSOR_CACHE*
+  Sometimes after a redeploy the compressor cache needs to be cleared
+  to make sure the static assets are rebuilt. Not set by default, set to ``on``
+  if you want to clear the cache every redeploy.
