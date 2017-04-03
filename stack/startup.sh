@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 set -ex # fail on any error & print commands as they're run
 if [ "x$MANAGEPY_COLLECTSTATIC" = "xon" ]; then
 	/venv/bin/python manage.py collectstatic --noinput --no-post-process
@@ -20,19 +20,20 @@ fi
 if [ "x$MANAGEPY_MIGRATE" = "xon" ]; then
 	/venv/bin/python manage.py migrate
 fi
-if [ -n "$MANAGE_IMPORT_GEOJSON" ]; then
-	# NOTE: This file is only part of the `-posm` docker image.
-  tar -xf posm-extracts.tar.gz --strip-components=1 && rm posm-extracts.tar.gz
-	for i in $(echo $MANAGE_IMPORT_GEOJSON | sed "s/,/ /g")
-	do
-	    echo "Importing GeoJSON for $i"
-			if [ -d "./geojson/" ]; then
-				/venv/bin/python manage.py import_geojson "./geojson/R{$i}*_simplified.json"
-			else
-				echo "Unable to import $i, make sure to use the `-posm` docker image."
-			fi
+if [ -n "$MANAGEPY_IMPORT_GEOJSON" ]; then
+	GEO_JSON_SHA=$(curl -s https://api.github.com/repos/nyaruka/posm-extracts/git/trees/master | jq -r '.tree | .[] | select(.path == "geojson").sha')
+	mkdir -p ./geojson
+	for RELATION_ID in $(echo $MANAGEPY_IMPORT_GEOJSON | sed "s/,/ /g")
+		do
+		FILES=$(curl -s https://api.github.com/repos/nyaruka/posm-extracts/git/trees/$GEO_JSON_SHA | jq -r ".tree | .[] | select(.path | test(\"R$RELATION_ID.*_simplified.json\")) | .path")
+		for FILE in $FILES
+		do
+			curl -s -O ./geojson/$FILE https://raw.githubusercontent.com/nyaruka/posm-extracts/master/geojson/$FILE
+	    echo "Importing ./geojson/$FILE for relation id $RELATION_ID"
+			echo /venv/bin/python manage.py import_geojson "./geojson/$FILE"
+		done
 	done
 	echo "Import done, Clearing GeoJSON"
-	rm -rf ./geojson/
+	echo rm -rf ./geojson/
 fi
 $STARTUP_CMD
