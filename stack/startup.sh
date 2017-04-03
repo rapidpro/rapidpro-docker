@@ -3,6 +3,9 @@ set -ex # fail on any error & print commands as they're run
 if [ "x$MANAGEPY_COLLECTSTATIC" = "xon" ]; then
 	python manage.py collectstatic --noinput --no-post-process
 fi
+if [ "x$CLEAR_COMPRESSOR_CACHE" = "xon" ]; then
+	/venv/bin/python clear-compressor-cache.py
+fi
 if [ "x$MANAGEPY_COMPRESS" = "xon" ]; then
 	python manage.py compress --extension=".haml" --force -v0
 fi
@@ -16,8 +19,5 @@ if [ "x$MANAGEPY_INIT_DB" = "xon" ]; then
 fi
 if [ "x$MANAGEPY_MIGRATE" = "xon" ]; then
 	python manage.py migrate
-fi
-if [ "x$CLEAR_COMPRESSOR_CACHE" = "xon" ]; then
-	/venv/bin/python clear-compressor-cache.py
 fi
 $STARTUP_CMD
