@@ -107,6 +107,7 @@ COPY settings.py /rapidpro/temba/
 # 500.html needed to keep the missing template from causing an exception during error handling
 COPY stack/500.html /rapidpro/templates/
 COPY stack/init_db.sql /rapidpro/
+COPY stack/clear-compressor-cache.py /rapidpro/
 
 EXPOSE 8000
 COPY stack/startup.sh /
