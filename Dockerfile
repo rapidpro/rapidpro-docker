@@ -5,13 +5,11 @@ ARG RAPIDPRO_VERSION
 ARG RAPIDPRO_REPO
 ARG VCS_REF
 ARG BUILD_DATE
-ARG INCLUDE_POSM
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
     C_FORCE_ROOT=1
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
-ENV INCLUDE_POSM=${INCLUDE_POSM:-false}
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
         org.label-schema.name="RapidPro" \
@@ -36,11 +34,6 @@ RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPI
     wget -O rapidpro.tar.gz "https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     tar -xf rapidpro.tar.gz --strip-components=1 && \
     rm rapidpro.tar.gz
-
-RUN if [ "$INCLUDE_POSM" = true ]; then \
-  echo "Downloading https://github.com/nyaruka/posm-extracts/archive/master.tar.gz" && \
-  wget -O posm-extracts.tar.gz https://github.com/nyaruka/posm-extracts/archive/master.tar.gz; \
-fi
 
 # workaround for broken dependency to old Pillow version from django-quickblocks
 RUN sed -i '/Pillow/c\Pillow==3.4.2' /rapidpro/pip-freeze.txt
