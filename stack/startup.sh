@@ -17,4 +17,7 @@ fi
 if [ "x$MANAGEPY_MIGRATE" = "xon" ]; then
 	python manage.py migrate
 fi
+if [ "x$CLEAR_COMPRESSOR_CACHE" = "xon" ]; then
+	/venv/bin/python clear-compressor-cache.py
+fi
 $STARTUP_CMD
