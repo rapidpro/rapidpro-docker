@@ -36,6 +36,7 @@ if CACHES['default']['BACKEND'] == 'django_redis.cache.RedisCache':
 
 RAVEN_CONFIG = {
     'dsn': env('RAVEN_DSN'),
+    'release': env('RAPIDPRO_VERSION'),
 }
 
 # -----------------------------------------------------------------------------------
