@@ -11,6 +11,8 @@ import django_cache_url
 
 from temba.settings_common import *  # noqa
 
+INSTALLED_APPS = INSTALLED_APPS + ('raven.contrib.django.raven_compat',)
+
 DEBUG = env('DJANGO_DEBUG', 'off') == 'on'
 
 GEOS_LIBRARY_PATH = '/usr/local/lib/libgeos_c.so'
@@ -31,6 +33,10 @@ if CACHES['default']['BACKEND'] == 'django_redis.cache.RedisCache':
     if 'OPTIONS' not in CACHES['default']:
         CACHES['default']['OPTIONS'] = {}
     CACHES['default']['OPTIONS']['CLIENT_CLASS'] = 'django_redis.client.DefaultClient'
+
+RAVEN_CONFIG = {
+    'dsn': env('RAVEN_DSN'),
+}
 
 # -----------------------------------------------------------------------------------
 # Used when creating callbacks for Twilio, Nexmo etc..
