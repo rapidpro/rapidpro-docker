@@ -69,7 +69,6 @@ RUN set -ex \
                 ncurses \
                 ncurses-dev \
                 libzmq \
-                jq \
                 && pip install -U virtualenv \
                 && virtualenv /venv \
                 && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.1.1" \
@@ -89,7 +88,8 @@ RUN cd /rapidpro && bower install --allow-root
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
 # Install `libmagic` (needed since rapidpro v3.0.64)
-RUN apk add --no-cache postgresql-client libmagic
+# Install jq for geo-json downloading scripts
+RUN apk add --no-cache postgresql-client libmagic jq
 
 RUN sed -i 's/sitestatic\///' /rapidpro/static/brands/rapidpro/less/style.less
 
