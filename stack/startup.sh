@@ -21,7 +21,9 @@ if [ "x$MANAGEPY_MIGRATE" = "xon" ]; then
 	/venv/bin/python manage.py migrate
 fi
 if [ "x$MANAGEPY_IMPORT_GEOJSON" = "xon" ]; then
+	echo "Downloading geojson for relation_ids $OSM_RELATION_IDS"
 	/venv/bin/python manage.py download_geojson $OSM_RELATION_IDS
 	/venv/bin/python manage.py import_geojson ./geojson/*.json
+	echo "Imported geojson for relation_ids $OSM_RELATION_IDS"
 fi
 $STARTUP_CMD
