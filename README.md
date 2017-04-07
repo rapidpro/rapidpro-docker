@@ -154,7 +154,11 @@ Environment variables
   to make sure the static assets are rebuilt. Not set by default, set to ``on``
   if you want to clear the cache every redeploy.
 
+*OSM_RELATION_IDS*
+  The list of OSM Relation IDs that need to be downloaded for this
+  deploy. Use spaces to separate the values.
+
 *MANAGE_IMPORT_GEOJSON*
-  List of OSM relation ID's to import. This requires the use of the larger
-  ``-posm`` Docker image that has the posm-extracts included. The list should
-  be formatted as comma separated values.
+  Whether or not to import OSM GeoJSON boundary files. Not set by default,
+  set to ``on`` to activate. Requires the ``OSM_RELATION_IDS`` environment
+  variable to be set.
