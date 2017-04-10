@@ -109,7 +109,7 @@ BRANDING = {
         'slug': env('BRANDING_SLUG', 'rapidpro'),
         'name': env('BRANDING_NAME', 'RapidPro'),
         'org': env('BRANDING_ORG', 'RapidPro'),
-        'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(',')]),
+        'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
         'styles': ['brands/rapidpro/font/style.css'],
         'welcome_topup': 1000,
         'email': env('BRANDING_EMAIL', 'join@rapidpro.io'),
