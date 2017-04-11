@@ -107,7 +107,7 @@ SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
 
 BRANDING = {
-    'default_brand': {
+    'rapidpro.io': {
         'slug': env('BRANDING_SLUG', 'rapidpro'),
         'name': env('BRANDING_NAME', 'RapidPro'),
         'org': env('BRANDING_ORG', 'RapidPro'),
@@ -133,4 +133,11 @@ BRANDING = {
         ))
     }
 }
-DEFAULT_BRAND = 'default_brand'
+DEFAULT_BRAND = 'rapidpro.io'
+
+# build up our offline compression context based on available brands
+COMPRESS_OFFLINE_CONTEXT = []
+for brand in BRANDING.values():
+    context = dict(STATIC_URL=STATIC_URL, base_template='frame.html', debug=False, testing=False)
+    context['brand'] = dict(slug=brand['slug'], styles=brand['styles'])
+    COMPRESS_OFFLINE_CONTEXT.append(context)
