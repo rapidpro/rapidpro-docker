@@ -8,6 +8,8 @@ from __future__ import unicode_literals
 from getenv import env
 import dj_database_url
 import django_cache_url
+from datetime import datetime
+from django.utils.translation import ugettext_lazy as _
 
 from temba.settings_common import *  # noqa
 
@@ -103,3 +105,32 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
 SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
+
+BRANDING = {
+    'default_brand': {
+        'slug': env('BRANDING_SLUG', 'rapidpro'),
+        'name': env('BRANDING_NAME', 'RapidPro'),
+        'org': env('BRANDING_ORG', 'RapidPro'),
+        'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
+        'styles': ['brands/rapidpro/font/style.css'],
+        'welcome_topup': 1000,
+        'email': env('BRANDING_EMAIL', 'join@rapidpro.io'),
+        'support_email': env('BRANDING_SUPPORT_EMAIL', 'join@rapidpro.io'),
+        'link': env('BRANDING_LINK', 'https://app.rapidpro.io'),
+        'api_link': env('BRANDING_API_LINK', 'https://api.rapidpro.io'),
+        'docs_link': env('BRANDING_DOCS_LINK', 'http://docs.rapidpro.io'),
+        'domain': HOSTNAME,
+        'favico': env('BRANDING_FAVICO', 'brands/rapidpro/rapidpro.ico'),
+        'splash': env('BRANDING_SPLASH', '/brands/rapidpro/splash.jpg'),
+        'logo': env('BRANDING_LOGO', '/brands/rapidpro/logo.png'),
+        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
+        'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
+        'bundles': [],
+        'welcome_packs': [dict(size=5000, name="Demo Account"), dict(size=100000, name="UNICEF Account")],
+        'description': _("Visually build nationally scalable mobile applications from anywhere in the world."),
+        'credits': _("Copyright &copy; 2012-%s UNICEF, Nyaruka, and individual contributors. All Rights Reserved." % (
+            datetime.now().strftime('%Y')
+        ))
+    }
+}
+DEFAULT_BRAND = 'default_brand'

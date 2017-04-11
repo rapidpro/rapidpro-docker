@@ -162,3 +162,43 @@ Environment variables
   Whether or not to import OSM GeoJSON boundary files. Not set by default,
   set to ``on`` to activate. Requires the ``OSM_RELATION_IDS`` environment
   variable to be set.
+
+*BRANDING_SLUG*
+  The URL slug of the brand, defaults to ``rapidpro``.
+
+*BRANDING_NAME*
+  The name of the brand, defaults to ``RapidPro``.
+
+*BRANDING_ORG*
+  The organisation of the brand, defaults to ``RapidPro``.
+
+*BRANDING_COLORS*
+  The color scheme of the brand. Semi-colon separated CSS rules.
+  Defaults to ``primary=#0c6596``.
+
+*BRANDING_EMAIL*
+  Defaults to ``join@rapidpro.io``.
+
+*BRANDING_SUPPORT_EMAIL*
+  Defaults to ``join@rapidpro.io``.
+
+*BRANDING_LINK*
+  The URL for the brand, defaults to https://app.rapidpro.io.
+
+*BRANDING_API_LINK*
+  The API URL for the brand, defaults to https://api.rapidpro.io.
+
+*BRANDING_DOCS_LINK*
+  The docs URL for the brand, defaults to http://docs.rapidpro.io.
+
+*BRANDING_FAVICO*
+  The Favico for the brand, defaults to ``brands/rapidpro/rapidpro.ico``.
+
+*BRANDING_SPLASH*
+  The splash image for the brand, defaults to ``/brands/rapidpro/splash.jpg``.
+
+*BRANDING_LOGO*
+  The logo for the brand, defaults to ``/brands/rapidpro/logo.png``.
+
+*BRANDING_ALLOW_SIGNUPS*
+  Boolean for whether or not to allow signups, defaults to ``True``.
