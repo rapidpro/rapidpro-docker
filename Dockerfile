@@ -8,7 +8,8 @@ ARG BUILD_DATE
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
-    C_FORCE_ROOT=1
+    C_FORCE_ROOT=1 \
+    PIP_EXTRA_INDEX_URL="https://alpine-3.wheelhouse.praekelt.org/simple"
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
@@ -34,13 +35,6 @@ RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPI
     wget -O rapidpro.tar.gz "https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
     tar -xf rapidpro.tar.gz --strip-components=1 && \
     rm rapidpro.tar.gz
-
-# workaround for broken dependency to old Pillow version from django-quickblocks
-RUN sed -i '/Pillow/c\Pillow==3.4.2' /rapidpro/pip-freeze.txt
-
-# workaround: outdated dj-database-url does not work with sqlite://:memory: url
-# which is needed for build mode.
-RUN sed -i '/dj-database-url/c\dj-database-url==0.4.1' /rapidpro/pip-freeze.txt
 
 # Build Python virtualenv
 COPY requirements.txt /app/requirements.txt
