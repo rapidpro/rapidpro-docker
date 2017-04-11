@@ -91,8 +91,6 @@ RUN cd /rapidpro && bower install --allow-root
 # Install jq for geo-json downloading scripts
 RUN apk add --no-cache postgresql-client libmagic jq
 
-RUN sed -i 's/sitestatic\///' /rapidpro/static/brands/rapidpro/less/style.less
-
 ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_WORKERS=8 UWSGI_HARAKIRI=20
 # Enable HTTP 1.1 Keep Alive options for uWSGI (http-auto-chunked needed when ConditionalGetMiddleware not installed)
 # These options don't appear to be configurable via environment variables, so pass them in here instead
