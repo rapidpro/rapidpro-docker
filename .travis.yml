@@ -4,7 +4,7 @@ services:
 cache:
   directories:
     - $HOME/postgresql
-    - $HOME/docker
+
 env:
   global:
     - GREP_TIMEOUT=360
@@ -20,13 +20,9 @@ env:
 before_install:
   - sudo apt-get update
   - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine coreutils
-  - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
 before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
-  - >
-    mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
-    | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
 
 before_script:
   - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r '.[0].name')
@@ -47,8 +43,10 @@ script:
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
+  - docker pull "$IMAGE"
   - >
-    docker build --tag "$IMAGE" \
+    docker build --pull --cache-from "$IMAGE" \
+      --tag "$IMAGE" \
       --build-arg RAPIDPRO_VERSION=$VERSION \
       --build-arg VCS_REF=$TRAVIS_COMMIT \
       --build-arg BUILD_DATE=$(date -Iseconds) \
@@ -76,10 +74,11 @@ after_script:
   - docker images
 
 before_deploy:
+  - pip install docker-ci-deploy==0.2.0
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./deploy.sh "$IMAGE" "$VERSION"
+  script: dcd --tag-version "$VERSION" --tag-semver --tag-latest "$IMAGE"
   on:
     branch: master
