@@ -87,16 +87,12 @@ COPY stack/clear-compressor-cache.py /rapidpro/
 EXPOSE 8000
 COPY stack/startup.sh /
 
-ARG VCS_REF
-ARG BUILD_DATE
-LABEL org.label-schema.build-date=$BUILD_DATE \
-        org.label-schema.name="RapidPro" \
-        org.label-schema.description="RapidPro allows organizations to visually build scalable interactive messaging applications." \
-        org.label-schema.url="https://www.rapidpro.io/" \
-        org.label-schema.vcs-ref=$VCS_REF \
-        org.label-schema.vcs-url="https://github.com/$RAPIDPRO_REPO" \
-        org.label-schema.vendor="Nyaruka, UNICEF, and individual contributors." \
-        org.label-schema.version=$RAPIDPRO_VERSION \
-        org.label-schema.schema-version="1.0"
+LABEL org.label-schema.name="RapidPro" \
+      org.label-schema.description="RapidPro allows organizations to visually build scalable interactive messaging applications." \
+      org.label-schema.url="https://www.rapidpro.io/" \
+      org.label-schema.vcs-url="https://github.com/$RAPIDPRO_REPO" \
+      org.label-schema.vendor="Nyaruka, UNICEF, and individual contributors." \
+      org.label-schema.version=$RAPIDPRO_VERSION \
+      org.label-schema.schema-version="1.0"
 
 CMD ["/startup.sh"]

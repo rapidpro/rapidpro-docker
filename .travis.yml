@@ -48,8 +48,6 @@ script:
     docker build --pull --cache-from "$IMAGE" \
       --tag "$IMAGE" \
       --build-arg RAPIDPRO_VERSION=$VERSION \
-      --build-arg VCS_REF=$TRAVIS_COMMIT \
-      --build-arg BUILD_DATE=$(date -Iseconds) \
       --build-arg RAPIDPRO_REPO=$REPO \
       .
   - >
