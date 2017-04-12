@@ -1,10 +1,6 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
 FROM rapidpro/rapidpro-base
-ARG RAPIDPRO_VERSION
-ARG RAPIDPRO_REPO
-ARG VCS_REF
-ARG BUILD_DATE
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
@@ -47,6 +43,8 @@ RUN set -ex \
                 && pip install -U virtualenv \
                 && virtualenv /venv
 
+ARG RAPIDPRO_VERSION
+ARG RAPIDPRO_REPO
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
 ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-rapidpro/rapidpro}
 RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
@@ -89,6 +87,8 @@ COPY stack/clear-compressor-cache.py /rapidpro/
 EXPOSE 8000
 COPY stack/startup.sh /
 
+ARG VCS_REF
+ARG BUILD_DATE
 LABEL org.label-schema.build-date=$BUILD_DATE \
         org.label-schema.name="RapidPro" \
         org.label-schema.description="RapidPro allows organizations to visually build scalable interactive messaging applications." \
