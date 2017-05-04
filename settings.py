@@ -56,6 +56,9 @@ AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', '')
 CDN_DOMAIN_NAME = env('CDN_DOMAIN_NAME', '')
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', '')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', '')
+AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', '')
+AWS_LOCATION = env('AWS_LOCATION')
 
 if AWS_STORAGE_BUCKET_NAME:
     # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
@@ -71,9 +74,13 @@ if AWS_STORAGE_BUCKET_NAME:
     # refers directly to STATIC_URL. So it's safest to always set it.
     STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 
+    MEDIAFILES_LOCATION = 'media'
+    MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+
     # Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
     # you run `collectstatic`).
-    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     COMPRESS_STORAGE = STATICFILES_STORAGE
 else:
     STATIC_URL = '/sitestatic/'
