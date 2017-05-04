@@ -58,7 +58,9 @@ AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', '')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', '')
 AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', '')
-AWS_LOCATION = env('AWS_LOCATION')
+AWS_LOCATION = env('AWS_LOCATION', '')
+AWS_STATIC = env('AWS_STATIC', False)
+AWS_MEDIA = env('AWS_MEDIA', False)
 
 if AWS_STORAGE_BUCKET_NAME:
     # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
@@ -70,18 +72,22 @@ if AWS_STORAGE_BUCKET_NAME:
     else:
         AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
-    # This is used by the `static` template tag from `static`, if you're using that. Or if anything else
-    # refers directly to STATIC_URL. So it's safest to always set it.
-    STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+    if AWS_STATIC:
+        # This is used by the `static` template tag from `static`, if you're using that. Or if anything else
+        # refers directly to STATIC_URL. So it's safest to always set it.
+        STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 
-    MEDIAFILES_LOCATION = 'media'
-    MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+        # Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
+        # you run `collectstatic`).
+        STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-    # Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
-    # you run `collectstatic`).
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    COMPRESS_STORAGE = STATICFILES_STORAGE
+        COMPRESS_STORAGE = STATICFILES_STORAGE
+
+    if AWS_MEDIA:
+        MEDIAFILES_LOCATION = 'media'
+        MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+
+        DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 else:
     STATIC_URL = '/sitestatic/'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
