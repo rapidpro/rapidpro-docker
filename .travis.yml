@@ -19,7 +19,7 @@ env:
 # Update Docker Engine
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine coreutils
+  - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-ce coreutils
 
 before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
