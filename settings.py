@@ -8,8 +8,12 @@ from __future__ import unicode_literals
 from getenv import env
 import dj_database_url
 import django_cache_url
+from datetime import datetime
+from django.utils.translation import ugettext_lazy as _
 
 from temba.settings_common import *  # noqa
+
+INSTALLED_APPS = INSTALLED_APPS + ('raven.contrib.django.raven_compat',)
 
 DEBUG = env('DJANGO_DEBUG', 'off') == 'on'
 
@@ -32,6 +36,11 @@ if CACHES['default']['BACKEND'] == 'django_redis.cache.RedisCache':
         CACHES['default']['OPTIONS'] = {}
     CACHES['default']['OPTIONS']['CLIENT_CLASS'] = 'django_redis.client.DefaultClient'
 
+RAVEN_CONFIG = {
+    'dsn': env('RAVEN_DSN'),
+    'release': env('RAPIDPRO_VERSION'),
+}
+
 # -----------------------------------------------------------------------------------
 # Used when creating callbacks for Twilio, Nexmo etc..
 # -----------------------------------------------------------------------------------
@@ -45,6 +54,13 @@ LOGGING['root']['level'] = env('DJANGO_LOG_LEVEL', 'INFO')
 
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', '')
 CDN_DOMAIN_NAME = env('CDN_DOMAIN_NAME', '')
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', '')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', '')
+AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', '')
+AWS_LOCATION = env('AWS_LOCATION', '')
+AWS_STATIC = env('AWS_STATIC', False)
+AWS_MEDIA = env('AWS_MEDIA', False)
 
 if AWS_STORAGE_BUCKET_NAME:
     # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
@@ -56,15 +72,24 @@ if AWS_STORAGE_BUCKET_NAME:
     else:
         AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
-    # This is used by the `static` template tag from `static`, if you're using that. Or if anything else
-    # refers directly to STATIC_URL. So it's safest to always set it.
-    STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+    if AWS_STATIC:
+        # This is used by the `static` template tag from `static`, if you're using that. Or if anything else
+        # refers directly to STATIC_URL. So it's safest to always set it.
+        STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 
-    # Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
-    # you run `collectstatic`).
-    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-    COMPRESS_STORAGE = STATICFILES_STORAGE
-else:
+        # Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
+        # you run `collectstatic`).
+        STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+        COMPRESS_STORAGE = STATICFILES_STORAGE
+
+    if AWS_MEDIA:
+        MEDIAFILES_LOCATION = 'media'
+        MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+
+        DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+if not AWS_STATIC:
     STATIC_URL = '/sitestatic/'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['whitenoise.middleware.WhiteNoiseMiddleware']
@@ -96,3 +121,39 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
 SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
+
+BRANDING = {
+    'rapidpro.io': {
+        'slug': env('BRANDING_SLUG', 'rapidpro'),
+        'name': env('BRANDING_NAME', 'RapidPro'),
+        'org': env('BRANDING_ORG', 'RapidPro'),
+        'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
+        'styles': ['brands/rapidpro/font/style.css'],
+        'welcome_topup': 1000,
+        'email': env('BRANDING_EMAIL', 'join@rapidpro.io'),
+        'support_email': env('BRANDING_SUPPORT_EMAIL', 'join@rapidpro.io'),
+        'link': env('BRANDING_LINK', 'https://app.rapidpro.io'),
+        'api_link': env('BRANDING_API_LINK', 'https://api.rapidpro.io'),
+        'docs_link': env('BRANDING_DOCS_LINK', 'http://docs.rapidpro.io'),
+        'domain': HOSTNAME,
+        'favico': env('BRANDING_FAVICO', 'brands/rapidpro/rapidpro.ico'),
+        'splash': env('BRANDING_SPLASH', '/brands/rapidpro/splash.jpg'),
+        'logo': env('BRANDING_LOGO', '/brands/rapidpro/logo.png'),
+        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
+        'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
+        'bundles': [],
+        'welcome_packs': [dict(size=5000, name="Demo Account"), dict(size=100000, name="UNICEF Account")],
+        'description': _("Visually build nationally scalable mobile applications from anywhere in the world."),
+        'credits': _("Copyright &copy; 2012-%s UNICEF, Nyaruka, and individual contributors. All Rights Reserved." % (
+            datetime.now().strftime('%Y')
+        ))
+    }
+}
+DEFAULT_BRAND = 'rapidpro.io'
+
+# build up our offline compression context based on available brands
+COMPRESS_OFFLINE_CONTEXT = []
+for brand in BRANDING.values():
+    context = dict(STATIC_URL=STATIC_URL, base_template='frame.html', debug=False, testing=False)
+    context['brand'] = dict(slug=brand['slug'], styles=brand['styles'])
+    COMPRESS_OFFLINE_CONTEXT.append(context)

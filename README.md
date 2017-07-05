@@ -1,8 +1,8 @@
 RapidPro Docker
 ===============
 
-[![Build Status](https://travis-ci.org/rapidpro/rapidpro-docker.svg?branch=master)](https://travis-ci.org/rapidpro/rapidpro-docker)
-[![Docker Version](https://images.microbadger.com/badges/version/rapidpro/rapidpro.svg)](https://hub.docker.com/r/rapidpro/rapidpro/tags/ "Get the latest version from Docker Hub")
+[![Build Status](https://travis-ci.org/praekeltfoundation/rapidpro-docker.svg?branch=master)](https://travis-ci.org/praekeltfoundation/rapidpro-docker)
+[![Docker Version](https://images.microbadger.com/badges/version/praekeltfoundation/rapidpro.svg)](https://hub.docker.com/r/praekeltfoundation/rapidpro/tags/ "Get the latest version from Docker Hub")
 
 This repository's sole purpose is to build docker images versioned off of
 git tags published in rapidpro/rapidpro and upload them to Docker Hub.
@@ -148,3 +148,57 @@ Environment variables
 
 *SECURE_PROXY_SSL_HEADER*
   Defaults to ``HTTP_X_FORWARDED_PROTO``
+
+*CLEAR_COMPRESSOR_CACHE*
+  Sometimes after a redeploy the compressor cache needs to be cleared
+  to make sure the static assets are rebuilt. Not set by default, set to ``on``
+  if you want to clear the cache every redeploy.
+
+*OSM_RELATION_IDS*
+  The list of OSM Relation IDs that need to be downloaded for this
+  deploy. Use spaces to separate the values.
+
+*MANAGE_IMPORT_GEOJSON*
+  Whether or not to import OSM GeoJSON boundary files. Not set by default,
+  set to ``on`` to activate. Requires the ``OSM_RELATION_IDS`` environment
+  variable to be set.
+
+*BRANDING_SLUG*
+  The URL slug of the brand, defaults to ``rapidpro``.
+
+*BRANDING_NAME*
+  The name of the brand, defaults to ``RapidPro``.
+
+*BRANDING_ORG*
+  The organisation of the brand, defaults to ``RapidPro``.
+
+*BRANDING_COLORS*
+  The color scheme of the brand. Semi-colon separated CSS rules.
+  Defaults to ``primary=#0c6596``.
+
+*BRANDING_EMAIL*
+  Defaults to ``join@rapidpro.io``.
+
+*BRANDING_SUPPORT_EMAIL*
+  Defaults to ``join@rapidpro.io``.
+
+*BRANDING_LINK*
+  The URL for the brand, defaults to https://app.rapidpro.io.
+
+*BRANDING_API_LINK*
+  The API URL for the brand, defaults to https://api.rapidpro.io.
+
+*BRANDING_DOCS_LINK*
+  The docs URL for the brand, defaults to http://docs.rapidpro.io.
+
+*BRANDING_FAVICO*
+  The Favico for the brand, defaults to ``brands/rapidpro/rapidpro.ico``.
+
+*BRANDING_SPLASH*
+  The splash image for the brand, defaults to ``/brands/rapidpro/splash.jpg``.
+
+*BRANDING_LOGO*
+  The logo for the brand, defaults to ``/brands/rapidpro/logo.png``.
+
+*BRANDING_ALLOW_SIGNUPS*
+  Boolean for whether or not to allow signups, defaults to ``True``.

@@ -4,21 +4,18 @@ services:
 cache:
   directories:
     - $HOME/postgresql
+
 env:
   global:
-    - IMAGE="rapidpro/rapidpro"
     - GREP_TIMEOUT=360
     - REGISTRY_USER=rapidproautomation
     # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
     #       which is decrypted by Travis CI and set as environment variables
-    - secure: "ftzg9S+hYbPRWVoXmhaZiOTqed4u63Lw90okq6w2AOs5T9LKuf1PVtvjGj7cfJCJqd/nANxedgxTvPeQXRc37rwLnJIikCA/D4e7XfQVOx66SbdyQxDwGtDxaWzR+cZw5yMc3pi4bl53/rXE3Gq0Hsetg7N/6YGBuxVPqIzidRHHo9zbSvb9gwB96bCPWOdtBDsZITHlxS0fNiWhuWi4m4qHlGtDUVaA47ZGfz3heXCnC79kjmJCLuSQvP+wNTOWeFSZ+Ajn0eE5RxqD4nfBRFkdhVJw52RfJqwvJdjnp4gTbHUtZ8fKQIbh+SXdBIXb7KSzhIVGsSl3ixzBvExgAnI6YxtLuzCfDi9D1uZQHWLne2Iexa2za7Y01OaQsLGedU0y5ioigXGayx9wirPCHMKTtzdWZ6G5E5i/DAAHciGW6BM0u/Vk9/Wf3ACxwdbe+pe7hsfPgCxb7KZ8mZmtH9Zx6qjWpqup69hMNaUYIIIY1hDJanO/rC4+6Zpznk/c3YF/AOwpkOsoT/uudnSWTauaDc6nw0PDMTHKdtPm6yjBN+T52Jb7YowlAjVneS+Ej9WHcSXoxjMeuK/RbFWCULX7ywGW0wqOLSD1qmR21A2ur6YRd9aSWVYCirDBHm2dEHEwl8by/Cs6P0oVXF+DA01VA1tBcT+xLCGbwFuNrMo="
+    - secure: "ZEp6Zahblytf+53HNnrCEZ0teQJFrBlS2+6NrGJk+pbutkG1nTUQzZrbPRiJwj61Xh/AHkWnUsKvFUF8P6wJLLXklEZMFid0G9Y7pBmcSNmtrVTl6WySQDGAHKb7X+6CAftQX443bcrjIKRgHLkBfC4ZQWXjqfwQrlBrJsdDrLFJjl/v6aYlst92kbSBcA0gi8/1rFiNlUZdh7SqG5GI52LOjL6F4LwLkcAe0m+RTGOjwfv+jIG4xXFZme0EOeRqxM2LXLSrCbZFu7MvE7fDJrTwiAX4R+iEsV8LNwYfX8L1b5NUzrSBbgClfSHnA02wWLnrsVQJbSqipiwB5pHntA8/4aRHzkZrdPTowZtk4QG5Ngp/f7kZ014v4l90HDIEmcDATsKzalf/VoLsUrcZhU4dokXkXb6M4yogYKKMbGSwOVmlKahRCEs8LI+tbPH0nGey5h/Mg1OFysmFHMM6z/krGmDZi+4LRLLcybuXXAZELeNMzPJQgSTlYAftuXPftQwuseRS4pg+Heb4NHzToG7KqTwV642G03x2UHmQ6rfB9Ld50KBr7ZGIcMKqvUGtVKS5ZI+wCeDdg2u4YbvMTNGd0srNX8Rdn51PzlGJZHOe6e8ZzGRNZocmb/LUjSn2YOj0gz9GoIMjKgQstGY7HoEGJ5/yfZ9Q/KU2kyIpfPk="
   matrix:
-    - VERSION=""
-    - VERSION="master"
+    - IMAGE="praekeltfoundation/rapidpro" VERSION="" REPO="praekeltfoundation/rapidpro"
+    - IMAGE="praekeltfoundation/rapidpro" VERSION="master" REPO="praekeltfoundation/rapidpro"
 
-matrix:
-  allow_failures:
-    env: VERSION="master"
 # Update Docker Engine
 before_install:
   - sudo apt-get update
@@ -28,7 +25,7 @@ before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - LATEST_TAG=$(curl -s https://api.github.com/repos/rapidpro/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
+  - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r '.[0].name')
   - VERSION=${VERSION:-$LATEST_TAG}
 
 script:
@@ -46,11 +43,12 @@ script:
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
+  - docker pull "$IMAGE"
   - >
-    docker build --tag "$IMAGE" \
+    docker build --pull --cache-from "$IMAGE" \
+      --tag "$IMAGE" \
       --build-arg RAPIDPRO_VERSION=$VERSION \
-      --build-arg VCS_REF=$TRAVIS_COMMIT \
-      --build-arg BUILD_DATE=$(date -Iseconds) \
+      --build-arg RAPIDPRO_REPO=$REPO \
       .
   - >
     docker run --name rapidpro \
@@ -64,18 +62,21 @@ script:
   - timeout $GREP_TIMEOUT grep -m 1 'static files copied' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Compressing... done' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Running migrations' <(docker logs --follow rapidpro 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Downloading geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Imported geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'spawned uWSGI http 1' <(docker logs --follow rapidpro 2>&1)
-  - docker exec rapidpro python /rapidpro/manage.py check
+  - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
 after_script:
   - docker logs rapidpro
   - docker images
 
 before_deploy:
+  - pip install docker-ci-deploy==0.2.0
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./deploy.sh "$IMAGE" "$VERSION"
+  script: dcd --tag-version "$VERSION" --tag-semver --tag-latest "$IMAGE"
   on:
     branch: master
