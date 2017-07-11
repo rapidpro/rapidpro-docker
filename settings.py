@@ -116,6 +116,7 @@ IP_ADDRESSES = tuple(filter(None, env('IP_ADDRESSES', '').split(',')))
 
 EMAIL_HOST = env('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', 'server@temba.io')
+EMAIL_PORT = int(env('EMAIL_PORT', 25))
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'server@temba.io')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
