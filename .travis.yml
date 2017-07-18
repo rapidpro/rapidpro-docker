@@ -39,7 +39,7 @@ script:
   # Setup redis
   - docker pull redis:alpine
   - docker run -d --name redis redis:alpine
-  - timeout $GREP_TIMEOUT grep -m 1 'The server is now ready to accept connections on port 6379' <(docker logs --follow redis 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Ready to accept connections' <(docker logs --follow redis 2>&1)
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
