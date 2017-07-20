@@ -1,6 +1,6 @@
 #!/bin/sh
 
-apk add curl jq
+apk add --no-cache curl jq
 
 version=$(curl -s https://api.github.com/repos/praekeltfoundation/rapidpro/tags  | jq -r '.[0].name')
 
