@@ -22,6 +22,8 @@ jobs:
     trigger: true
   - task: build
     file: rapidpro-docker/.ci/build.yml
+    params:
+        version_suffix: {{version-suffix}}
   - put: rapidpro-image
     params:
       build: rapidpro-docker

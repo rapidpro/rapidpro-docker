@@ -11,7 +11,8 @@ inputs:
 outputs:
   - name: image-params
 
+params:
+    version_suffix:
+
 run:
   path: ./rapidpro-docker/.ci/build.sh
-  args:
-    - {{version-suffix}}
