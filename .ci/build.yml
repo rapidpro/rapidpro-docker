@@ -1,0 +1,15 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: busybox
+
+inputs:
+  - name: rapidpro-docker
+
+outputs:
+  - name: image-params
+
+run:
+  path: ./rapidpro-docker/.ci/build.sh
