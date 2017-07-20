@@ -13,4 +13,5 @@ outputs:
 
 run:
   path: ./rapidpro-docker/.ci/build.sh
-  params: {postfix: local}
+  args:
+    - {{version-suffix}}
