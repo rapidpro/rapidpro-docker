@@ -1,5 +1,5 @@
 #!/bin/sh
 
-version=$(awk '/^ENV RAPIDPRO_VERSION/ { print $3 }' rapidpro-docker/Dockerfile)
+version=$(curl -s https://api.github.com/repos/praekeltfoundation/rapidpro/tags  | jq -r '.[0].name')
 
-echo "$version" > image-params/tag
+echo "$version.local" > image-params/tag
