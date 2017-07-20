@@ -11,8 +11,8 @@ resources:
   type: docker-image
   source:
     repository: praekeltfoundation/rapidpro
-    username: jerithbot
-    password: {{jerithbot-dockerhub-key}}
+    username: {{rapidpro-dockerhub-username}}
+    password: {{rapidpro-dockerhub-password}}
   check_every: 30m
 
 jobs:
