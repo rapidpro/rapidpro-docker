@@ -12,7 +12,7 @@ outputs:
   - name: image-params
 
 params:
-    version_suffix: local
+    VERSION_SUFFIX: local
 
 run:
   path: ./rapidpro-docker/.ci/build.sh

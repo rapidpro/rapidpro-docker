@@ -23,7 +23,7 @@ jobs:
   - task: build
     file: rapidpro-docker/.ci/build.yml
     params:
-        version_suffix: {{version-suffix}}
+        VERSION_SUFFIX: {{version-suffix}}
   - put: rapidpro-image
     params:
       build: rapidpro-docker
