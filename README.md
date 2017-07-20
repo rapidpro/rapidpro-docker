@@ -134,6 +134,9 @@ Environment variables
 *EMAIL_HOST*
   Defaults to ``smtp.gmail.com``
 
+*EMAIL_PORT*
+  DEfaults to ``25``
+
 *EMAIL_HOST_USER*
   Defaults to ``server@temba.io``
 
@@ -202,3 +205,7 @@ Environment variables
 
 *BRANDING_ALLOW_SIGNUPS*
   Boolean for whether or not to allow signups, defaults to ``True``.
+
+*RAVEN_DSN*
+  The DSN for Sentry
+

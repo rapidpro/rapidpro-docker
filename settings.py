@@ -68,14 +68,14 @@ if AWS_STORAGE_BUCKET_NAME:
     # This controls how the `static` template tag from `staticfiles` gets expanded, if you're using it.
     # We also use it in the next setting.
     if CDN_DOMAIN_NAME:
-        AWS_S3_CUSTOM_DOMAIN = CDN_DOMAIN_NAME
+        AWS_S3_DOMAIN = CDN_DOMAIN_NAME
     else:
-        AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+        AWS_S3_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
     if AWS_STATIC:
         # This is used by the `static` template tag from `static`, if you're using that. Or if anything else
         # refers directly to STATIC_URL. So it's safest to always set it.
-        STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+        STATIC_URL = "https://%s/" % AWS_S3_DOMAIN
 
         # Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
         # you run `collectstatic`).
@@ -85,7 +85,7 @@ if AWS_STORAGE_BUCKET_NAME:
 
     if AWS_MEDIA:
         MEDIAFILES_LOCATION = 'media'
-        MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+        MEDIA_URL = "https://%s/%s/" % (AWS_S3_DOMAIN, MEDIAFILES_LOCATION)
 
         DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
@@ -116,6 +116,7 @@ IP_ADDRESSES = tuple(filter(None, env('IP_ADDRESSES', '').split(',')))
 
 EMAIL_HOST = env('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', 'server@temba.io')
+EMAIL_PORT = int(env('EMAIL_PORT', 25))
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'server@temba.io')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
