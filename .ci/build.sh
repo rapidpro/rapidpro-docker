@@ -1,6 +1,6 @@
 #!/bin/sh
 
-apk install curl jq
+apk add curl jq
 
 version=$(curl -s https://api.github.com/repos/praekeltfoundation/rapidpro/tags  | jq -r '.[0].name')
 
