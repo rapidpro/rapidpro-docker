@@ -1,8 +1,6 @@
 #!/bin/sh
 
-opkg-install curl
-
-curl -o /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq && chmod +x /usr/bin/jq
+apk install curl jq
 
 version=$(curl -s https://api.github.com/repos/praekeltfoundation/rapidpro/tags  | jq -r '.[0].name')
 
