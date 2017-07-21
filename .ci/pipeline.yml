@@ -29,4 +29,5 @@ jobs:
     params:
       build: rapidpro-docker
       tag: image-params/tag
+      additional_tags: image-params/additional_tags
       tag_as_latest: false
