@@ -42,4 +42,4 @@ jobs:
       tag_as_latest: false
       cache: ((cache))
       cache_tag: ((cache-tag))
-      build_args: build-args.json
+      build_args: image-params/build-args.json
