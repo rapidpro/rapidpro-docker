@@ -40,5 +40,5 @@ jobs:
       tag: image-params/tag
       additional_tags: image-params/additional_tags
       tag_as_latest: false
-      cache: true
-      cache_tag: latest.((version-suffix))
+      cache: ((cache))
+      cache_tag: ((cache-tag))
