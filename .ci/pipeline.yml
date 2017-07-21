@@ -14,6 +14,7 @@ resources:
     username: {{rapidpro-dockerhub-username}}
     password: {{rapidpro-dockerhub-password}}
   check_every: 30m
+  registry_mirror: {{registry-mirror}}
 
 jobs:
 - name: build-image
@@ -28,4 +29,4 @@ jobs:
     params:
       build: rapidpro-docker
       tag: image-params/tag
-      tag_as_latest: true
+      tag_as_latest: false
