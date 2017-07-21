@@ -215,15 +215,15 @@ Concourse CI
 
 To login and sync:
 
-> $ fly login --concourse-url https://concourse.example.com -t target  
-> $ fly -t target sync
+    > $ fly login --concourse-url https://concourse.example.com -t <target>  
+    > $ fly -t <target> sync
 
 To add a pipeline:
 
-> $ fly validate-pipeline --config .ci/pipeline.yml  
-> $ fly -t target set-pipeline --config .ci/pipeline.yml --pipeline pipeline-name>--load-vars-from .ci/vars.yml  
-> $ fly -t target unpause-pipeline -p pipeline-name
+    > $ fly validate-pipeline --config .ci/pipeline.yml  
+    > $ fly -t <target> set-pipeline --config .ci/pipeline.yml --pipeline <pipeline-name> --load-vars-from .ci/vars.yml  
+    > $ fly -t <target> unpause-pipeline -p <pipeline-name>
 
 To trigger and watch a build:
 
-> $ fly -t target trigger-job -j pipeline-name/build-image -w
+    > $ fly -t <target> trigger-job -j <pipeline-name>/build-image -w
