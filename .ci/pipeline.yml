@@ -5,7 +5,7 @@ resource_types:
   source:
     repository: jerithorg/docker-image-resource
     tag: latest
-    registry_mirror: {{registry-mirror}}
+    registry_mirror: ((registry-mirror))
 
 resources:
 - name: rapidpro-docker
@@ -20,9 +20,9 @@ resources:
   type: docker-image-multitag
   source:
     repository: praekeltfoundation/rapidpro
-    username: {{rapidpro-dockerhub-username}}
-    password: {{rapidpro-dockerhub-password}}
-    registry_mirror: {{registry-mirror}}
+    username: ((rapidpro-dockerhub-username))
+    password: ((rapidpro-dockerhub-password))
+    registry_mirror: ((registry-mirror))
   check_every: 30m
 
 jobs:
@@ -33,10 +33,12 @@ jobs:
   - task: build
     file: rapidpro-docker/.ci/build.yml
     params:
-        VERSION_SUFFIX: {{version-suffix}}
+        VERSION_SUFFIX: ((version-suffix))
   - put: rapidpro-image
     params:
       build: rapidpro-docker
       tag: image-params/tag
       additional_tags: image-params/additional_tags
       tag_as_latest: false
+      cache: true
+      cache_tag: latest.((version-suffix))
