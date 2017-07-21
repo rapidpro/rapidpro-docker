@@ -8,3 +8,5 @@ VERSION_SUFFIX=${VERSION_SUFFIX+.$VERSION_SUFFIX}
 
 echo "$version$VERSION_SUFFIX" > image-params/tag
 echo "latest$VERSION_SUFFIX" > image-params/additional_tags
+
+echo '{"RAPIDPRO_VERSION":"'$version'","RAPIDPRO_REPO":"praekeltfoundation/rapidpro"}' > build-args.json
