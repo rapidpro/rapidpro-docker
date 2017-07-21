@@ -7,3 +7,4 @@ version=$(curl -s https://api.github.com/repos/praekeltfoundation/rapidpro/tags 
 VERSION_SUFFIX=${VERSION_SUFFIX+.$VERSION_SUFFIX}
 
 echo "$version$VERSION_SUFFIX" > image-params/tag
+echo "latest$VERSION_SUFFIX" > image-params/additional_tags
