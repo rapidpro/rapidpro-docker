@@ -5,6 +5,7 @@ resource_types:
   source:
     repository: jerithorg/docker-image-resource
     tag: latest
+    registry_mirror: {{registry-mirror}}
 
 resources:
 - name: rapidpro-docker
