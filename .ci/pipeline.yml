@@ -13,8 +13,8 @@ resources:
     repository: praekeltfoundation/rapidpro
     username: {{rapidpro-dockerhub-username}}
     password: {{rapidpro-dockerhub-password}}
+    registry_mirror: {{registry-mirror}}
   check_every: 30m
-  registry_mirror: {{registry-mirror}}
 
 jobs:
 - name: build-image
