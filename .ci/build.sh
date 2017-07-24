@@ -11,4 +11,4 @@ echo "latest$VERSION_SUFFIX" > image-params/additional_tags
 
 echo '{"RAPIDPRO_VERSION":"'$version'","RAPIDPRO_REPO":"praekeltfoundation/rapidpro"}' > image-params/build-args.json
 
-echo "Building ...: $version"
+echo "Building RapidPro: $version"
