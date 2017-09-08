@@ -29,6 +29,9 @@ before_script:
   - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r '.[0].name')
   - VERSION=${VERSION:-$LATEST_TAG}
 
+install:
+  - echo "preventing default pip install here"
+
 script:
   # Setup postgresql and load sql dump if exists
   - docker pull mdillon/postgis:9.6
