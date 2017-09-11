@@ -13,7 +13,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from temba.settings_common import *  # noqa
 
-INSTALLED_APPS = INSTALLED_APPS + ('raven.contrib.django.raven_compat',)
+INSTALLED_APPS = (
+    INSTALLED_APPS +
+    tuple(filter(None, env('EXTRA_INSTALLED_APPS', '').split(','))) +
+    ('raven.contrib.django.raven_compat',))
+
+ROOT_URLCONF = env('ROOT_URLCONF', 'temba.urls')
 
 DEBUG = env('DJANGO_DEBUG', 'off') == 'on'
 
