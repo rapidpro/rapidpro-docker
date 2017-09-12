@@ -215,6 +215,9 @@ Environment variables
 *ROOT_URLCONF*
   The urlconf to use, defaults to ``temba.urls``.
 
+*IS_PROD*
+  If you want channel or trigger activation / deactivation
+  callbacks handled set this to ``on``.
 
 Concourse CI
 ---------------------

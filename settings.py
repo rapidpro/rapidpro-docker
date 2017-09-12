@@ -127,6 +127,7 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
 SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
+IS_PROD = env('IS_PROD', 'off') == 'on'
 
 BRANDING = {
     'rapidpro.io': {
