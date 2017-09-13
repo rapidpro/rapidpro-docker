@@ -82,6 +82,10 @@ Environment variables
   If set RapidPro will use S3 for static file storage. If not it will
   default to using whitenoise.
 
+*AWS_BUCKET_DOMAIN*
+  The domain to use for serving statics from, defaults to 
+  ``AWS_STORAGE_BUCKET_NAME`` + '.s3.amazonaws.com'
+
 *CDN_DOMAIN_NAME*
   Defaults to `''`
 
