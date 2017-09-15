@@ -148,3 +148,6 @@ Environment variables
 
 *SECURE_PROXY_SSL_HEADER*
   Defaults to ``HTTP_X_FORWARDED_PROTO``
+
+*SECURE_SSL_REDIRECT*
+  Defaults to ``off``, set to ``on`` to cause Django to redirect all requests to HTTPS
