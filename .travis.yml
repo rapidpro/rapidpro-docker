@@ -47,7 +47,8 @@ script:
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
-  - docker pull "$IMAGE"
+  # This can fail if this is the first run and a :latest tag doesn't exist yet.
+  - docker pull "$IMAGE" || true
   - >
     docker build --pull --cache-from "$IMAGE" \
       --tag "$IMAGE" \
