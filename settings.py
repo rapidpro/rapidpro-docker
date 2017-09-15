@@ -94,5 +94,8 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER', 'server@temba.io')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'server@temba.io')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
+# Allow customizing how Django detects secure URLs:
 SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
+# Allow redirecting all requests to HTTPS
+SECURE_SSL_REDIRECT = env('SECURE_SSL_REDIRECT', 'off') == 'on'
