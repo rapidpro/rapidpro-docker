@@ -65,8 +65,8 @@ AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', '')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', '')
 AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', '')
 AWS_LOCATION = env('AWS_LOCATION', '')
-AWS_STATIC = bool(env('AWS_STATIC', False))
-AWS_MEDIA = bool(env('AWS_MEDIA', False))
+AWS_STATIC = env('AWS_STATIC', bool(AWS_STORAGE_BUCKET_NAME))
+AWS_MEDIA = env('AWS_MEDIA', bool(AWS_STORAGE_BUCKET_NAME))
 
 if AWS_STORAGE_BUCKET_NAME:
     # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
