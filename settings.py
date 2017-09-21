@@ -90,8 +90,7 @@ if AWS_STORAGE_BUCKET_NAME:
         COMPRESS_STORAGE = STATICFILES_STORAGE
 
     if AWS_MEDIA:
-        MEDIAFILES_LOCATION = 'media'
-        MEDIA_URL = "https://%s/%s/" % (AWS_S3_DOMAIN, MEDIAFILES_LOCATION)
+        MEDIA_URL = "https://s3.amazonaws.com/%s/media/" % (AWS_STORAGE_BUCKET_NAME)
 
         DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
