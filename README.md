@@ -82,6 +82,10 @@ Environment variables
   If set RapidPro will use S3 for static file storage. If not it will
   default to using whitenoise.
 
+*AWS_BUCKET_DOMAIN*
+  The domain to use for serving statics from, defaults to
+  ``AWS_STORAGE_BUCKET_NAME`` + '.s3.amazonaws.com'
+
 *CDN_DOMAIN_NAME*
   Defaults to `''`
 
@@ -134,6 +138,9 @@ Environment variables
 *EMAIL_HOST*
   Defaults to ``smtp.gmail.com``
 
+*EMAIL_PORT*
+  DEfaults to ``25``
+
 *EMAIL_HOST_USER*
   Defaults to ``server@temba.io``
 
@@ -148,3 +155,70 @@ Environment variables
 
 *SECURE_PROXY_SSL_HEADER*
   Defaults to ``HTTP_X_FORWARDED_PROTO``
+
+*CLEAR_COMPRESSOR_CACHE*
+  Sometimes after a redeploy the compressor cache needs to be cleared
+  to make sure the static assets are rebuilt. Not set by default, set to ``on``
+  if you want to clear the cache every redeploy.
+
+*OSM_RELATION_IDS*
+  The list of OSM Relation IDs that need to be downloaded for this
+  deploy. Use spaces to separate the values.
+
+*MANAGE_IMPORT_GEOJSON*
+  Whether or not to import OSM GeoJSON boundary files. Not set by default,
+  set to ``on`` to activate. Requires the ``OSM_RELATION_IDS`` environment
+  variable to be set.
+
+*BRANDING_SLUG*
+  The URL slug of the brand, defaults to ``rapidpro``.
+
+*BRANDING_NAME*
+  The name of the brand, defaults to ``RapidPro``.
+
+*BRANDING_ORG*
+  The organisation of the brand, defaults to ``RapidPro``.
+
+*BRANDING_COLORS*
+  The color scheme of the brand. Semi-colon separated CSS rules.
+  Defaults to ``primary=#0c6596``.
+
+*BRANDING_EMAIL*
+  Defaults to ``join@rapidpro.io``.
+
+*BRANDING_SUPPORT_EMAIL*
+  Defaults to ``join@rapidpro.io``.
+
+*BRANDING_LINK*
+  The URL for the brand, defaults to https://app.rapidpro.io.
+
+*BRANDING_API_LINK*
+  The API URL for the brand, defaults to https://api.rapidpro.io.
+
+*BRANDING_DOCS_LINK*
+  The docs URL for the brand, defaults to http://docs.rapidpro.io.
+
+*BRANDING_FAVICO*
+  The Favico for the brand, defaults to ``brands/rapidpro/rapidpro.ico``.
+
+*BRANDING_SPLASH*
+  The splash image for the brand, defaults to ``/brands/rapidpro/splash.jpg``.
+
+*BRANDING_LOGO*
+  The logo for the brand, defaults to ``/brands/rapidpro/logo.png``.
+
+*BRANDING_ALLOW_SIGNUPS*
+  Boolean for whether or not to allow signups, defaults to ``True``.
+
+*RAVEN_DSN*
+  The DSN for Sentry
+
+*EXTRA_INSTALLED_APPS*
+  Any extra apps to be appended to ``INSTALLED_APPS``.
+
+*ROOT_URLCONF*
+  The urlconf to use, defaults to ``temba.urls``.
+
+*IS_PROD*
+  If you want channel or trigger activation / deactivation
+  callbacks handled set this to ``on``.
