@@ -26,4 +26,10 @@ if [ "x$MANAGEPY_IMPORT_GEOJSON" = "xon" ]; then
 	/venv/bin/python manage.py import_geojson ./geojson/*.json
 	echo "Imported geojson for relation_ids $OSM_RELATION_IDS"
 fi
-$STARTUP_CMD
+
+TYPE=${1:-rapidpro}
+if [ "$TYPE" = "celery" ]; then
+	$CELERY_CMD
+elif [ "$TYPE" = "rapidpro" ]; then
+	$STARTUP_CMD
+fi
