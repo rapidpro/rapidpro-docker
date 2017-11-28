@@ -147,7 +147,7 @@ BRANDING = {
         'favico': env('BRANDING_FAVICO', 'brands/rapidpro/rapidpro.ico'),
         'splash': env('BRANDING_SPLASH', '/brands/rapidpro/splash.jpg'),
         'logo': env('BRANDING_LOGO', '/brands/rapidpro/logo.png'),
-        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
+        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', 'on') == 'on',
         'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
         'bundles': [],
         'welcome_packs': [dict(size=5000, name="Demo Account"), dict(size=100000, name="UNICEF Account")],
