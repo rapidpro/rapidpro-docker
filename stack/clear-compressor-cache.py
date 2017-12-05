@@ -13,9 +13,14 @@ REDIS_URL = env('REDIS_URL', required=True)
 up = urlparse(REDIS_URL)
 redis_host = up.hostname
 redis_port = int(up.port or 6379)
-redis_db = int(up.path.lstrip('/'))
+redis_password = up.password or None
+redis_db = int(up.path.lstrip('/') or 0)
 
-redis = redis.Redis(host=redis_host, port=redis_port, db=redis_db)
+if redis_password is None:
+  redis = redis.Redis(host=redis_host, port=redis_port, db=redis_db)
+else:
+  redis = redis.Redis(host=redis_host, port=redis_port, db=redis_db, password=redis_password)
+
 keys = redis.keys('%s.*' % (key_prefix,))
 for key in keys:
     redis.delete(key)

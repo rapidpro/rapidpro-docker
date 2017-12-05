@@ -63,8 +63,8 @@ RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.
               | xargs -r apk info --installed \
               | sort -u \
     )" \
-    && apk add --virtual .python-rundeps $runDeps \
-    && apk del .build-deps
+    && apk --no-cache add --virtual .python-rundeps $runDeps \
+    && apk del .build-deps && rm -rf /var/cache/apk/*
 
 # TODO should this be in startup.sh?
 RUN cd /rapidpro && bower install --allow-root
@@ -77,13 +77,14 @@ ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_
 # Enable HTTP 1.1 Keep Alive options for uWSGI (http-auto-chunked needed when ConditionalGetMiddleware not installed)
 # These options don't appear to be configurable via environment variables, so pass them in here instead
 ENV STARTUP_CMD="/venv/bin/uwsgi --http-auto-chunked --http-keepalive"
-
+ENV CELERY_CMD="/venv/bin/celery --beat --app=temba worker --loglevel=INFO --queues=celery,msgs,flows,handler"
 COPY settings.py /rapidpro/temba/
 # 500.html needed to keep the missing template from causing an exception during error handling
 COPY stack/500.html /rapidpro/templates/
 COPY stack/init_db.sql /rapidpro/
 COPY stack/clear-compressor-cache.py /rapidpro/
-
+COPY Procfile /rapidpro/
+COPY Procfile /
 EXPOSE 8000
 COPY stack/startup.sh /
 
@@ -96,3 +97,4 @@ LABEL org.label-schema.name="RapidPro" \
       org.label-schema.schema-version="1.0"
 
 CMD ["/startup.sh"]
+
