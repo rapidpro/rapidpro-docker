@@ -208,7 +208,7 @@ Environment variables
   The logo for the brand, defaults to ``/brands/rapidpro/logo.png``.
 
 *BRANDING_ALLOW_SIGNUPS*
-  Boolean for whether or not to allow signups, defaults to ``True``.
+  Set to `off` to disable, defaults to `on`
 
 *RAVEN_DSN*
   The DSN for Sentry
