@@ -26,11 +26,22 @@ GEOS_LIBRARY_PATH = '/usr/local/lib/libgeos_c.so'
 GDAL_LIBRARY_PATH = '/usr/local/lib/libgdal.so'
 
 SECRET_KEY = env('SECRET_KEY', required=True)
+
 DATABASE_URL = env('DATABASE_URL', required=True)
-DATABASES = {'default': dj_database_url.parse(DATABASE_URL)}
-DATABASES['default']['CONN_MAX_AGE'] = 60
-DATABASES['default']['ATOMIC_REQUESTS'] = True
-DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+
+_default_database_config = dj_database_url.parse(DATABASE_URL)
+_default_database_config['CONN_MAX_AGE'] = 60
+_default_database_config['ATOMIC_REQUESTS'] = True
+_default_database_config['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+
+_direct_database_config = _default_database_config.copy()
+_default_database_config['DISABLE_SERVER_SIDE_CURSORS'] = True
+
+DATABASES = {
+    'default': _default_database_config,
+    'direct': _direct_database_config
+}
+
 REDIS_URL = env('REDIS_URL', required=True)
 BROKER_URL = env('BROKER_URL', REDIS_URL)
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', REDIS_URL)
