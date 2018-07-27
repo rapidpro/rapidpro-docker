@@ -226,12 +226,17 @@ Environment variables
 API Throttling:
 
 Throttle period may include ``second``, ``minute``, ``hour`` or ``day``.
+
 The required format is ``{{hits}}/{{period}}`` and the default is ``2500/hour``.
 
 *API_THROTTLE_V2*
+
 *API_THROTTLE_V2_CONTACTS*
+
 *API_THROTTLE_V2_MESSAGES*
+
 *API_THROTTLE_V2_RUNS*
+
 *API_THROTTLE_V2_API*
 
 Concourse CI
