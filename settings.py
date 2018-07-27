@@ -175,3 +175,11 @@ for brand in BRANDING.values():
     context = dict(STATIC_URL=STATIC_URL, base_template='frame.html', debug=False, testing=False)
     context['brand'] = dict(slug=brand['slug'], styles=brand['styles'])
     COMPRESS_OFFLINE_CONTEXT.append(context)
+
+REST_FRAMEWORK['DEFAULT_THROTTLE_RATES'] = {
+    'v2': env('API_THROTTLE_V2', '2500/hour'),
+    'v2.contacts': env('API_THROTTLE_V2_CONTACTS', '2500/hour'),
+    'v2.messages': env('API_THROTTLE_V2_MESSAGES', '2500/hour'),
+    'v2.runs': env('API_THROTTLE_V2_RUNS', '2500/hour'),
+    'v2.api': env('API_THROTTLE_V2_API', '2500/hour'),
+}
