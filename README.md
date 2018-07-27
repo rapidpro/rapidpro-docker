@@ -223,7 +223,7 @@ Environment variables
   If you want channel or trigger activation / deactivation
   callbacks handled set this to ``on``.
 
-API Throttling:
+**API Throttling:**
 
 Throttle period may include ``second``, ``minute``, ``hour`` or ``day``.
 
