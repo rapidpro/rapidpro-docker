@@ -83,7 +83,7 @@ Environment variables
   default to using whitenoise.
 
 *AWS_BUCKET_DOMAIN*
-  The domain to use for serving statics from, defaults to 
+  The domain to use for serving statics from, defaults to
   ``AWS_STORAGE_BUCKET_NAME`` + '.s3.amazonaws.com'
 
 *CDN_DOMAIN_NAME*
@@ -222,6 +222,22 @@ Environment variables
 *IS_PROD*
   If you want channel or trigger activation / deactivation
   callbacks handled set this to ``on``.
+
+**API Throttling:**
+
+Throttle period may include ``second``, ``minute``, ``hour`` or ``day``.
+
+The required format is ``{{hits}}/{{period}}`` and the default is ``2500/hour``.
+
+*API_THROTTLE_V2*
+
+*API_THROTTLE_V2_CONTACTS*
+
+*API_THROTTLE_V2_MESSAGES*
+
+*API_THROTTLE_V2_RUNS*
+
+*API_THROTTLE_V2_API*
 
 Concourse CI
 ---------------------
