@@ -1,9 +1,11 @@
 sudo: required
+language: python
 services:
   - docker
 cache:
   directories:
     - $HOME/postgresql
+
 env:
   global:
     - GREP_TIMEOUT=360
@@ -11,20 +13,24 @@ env:
     # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
     #       which is decrypted by Travis CI and set as environment variables
     - secure: "ffYdrH1sxDNP+KrE3cnP2r5lYsRGOmPUwlBON60GsYKwMQDg8Of5vt9fK5FzW9p5SWTpcAhCHeuJjbQ8qB0i4Uh5HtAs2focQdH13CQSQ5RZroNP60gV4WQENmxHqCaLuMQ4zgLQjKdu2R1PkEaUwm/HdHOzQ1Gwt+QEivPgCxtxdvfMFoebffzunpISSoOxSA7DJLWfuWqhszOF2oa+KxrMp/DAVnjwKhyepqSbdxOfuYiKyEdmoiic8S4TLgeDcYSxJnZgGzDP8p3HRahGmXsosMeg2eNghohKZ+c2tiD7DBHbRIrikC1da6/XnsXpcz+ugHuMTw5QTvZcgqKfGkoOchg9/ae5vXWCNQL4b7CPPxgnuxO0jeNUgbeQLnbqrkyxgudCSrTRKlCdmE5G6QijzwyWYOy2BV7+8Ybs17EfqFtSnzn6J6D4+prbklQGy8zB3oyZZXPSPgTFdImyrYAL96Ag1jI6EbwfodzY7himEnquvmcpC9sDoEdX/Z9JWWRKAxqeADzDx/IXiVfT4M155Np8cq8pWFypKOy03DE8KsHnOwaPz0qxgl/imvXW198SUe9qmiavOCY0h+taHK50JK7mKzokCDI25OYbei91iW+0GSuQ4ZR78NeTDO4ktKDZkA9oYMHzi9oKoBCSe8SbZffkRGe6bK45MXvvfEo="
+  matrix:
+    - IMAGE="sdehaan/rapidpro" VERSION="" REPO="rapidpro/rapidpro"
+    - IMAGE="sdehaan/rapidpro" VERSION="master" REPO="rapidpro/rapidpro"
 
 # Update Docker Engine
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-engine coreutils
+  - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-ce coreutils
 
 before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - image="sdehaan/rapidpro-docker"
-  - repository="smn/rapidpro"
-  - # version=$(curl -s https://api.github.com/repos/nyaruka/rapidpro/tags  | jq -r 'map(select(.name | test("^v[0-9\\.]+$"))) | .[0].name')
-  - version="feature/junebug-channel"
+  - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r '.[0].name')
+  - VERSION=${VERSION:-$LATEST_TAG}
+
+install:
+  - echo "preventing default pip install here"
 
 script:
   # Setup postgresql and load sql dump if exists
@@ -37,14 +43,17 @@ script:
   # Setup redis
   - docker pull redis:alpine
   - docker run -d --name redis redis:alpine
-  - timeout $GREP_TIMEOUT grep -m 1 'The server is now ready to accept connections on port 6379' <(docker logs --follow redis 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Ready to accept connections' <(docker logs --follow redis 2>&1)
 
   # Build RapidPro and run it
   - docker pull rapidpro/rapidpro-base
+  # This can fail if this is the first run and a :latest tag doesn't exist yet.
+  - docker pull "$IMAGE" || true
   - >
-    docker build --tag "$image" \
-      --build-arg RAPIDPRO_VERSION=$version \
-      --build-arg RAPIDPRO_REPOSITORY=$repository \
+    docker build --pull --cache-from "$IMAGE" \
+      --tag "$IMAGE" \
+      --build-arg RAPIDPRO_VERSION=$VERSION \
+      --build-arg RAPIDPRO_REPO=$REPO \
       .
   - >
     docker run --name rapidpro \
@@ -53,11 +62,13 @@ script:
       --link postgresql \
       --publish 8000:8000 \
       --detach \
-      "$image"
+      "$IMAGE"
 
   - timeout $GREP_TIMEOUT grep -m 1 'static files copied' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Compressing... done' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Running migrations' <(docker logs --follow rapidpro 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Downloading geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Imported geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'spawned uWSGI http 1' <(docker logs --follow rapidpro 2>&1)
   - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
@@ -66,10 +77,11 @@ after_script:
   - docker images
 
 before_deploy:
+  - pip install docker-ci-deploy==0.3.0
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./deploy.sh "$image" $(echo "$version" | sed 's/\//-/')
+  script: dcd --tag-version "$VERSION" --tag-semver --tag-latest "$IMAGE"
   on:
     branch: master
