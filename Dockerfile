@@ -1,6 +1,6 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
-FROM rapidpro/rapidpro-base
+FROM sdehaan/rapidpro-base-docker:v4
 ARG RAPIDPRO_VERSION
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
