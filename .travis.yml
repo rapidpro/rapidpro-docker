@@ -48,11 +48,11 @@ script:
   - timeout $GREP_TIMEOUT grep -m 1 'Ready to accept connections' <(docker logs --follow redis 2>&1)
 
   # Build RapidPro and run it
-  - docker pull rapidpro/rapidpro-base
+  - docker pull sdehaan/rapidpro-base-docker:v4
   # This can fail if this is the first run and a :latest tag doesn't exist yet.
   - docker pull "$IMAGE" || true
   - >
-    docker build --pull
+    docker build --pull \
       --tag "$IMAGE" \
       --build-arg RAPIDPRO_VERSION=$VERSION \
       --build-arg RAPIDPRO_REPO=$REPO \
