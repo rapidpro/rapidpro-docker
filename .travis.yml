@@ -86,4 +86,4 @@ deploy:
   skip_cleanup: true
   script: dcd --tag-version "$VERSION" --tag-semver --tag-latest "$IMAGE"
   on:
-    branch: master
+    branch: develop
