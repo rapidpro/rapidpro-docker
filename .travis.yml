@@ -52,7 +52,7 @@ script:
   # This can fail if this is the first run and a :latest tag doesn't exist yet.
   - docker pull "$IMAGE" || true
   - >
-    docker build --pull --cache-from "$IMAGE" \
+    docker build --pull
       --tag "$IMAGE" \
       --build-arg RAPIDPRO_VERSION=$VERSION \
       --build-arg RAPIDPRO_REPO=$REPO \
