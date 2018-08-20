@@ -5,6 +5,11 @@ MANAGEPY_COLLECTSTATIC=on
 MANAGEPY_COMPRESS=on
 MANAGEPY_INIT_DB=on
 MANAGEPY_MIGRATE=on
-MANAGEPY_IMPORT_GEOJSON=on
-# Use Uganda Relation ID as a test
-OSM_RELATION_IDS=192796
+# Since we're not setting up OAuth tokens builds are subject
+# to IP based rate limiting on GitHub for TravisCI IPs which
+# can result in unpredictable builds.
+#
+# Set this to `on` if you really want to test this.
+MANAGEPY_IMPORT_GEOJSON=off
+# Use Uganda Relation ID can be used as a test
+# OSM_RELATION_IDS=192796
