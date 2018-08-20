@@ -6,7 +6,7 @@
 version: '2'
 services:
   rapidpro:
-    image: rapidpro/rapidpro:master
+    image: sdehaan/rapidpro:v4
     depends_on:
       - redis
       - postgresql
@@ -24,8 +24,8 @@ services:
       - MANAGEPY_COMPRESS=on
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
-  celery:
-    image: rapidpro/rapidpro:master
+  celery_base:
+    image: sdehaan/rapidpro:v4
     depends_on:
       - rapidpro
     links:
@@ -35,21 +35,34 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=super-secret-key
-    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,msgs,flows,handler"]
+    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,flows"]
+  celery_msgs:
+    image: sdehaan/rapidpro:v4
+    depends_on:
+      - rapidpro
+    links:
+      - redis
+      - postgresql
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=super-secret-key
+    command: ["/venv/bin/celery", "--app=temba", "worker", "--loglevel=INFO", "--queues=msgs,handler"]
   redis:
     image: redis:alpine
   postgresql:
     image: mdillon/postgis:9.6
     environment:
       - POSTGRES_DB=rapidpro
-  mage:
-   image: rapidpro/mage
+  courier:
+   image: praekeltfoundation/courier
    depends_on:
      - rapidpro
    links:
      - redis
      - postgresql
    environment:
-     - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
-     - REDIS_URL=redis://redis/
-     - REDIS_DATABASE=8
+     - COURIER_DOMAIN=localhost
+     - COURIER_SPOOL_DIR=/tmp/courier/
+     - COURIER_DB=postgres://postgres:postgres@postgresql/rapidpro
+     - COURIER_REDIS=redis://redis:6379/8
