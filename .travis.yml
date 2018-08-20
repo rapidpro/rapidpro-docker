@@ -28,8 +28,8 @@ before_cache:
 before_script:
   - echo "https://api.github.com/repos/$REPO/tags"
   - jq --version
-  - curl -s https://api.github.com/repos/$REPO/tags | jq . | head
-  - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r '.[0].name')
+  - curl -s https://api.github.com/repos/$REPO/tags | tee ./tags.json | head
+  - LATEST_TAG=$(cat ./tags.json | jq -r '.[0].name')
   - VERSION=${VERSION:-$LATEST_TAG}
 
 install:
