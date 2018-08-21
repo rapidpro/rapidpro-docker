@@ -1,8 +1,8 @@
 RapidPro Docker
 ===============
 
-[![Build Status](https://travis-ci.org/rapidpro/rapidpro-docker.svg?branch=master)](https://travis-ci.org/rapidpro/rapidpro-docker)
-[![Docker Version](https://images.microbadger.com/badges/version/rapidpro/rapidpro.svg)](https://hub.docker.com/r/rapidpro/rapidpro/tags/ "Get the latest version from Docker Hub")
+[![Build Status](https://travis-ci.org/smn/rapidpro-docker.svg?branch=master)](https://travis-ci.org/smn/rapidpro-docker)
+[![Docker Version](https://images.microbadger.com/badges/version/sdehaan/rapidpro.svg)](https://hub.docker.com/r/sdehaan/rapidpro/tags/ "Get the latest version from Docker Hub")
 
 This repository's sole purpose is to build docker images versioned off of
 git tags published in rapidpro/rapidpro and upload them to Docker Hub.
