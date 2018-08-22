@@ -46,7 +46,7 @@ script:
   - timeout $GREP_TIMEOUT grep -m 1 'Ready to accept connections' <(docker logs --follow redis 2>&1)
 
   # Build RapidPro and run it
-  - docker pull rapidpro/rapidpro-base
+  - docker pull rapidpro/rapidpro-base:v4
   - docker pull "$IMAGE"
   - >
     docker build --pull --cache-from "$IMAGE" \

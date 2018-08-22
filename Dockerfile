@@ -1,6 +1,6 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
-FROM rapidpro/rapidpro-base
+FROM rapidpro/rapidpro-base:v4
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
