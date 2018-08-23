@@ -12,4 +12,4 @@ MANAGEPY_MIGRATE=on
 # Set this to `off` if you dont' care about this test
 MANAGEPY_IMPORT_GEOJSON=on
 # Use Uganda Relation ID can be used as a test
-# OSM_RELATION_IDS=192796
+OSM_RELATION_IDS=192796
