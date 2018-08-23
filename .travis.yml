@@ -71,10 +71,10 @@ script:
   - timeout $GREP_TIMEOUT grep -m 1 'static files copied' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Compressing... done' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Running migrations' <(docker logs --follow rapidpro 2>&1)
-  # See docker.envfile for the switch to turn this on. Defaults to off because these API
-  # calls are subject to GitHub's rate limiting of Travis CI IPs
-  # - timeout $GREP_TIMEOUT grep -m 1 'Downloading geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
-  # - timeout $GREP_TIMEOUT grep -m 1 'Imported geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
+  # See docker.envfile for the switch to turn this off. Defaults to on because of historical reasons.
+  # Calls are subject to GitHub's rate limiting of Travis CI IPs and therefor can result in build failures.
+  - timeout $GREP_TIMEOUT grep -m 1 'Downloading geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
+  - timeout $GREP_TIMEOUT grep -m 1 'Imported geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'spawned uWSGI http 1' <(docker logs --follow rapidpro 2>&1)
   - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
@@ -90,4 +90,4 @@ deploy:
   skip_cleanup: true
   script: dcd --tag-version "$VERSION" --tag-semver --tag-latest "$IMAGE"
   on:
-    branch: develop
+    branch: master
