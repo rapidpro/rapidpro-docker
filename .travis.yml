@@ -14,7 +14,7 @@ env:
     #       which is decrypted by Travis CI and set as environment variables
     - secure: "ZEp6Zahblytf+53HNnrCEZ0teQJFrBlS2+6NrGJk+pbutkG1nTUQzZrbPRiJwj61Xh/AHkWnUsKvFUF8P6wJLLXklEZMFid0G9Y7pBmcSNmtrVTl6WySQDGAHKb7X+6CAftQX443bcrjIKRgHLkBfC4ZQWXjqfwQrlBrJsdDrLFJjl/v6aYlst92kbSBcA0gi8/1rFiNlUZdh7SqG5GI52LOjL6F4LwLkcAe0m+RTGOjwfv+jIG4xXFZme0EOeRqxM2LXLSrCbZFu7MvE7fDJrTwiAX4R+iEsV8LNwYfX8L1b5NUzrSBbgClfSHnA02wWLnrsVQJbSqipiwB5pHntA8/4aRHzkZrdPTowZtk4QG5Ngp/f7kZ014v4l90HDIEmcDATsKzalf/VoLsUrcZhU4dokXkXb6M4yogYKKMbGSwOVmlKahRCEs8LI+tbPH0nGey5h/Mg1OFysmFHMM6z/krGmDZi+4LRLLcybuXXAZELeNMzPJQgSTlYAftuXPftQwuseRS4pg+Heb4NHzToG7KqTwV642G03x2UHmQ6rfB9Ld50KBr7ZGIcMKqvUGtVKS5ZI+wCeDdg2u4YbvMTNGd0srNX8Rdn51PzlGJZHOe6e8ZzGRNZocmb/LUjSn2YOj0gz9GoIMjKgQstGY7HoEGJ5/yfZ9Q/KU2kyIpfPk="
   matrix:
-    - IMAGE="praekeltfoundation/rapidpro" VERSION="v3.0.1000" REPO="praekeltfoundation/rapidpro"
+    - IMAGE="praekeltfoundation/rapidpro" VERSION="v4.3.2" REPO="praekeltfoundation/rapidpro"
     - IMAGE="praekeltfoundation/rapidpro" VERSION="master" REPO="praekeltfoundation/rapidpro"
 
 # Update Docker Engine
