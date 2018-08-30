@@ -26,7 +26,11 @@ before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r '.[0].name')
+  - echo "https://api.github.com/repos/$REPO/tags"
+  - jq --version
+  - curl -s https://api.github.com/repos/$REPO/tags | tee ./tags.json
+  - head ./tags.json
+  - LATEST_TAG=$(cat ./tags.json | jq -r '.[0].name')
   - VERSION=${VERSION:-$LATEST_TAG}
 
 install:
@@ -46,11 +50,11 @@ script:
   - timeout $GREP_TIMEOUT grep -m 1 'Ready to accept connections' <(docker logs --follow redis 2>&1)
 
   # Build RapidPro and run it
-  - docker pull rapidpro/rapidpro-base
+  - docker pull rapidpro/rapidpro-base:v4
   # This can fail if this is the first run and a :latest tag doesn't exist yet.
   - docker pull "$IMAGE" || true
   - >
-    docker build --pull --cache-from "$IMAGE" \
+    docker build --pull \
       --tag "$IMAGE" \
       --build-arg RAPIDPRO_VERSION=$VERSION \
       --build-arg RAPIDPRO_REPO=$REPO \
@@ -67,6 +71,8 @@ script:
   - timeout $GREP_TIMEOUT grep -m 1 'static files copied' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Compressing... done' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Running migrations' <(docker logs --follow rapidpro 2>&1)
+  # See docker.envfile for the switch to turn this off. Defaults to on because of historical reasons.
+  # Calls are subject to GitHub's rate limiting of Travis CI IPs and therefor can result in build failures.
   - timeout $GREP_TIMEOUT grep -m 1 'Downloading geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Imported geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'spawned uWSGI http 1' <(docker logs --follow rapidpro 2>&1)
