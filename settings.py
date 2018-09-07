@@ -108,7 +108,7 @@ if AWS_STORAGE_BUCKET_NAME:
 
 if not AWS_STATIC:
     STATIC_URL = '/sitestatic/'
-    MIDDLEWARE = list(MIDDLEWARE) + ['whitenoise.middleware.WhiteNoiseMiddleware']
+    MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['whitenoise.middleware.WhiteNoiseMiddleware']
 
 COMPRESS_ENABLED = env('DJANGO_COMPRESSOR', 'on') == 'on'
 COMPRESS_OFFLINE = False
