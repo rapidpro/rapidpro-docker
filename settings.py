@@ -45,6 +45,7 @@ RAVEN_CONFIG = {
     'dsn': env('RAVEN_DSN'),
     'release': env('RAPIDPRO_VERSION'),
 }
+RAVEN_PUBLIC_DSN = env('RAVEN_PUBLIC_DSN')
 
 # -----------------------------------------------------------------------------------
 # Used when creating callbacks for Twilio, Nexmo etc..
