@@ -5,13 +5,26 @@
 
 version: '2'
 services:
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - rapidpro
+      - courier
+    links:
+      - rapidpro
+      - courier
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
   rapidpro:
     image: praekeltfoundation/rapidpro:latest
     depends_on:
       - redis
       - postgresql
-    ports:
-      - '8000:8000'
+      - courier
+    expose:
+      - '8000'
     environment:
       - DOMAIN_NAME=localhost
       - ALLOWED_HOSTS=localhost
@@ -42,3 +55,18 @@ services:
     image: mdillon/postgis:9.6
     environment:
       - POSTGRES_DB=rapidpro
+  courier:
+    image: praekeltfoundation/courier:latest
+    depends_on:
+      - postgresql
+      - redis
+    expose:
+      - '8080'
+    links:
+      - redis
+      - postgresql
+    environment:
+      - COURIER_DB=postgres://postgres:postgres@postgresql/rapidpro
+      - COURIER_REDIS=redis://redis:6379/0
+      - COURIER_DOMAIN=localhost
+      - COURIER_SPOOL_DIR=/home/courier/spool/persisted/
