@@ -45,7 +45,7 @@ script:
   - docker pull rapidpro/rapidpro-base
   - docker pull "$IMAGE"
   - >
-    docker build --pull \
+    docker build --pull --cache-from "$IMAGE" \
       --tag "$IMAGE" \
       --build-arg RAPIDPRO_VERSION=$VERSION \
       --build-arg RAPIDPRO_REPO=$REPO \
