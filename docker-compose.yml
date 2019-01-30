@@ -37,6 +37,7 @@ services:
       - MANAGEPY_COMPRESS=on
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
+      - ELASTICSEARCH_URL=http://your-elastic-search-url:9200
   celery:
     image: praekeltfoundation/rapidpro:latest
     depends_on:
@@ -48,6 +49,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=super-secret-key
+      - ELASTICSEARCH_URL=http://your-elastic-search-url:9200
     command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,msgs,flows,handler"]
   redis:
     image: redis:alpine
@@ -70,3 +72,12 @@ services:
       - COURIER_REDIS=redis://redis:6379/0
       - COURIER_DOMAIN=localhost
       - COURIER_SPOOL_DIR=/home/courier/spool/persisted/
+  indexer:
+    image: praekeltfoundation/rp-indexer:latest
+    depends_on:
+      - postgresql
+    links:
+      - postgresql
+    environment:
+      - INDEXER_DB=postgresql://postgres:postgres@postgresql/rapidpro
+      - INDEXER_ELASTIC_URL=http://your-elastic-search-url:9200
