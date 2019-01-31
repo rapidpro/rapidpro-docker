@@ -1,0 +1,18 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: alpine
+
+inputs:
+  - name: rapidpro-docker
+
+outputs:
+  - name: image-params
+
+params:
+    VERSION_SUFFIX: local
+
+run:
+  path: ./rapidpro-docker/.ci/build.sh

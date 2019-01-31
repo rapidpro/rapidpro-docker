@@ -1,0 +1,6 @@
+rapidpro-dockerhub-username: username
+rapidpro-dockerhub-password: secretpassword
+version-suffix: local-za
+registry-mirror: http://127.0.0.1:5000
+cache: false
+cache-tag: latest.local-za

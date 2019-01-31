@@ -1,4 +1,5 @@
 sudo: required
+language: python
 services:
   - docker
 cache:
@@ -15,7 +16,7 @@ env:
     - secure: KwcHx5aUsgtmkqC0mt06di9kuqskbvsrbjnVU/YvFz1mwB2vw5v7keAWcnpglB1gb99GKGVx9H5FzmZBqStl5pILbnIIpf5+UhHKSG4kEHXoG/amZApiI0Aks9Iq87DdYlSknCtz/Q66zZlxaHx4GNJCtcRI6wQyEngQhYYeobPJTg040BLIoXVBP7qnqd3yGMwSgLAg+/M6Ro6f2ZkMEXAit48bxQNhG1YyjDevGQnvZIGW/FnAszfNkuBp59ivMSsNp8fb2B4+Xn3RHs3Vdz4m6zqyLsHx/ZFonHynlrsQk0cIQ4xyN1KpzvgzdXVeo8f1IzXqCNczo6FsiGnSAJq0WPrRU77ie9nsCYlsiB7KescUJ3xHNPHxCFflfV6SBsgLLyAmA6gFZP+uLRovVDJpuATc6VJrFRkMTH9fLhbNdg+uBlz2v4zlfDmmfm8pxtXV7CZNnHM2LODUzNKv7pVYLezXmQUe9c1Kj3Q57rgG7rsY4OSZZM0B6Qn82SDI77hm7i3dZVloMxaEMuj0v1c7v5BFEL0Bfr2qSjdGgYJmWiL5lgH6eFc23NficE13SAlc7UeY/ZWNuAfn/LMI1M3NfIDhjTY5rDByfeOKzf9It9fSFjiYZFoRH7RHkbGUvGtBsycMKqG7kt+V6XoOx2kUcaQQc9KH8KJ4b+fBrFA=
   matrix:
     - IMAGE="praekeltfoundation/rapidpro" VERSION="" REPO="praekeltfoundation/rapidpro"
-    - IMAGE="praekeltfoundation/rapidpro" VERSION="master" REPO="praekeltfoundation/rapidpro"
+    # - IMAGE="praekeltfoundation/rapidpro" VERSION="master" REPO="praekeltfoundation/rapidpro"
 
 # Update Docker Engine
 before_install:
@@ -29,6 +30,9 @@ before_script:
   - 'curl -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" -s https://api.github.com/repos/$REPO/tags | tee ./tags.json'
   - LATEST_TAG=$(cat ./tags.json | jq -r '.[0].name')
   - VERSION=${VERSION:-$LATEST_TAG}
+
+install:
+  - echo "preventing default pip install here"
 
 script:
   # Setup postgresql and load sql dump if exists
@@ -44,7 +48,7 @@ script:
   - timeout $GREP_TIMEOUT grep -m 1 'Ready to accept connections' <(docker logs --follow redis 2>&1)
 
   # Build RapidPro and run it
-  - docker pull rapidpro/rapidpro-base
+  - docker pull rapidpro/rapidpro-base:v4
   - docker pull "$IMAGE"
   - >
     docker build --pull --cache-from "$IMAGE" \
@@ -76,8 +80,8 @@ after_script:
   - docker images
 
 before_deploy:
-  - pip install docker-ci-deploy==0.2.0
-  - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
+  - pip install docker-ci-deploy==0.3.0
+  - echo -n $REGISTRY_PASS | docker login -u "$REGISTRY_USER" --password-stdin
 deploy:
   provider: script
   skip_cleanup: true
