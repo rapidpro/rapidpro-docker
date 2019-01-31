@@ -41,6 +41,7 @@ RUN set -ex \
                 ncurses-dev \
                 libzmq \
                 && pip install -U virtualenv \
+                && pip install -U pip \
                 && virtualenv /venv
 
 ARG RAPIDPRO_VERSION

@@ -13,6 +13,7 @@ env:
     # NOTE: this is generated with `travis encrypt REGISTRY_PASS="the-password"`
     #       which is decrypted by Travis CI and set as environment variables
     - secure: "ZEp6Zahblytf+53HNnrCEZ0teQJFrBlS2+6NrGJk+pbutkG1nTUQzZrbPRiJwj61Xh/AHkWnUsKvFUF8P6wJLLXklEZMFid0G9Y7pBmcSNmtrVTl6WySQDGAHKb7X+6CAftQX443bcrjIKRgHLkBfC4ZQWXjqfwQrlBrJsdDrLFJjl/v6aYlst92kbSBcA0gi8/1rFiNlUZdh7SqG5GI52LOjL6F4LwLkcAe0m+RTGOjwfv+jIG4xXFZme0EOeRqxM2LXLSrCbZFu7MvE7fDJrTwiAX4R+iEsV8LNwYfX8L1b5NUzrSBbgClfSHnA02wWLnrsVQJbSqipiwB5pHntA8/4aRHzkZrdPTowZtk4QG5Ngp/f7kZ014v4l90HDIEmcDATsKzalf/VoLsUrcZhU4dokXkXb6M4yogYKKMbGSwOVmlKahRCEs8LI+tbPH0nGey5h/Mg1OFysmFHMM6z/krGmDZi+4LRLLcybuXXAZELeNMzPJQgSTlYAftuXPftQwuseRS4pg+Heb4NHzToG7KqTwV642G03x2UHmQ6rfB9Ld50KBr7ZGIcMKqvUGtVKS5ZI+wCeDdg2u4YbvMTNGd0srNX8Rdn51PzlGJZHOe6e8ZzGRNZocmb/LUjSn2YOj0gz9GoIMjKgQstGY7HoEGJ5/yfZ9Q/KU2kyIpfPk="
+    - secure: KwcHx5aUsgtmkqC0mt06di9kuqskbvsrbjnVU/YvFz1mwB2vw5v7keAWcnpglB1gb99GKGVx9H5FzmZBqStl5pILbnIIpf5+UhHKSG4kEHXoG/amZApiI0Aks9Iq87DdYlSknCtz/Q66zZlxaHx4GNJCtcRI6wQyEngQhYYeobPJTg040BLIoXVBP7qnqd3yGMwSgLAg+/M6Ro6f2ZkMEXAit48bxQNhG1YyjDevGQnvZIGW/FnAszfNkuBp59ivMSsNp8fb2B4+Xn3RHs3Vdz4m6zqyLsHx/ZFonHynlrsQk0cIQ4xyN1KpzvgzdXVeo8f1IzXqCNczo6FsiGnSAJq0WPrRU77ie9nsCYlsiB7KescUJ3xHNPHxCFflfV6SBsgLLyAmA6gFZP+uLRovVDJpuATc6VJrFRkMTH9fLhbNdg+uBlz2v4zlfDmmfm8pxtXV7CZNnHM2LODUzNKv7pVYLezXmQUe9c1Kj3Q57rgG7rsY4OSZZM0B6Qn82SDI77hm7i3dZVloMxaEMuj0v1c7v5BFEL0Bfr2qSjdGgYJmWiL5lgH6eFc23NficE13SAlc7UeY/ZWNuAfn/LMI1M3NfIDhjTY5rDByfeOKzf9It9fSFjiYZFoRH7RHkbGUvGtBsycMKqG7kt+V6XoOx2kUcaQQc9KH8KJ4b+fBrFA=
   matrix:
     - IMAGE="praekeltfoundation/rapidpro" VERSION="" REPO="praekeltfoundation/rapidpro"
     # - IMAGE="praekeltfoundation/rapidpro" VERSION="master" REPO="praekeltfoundation/rapidpro"
@@ -26,7 +27,8 @@ before_cache:
   - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
-  - LATEST_TAG=$(curl -s https://api.github.com/repos/$REPO/tags  | jq -r '.[0].name')
+  - 'curl -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" -s https://api.github.com/repos/$REPO/tags | tee ./tags.json'
+  - LATEST_TAG=$(cat ./tags.json | jq -r '.[0].name')
   - VERSION=${VERSION:-$LATEST_TAG}
 
 install:
@@ -66,8 +68,10 @@ script:
   - timeout $GREP_TIMEOUT grep -m 1 'static files copied' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Compressing... done' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'Running migrations' <(docker logs --follow rapidpro 2>&1)
-  - timeout $GREP_TIMEOUT grep -m 1 'Downloading geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
-  - timeout $GREP_TIMEOUT grep -m 1 'Imported geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
+  # See docker.envfile for the switch to turn this on. Defaults to off because these API
+  # calls are subject to GitHub's rate limiting of Travis CI IPs
+  # - timeout $GREP_TIMEOUT grep -m 1 'Downloading geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
+  # - timeout $GREP_TIMEOUT grep -m 1 'Imported geojson for relation_ids 192796' <(docker logs --follow rapidpro 2>&1)
   - timeout $GREP_TIMEOUT grep -m 1 'spawned uWSGI http 1' <(docker logs --follow rapidpro 2>&1)
   - docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
 
