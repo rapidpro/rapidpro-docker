@@ -23,6 +23,7 @@ services:
       - redis
       - postgresql
       - courier
+      - elasticsearch
     expose:
       - '8000'
     environment:
@@ -37,19 +38,21 @@ services:
       - MANAGEPY_COMPRESS=on
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
-      - ELASTICSEARCH_URL=http://your-elastic-search-url:9200
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
   celery:
     image: praekeltfoundation/rapidpro:latest
     depends_on:
       - rapidpro
+      - elasticsearch
     links:
       - redis
       - postgresql
+      - elasticsearch
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=super-secret-key
-      - ELASTICSEARCH_URL=http://your-elastic-search-url:9200
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,msgs,flows,handler"]
   redis:
     image: redis:alpine
@@ -76,8 +79,21 @@ services:
     image: praekeltfoundation/rp-indexer:latest
     depends_on:
       - postgresql
+      - elasticsearch
     links:
       - postgresql
+      - elasticsearch
     environment:
-      - INDEXER_DB=postgresql://postgres:postgres@postgresql/rapidpro
-      - INDEXER_ELASTIC_URL=http://your-elastic-search-url:9200
+      - INDEXER_DB=postgresql://postgres:postgres@postgresql/rapidpro?sslmode=disable
+      - INDEXER_ELASTIC_URL=http://elasticsearch:9200
+  elasticsearch:
+    image: elasticsearch:6.4.0
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+    volumes:
+      - 'es_data:/usr/share/elasticsearch/data'
+
+volumes:
+  es_data:
