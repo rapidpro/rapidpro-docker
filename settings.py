@@ -68,6 +68,8 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS', HOSTNAME).split(';')
 
 LOGGING['root']['level'] = env('DJANGO_LOG_LEVEL', 'INFO')
 
+STORAGE_URL = env("STORAGE_URL", "http://localhost:8000/media")
+
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', '')
 AWS_BUCKET_DOMAIN = env('AWS_BUCKET_DOMAIN', AWS_STORAGE_BUCKET_NAME + '.s3.amazonaws.com')
 CDN_DOMAIN_NAME = env('CDN_DOMAIN_NAME', '')
