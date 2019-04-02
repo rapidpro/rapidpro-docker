@@ -185,3 +185,5 @@ REST_FRAMEWORK['DEFAULT_THROTTLE_RATES'] = {
     'v2.runs': env('API_THROTTLE_V2_RUNS', '2500/hour'),
     'v2.api': env('API_THROTTLE_V2_API', '2500/hour'),
 }
+
+MAILROOM_URL = env('MAILROOM_URL', '')
