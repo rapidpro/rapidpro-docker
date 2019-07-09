@@ -6,63 +6,171 @@
 version: '2'
 services:
   rapidpro:
-    image: sdehaan/rapidpro:v4
+    image: istresearch/rapidpro 
+    build:
+      context: .
+      args:
+        - GITHUB_USER
+        - GITHUB_TOKEN
+        - GITHUB_ORG
+        - GITHUB_REPO
+        - GITHUB_BRANCH
     depends_on:
       - redis
       - postgresql
     ports:
-      - '8000:8000'
+      - '${HOSTPORT}:8000'
     environment:
-      - DOMAIN_NAME=localhost
-      - ALLOWED_HOSTS=localhost
-      - TEMBA_HOST=localhost
-      - DJANGO_DEBUG=off
-      - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
-      - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=super-secret-key
-      - MANAGEPY_COLLECTSTATIC=on
-      - MANAGEPY_COMPRESS=on
-      - MANAGEPY_INIT_DB=on
-      - MANAGEPY_MIGRATE=on
+      - RAPIDPRO_VERSION
+      - RAPIDPRO_REPO
+      - SEND_CALLS
+      - DOMAIN_NAME
+      - ALLOWED_HOSTS
+      - TEMBA_HOST
+      - DJANGO_DEBUG
+      - DATABASE_URL
+      - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB_NUM}
+      - SECRET_KEY
+      - MANAGEPY_COLLECTSTATIC
+      - MANAGEPY_COMPRESS
+      - MANAGEPY_INIT_DB
+      - MANAGEPY_MIGRATE
+      - AWS_STATIC
+      - MAILROOM_URL
+      - EMAIL_HOST
+      - EMAIL_PORT
+      - EMAIL_HOST_USER
+      - DEFAULT_FROM_EMAIL
+      - EMAIL_HOST_PASSWORD
+      - EMAIL_USE_TLS
+      - SEND_EMAILS
+      - AWS_S3_DOMAIN
+      - AWS_S3_REGION_NAME
+      - AWS_STORAGE_BUCKET_NAME
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - ELASTICSEARCH_URL
+      - BRANDING_NAME
+      - BRANDING_ORG
+      - BRANDING_EMAIL
+      - BRANDING_SUPPORT_EMAIL
+      - BRANDING_LINK
+      - BRANDING_API_LINK
+      - BRANDING_DOCS_LINK
+      - BRANDING_ALLOW_SIGNUPS
+      - UWSGI_HARAKIRI
+      - UWSGI_WORKERS
+      - ADMIN_NAME
+      - ADMIN_EMAIL
+      - ADMIN_PSWD
+    networks:
+      - pro-network
   celery_base:
-    image: sdehaan/rapidpro:v4
+    image: istresearch/rapidpro 
     depends_on:
       - rapidpro
     links:
       - redis
       - postgresql
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
-      - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=super-secret-key
+      - SEND_CALLS
+      - SEND_MESSAGES
+      - SEND_AIRTIME
+      - SEND_WEBHOOKS
+      - ELASTICSEARCH_URL
+      - DATABASE_URL
+      - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB_NUM}
+      - SECRET_KEY
     command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,flows"]
+    networks:
+      - pro-network
   celery_msgs:
-    image: sdehaan/rapidpro:v4
+    image: istresearch/rapidpro
     depends_on:
       - rapidpro
     links:
       - redis
       - postgresql
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
-      - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=super-secret-key
+      - SEND_CALLS
+      - SEND_WEBHOOKS
+      - SEND_AIRTIME
+      - SEND_MESSAGES
+      - ELASTICSEARCH_URL
+      - DATABASE_URL
+      - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB_NUM}
+      - SECRET_KEY
     command: ["/venv/bin/celery", "--app=temba", "worker", "--loglevel=INFO", "--queues=msgs,handler"]
+    networks:
+      - pro-network
   redis:
     image: redis:alpine
+    networks:
+      - pro-network
   postgresql:
     image: mdillon/postgis:9.6
     environment:
-      - POSTGRES_DB=rapidpro
+      - POSTGRES_DB=${DBCONN_DBNAME}
+    networks:
+      - pro-network
+    volumes:
+      - serverdb:/var/lib/postgresql/data
+    ports:
+     - '5432:5432'
   courier:
    image: praekeltfoundation/courier
-   depends_on:
-     - rapidpro
    links:
      - redis
      - postgresql
    environment:
-     - COURIER_DOMAIN=localhost
      - COURIER_SPOOL_DIR=/tmp/courier/
-     - COURIER_DB=postgres://postgres:postgres@postgresql/rapidpro
-     - COURIER_REDIS=redis://redis:6379/8
+     - COURIER_DOMAIN=${HOSTNAME}
+     - COURIER_DB=${DATABASE_URL}
+     - COURIER_REDIS=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB_NUM}
+     - COURIER_S3_REGION=${COURIER_S3_REGION}
+     - COURIER_S3_MEDIA_PREFIX
+     - COURIER_S3_MEDIA_BUCKET=${AWS_STORAGE_BUCKET_NAME}
+     - COURIER_AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+     - COURIER_AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+   networks:
+    - pro-network
+  proxy:
+   image: nginx
+   depends_on:
+     - rapidpro
+     - courier
+   volumes:
+     - ./nginx.conf:/etc/nginx/nginx.conf
+   ports:
+     - '8001:8001'
+   networks:
+     - pro-network
+  indexer:
+    image: praekeltfoundation/rp-indexer
+    depends_on:
+      - rapidpro
+      - celery_base
+      - celery_msgs
+    environment:
+      - INDEXER_DB=${DATABASE_URL}
+      - INDEXER_ELASTIC_URL=${ELASTICSEARCH_URL}
+    networks:
+      - pro-network
+  mailroom:
+    image: praekeltfoundation/mailroom
+    depends_on:
+      - rapidpro
+      - postgresql
+      - redis
+    ports:
+      - 8090:8090
+    networks:
+      - pro-network
+    command: ["mailroom", "-redis=redis://redis:${REDIS_PORT}/15", "-db=${DATABASE_URL}","-s3-media-bucket=${AWS_STORAGE_BUCKET_NAME}","-aws-access-key-id=${AWS_ACCESS_KEY_ID}", "-aws-secret-access-key=${AWS_SECRET_ACCESS_KEY}"]
+volumes:
+  serverdb:
+  webfiles:
+networks:
+  pro-network:
+    driver: bridge
+

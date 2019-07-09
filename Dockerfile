@@ -1,6 +1,10 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
-FROM rapidpro/rapidpro-base:v4
+#FROM rapidpro/rapidpro-base:v4
+FROM python:3.6-alpine
+
+COPY stack/geolibs.sh /
+
 ARG RAPIDPRO_VERSION
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
@@ -10,18 +14,20 @@ ENV PIP_RETRIES=120 \
 
 # TODO determine if a more recent version of Node is needed
 # TODO extract openssl and tar to their own upgrade/install line
-RUN set -ex \
-  && apk add --no-cache nodejs-lts nodejs-npm openssl tar \
-  && npm install -g coffee-script less bower
+#RUN set -ex \
+#  && apk add --no-cache nodejs-lts nodejs-npm openssl tar \
+#  && npm install -g coffee-script less bower
 
+COPY requirements.txt /app/requirements.txt
 WORKDIR /rapidpro
-
 RUN set -ex \
         && apk add --no-cache --virtual .build-deps \
+                --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+                --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
                 bash \
                 patch \
                 git \
-                gcc \
+		gcc \
                 g++ \
                 make \
                 libc-dev \
@@ -41,21 +47,41 @@ RUN set -ex \
                 ncurses \
                 ncurses-dev \
                 libzmq \
-                && pip install -U virtualenv \
-                && virtualenv /venv
+		gdal \
+                gdal-dev \
+                geos-dev \
+		python3-dev \
+		rsync
 
 ARG RAPIDPRO_VERSION
-ARG RAPIDPRO_REPO
+ARG RAPIDPRO_REPO=POLLSTERPRO_REPO
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
-ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-rapidpro/rapidpro}
-RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    wget -O rapidpro.tar.gz "https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    tar -xf rapidpro.tar.gz --strip-components=1 && \
-    rm rapidpro.tar.gz
+ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-istresearch/rapidpro}
+ENV GITHUB_USER=${GITHUB_USER}
+ENV GITHUB_TOKEN=${GITHUB_TOKEN}
+RUN  echo "Downloading PollsterPro $RAPIDPRO_VERSION from https://github.com/$RAPIDPRO_REPO" && \
+    git init && \
+    git remote add -t rp-orig-merge -f origin/rapidpro https://$GITHUB_USER:$GITHUB_TOKEN@github.com/istresearch/rapidpro.git && \
+    git fetch && \
+    git checkout origin/rapidpro/rp-orig-merge
+
+WORKDIR /rapidpro
+RUN set -ex \
+		&& apk add --no-cache --virtual .build-deps \
+               	rsync \
+		&& rsync -a /usr/lib/* /usr/local/lib \
+                && pip install -U virtualenv \
+		&& pip install -r /app/requirements.txt \
+                && virtualenv /venv 
+
+#RUN set -ex \
+#  && apk add --no-cache nodejs-lts nodejs-npm openssl tar \
+#  && npm install -g coffee-script less bower
+
 
 # Build Python virtualenv
 COPY requirements.txt /app/requirements.txt
-RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.1.1" \
+RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==41.0.1" \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install -r /app/requirements.txt" \
     && runDeps="$( \
       scanelf --needed --nobanner --recursive /venv \
@@ -66,6 +92,18 @@ RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.
     )" \
     && apk --no-cache add --virtual .python-rundeps $runDeps \
     && apk del .build-deps && rm -rf /var/cache/apk/*
+
+RUN set -ex \
+		&& apk add --no-cache --virtual .build-deps \
+                rsync \
+                && rsync -a /usr/lib/* /usr/local/lib \
+                && pip install -U virtualenv \
+                && pip install -r /app/requirements.txt \
+                && virtualenv /venv
+
+RUN set -ex \
+  && apk add --no-cache nodejs-lts nodejs-npm openssl tar \
+  && npm install -g coffee-script less bower
 
 # TODO should this be in startup.sh?
 RUN cd /rapidpro && npm install npm@latest && npm install && bower install --allow-root
@@ -88,6 +126,8 @@ COPY Procfile /rapidpro/
 COPY Procfile /
 EXPOSE 8000
 COPY stack/startup.sh /
+COPY settings.py /rapidpro/temba/settings.py
+COPY urls.py /rapidpro/temba/urls.py
 
 LABEL org.label-schema.name="RapidPro" \
       org.label-schema.description="RapidPro allows organizations to visually build scalable interactive messaging applications." \
@@ -98,4 +138,3 @@ LABEL org.label-schema.name="RapidPro" \
       org.label-schema.schema-version="1.0"
 
 CMD ["/startup.sh"]
-

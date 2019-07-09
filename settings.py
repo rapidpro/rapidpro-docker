@@ -10,8 +10,15 @@ import dj_database_url
 import django_cache_url
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
-
+from django.conf.urls import include, url
 from temba.settings_common import *  # noqa
+from django.urls import base
+
+AWS_QUERYSTRING_EXPIRE = '157784630'
+SUB_DIR = "somesub"
+
+STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
+MAILROOM_URL=env('MAILROOM_URL', 'http://localhost:8000')
 
 INSTALLED_APPS = (
     INSTALLED_APPS +
@@ -113,7 +120,7 @@ COMPRESS_URL = STATIC_URL
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_CSS_HASHING_METHOD = 'content'
 COMPRESS_OFFLINE_MANIFEST = 'manifest-%s.json' % env('RAPIDPRO_VERSION', required=True)
-
+ 
 MAGE_AUTH_TOKEN = env('MAGE_AUTH_TOKEN', None)
 MAGE_API_URL = env('MAGE_API_URL', 'http://localhost:8026/api/v1')
 SEND_MESSAGES = env('SEND_MESSAGES', 'off') == 'on'
@@ -134,33 +141,40 @@ SECURE_PROXY_SSL_HEADER = (
 IS_PROD = env('IS_PROD', 'off') == 'on'
 
 BRANDING = {
-    'rapidpro.io': {
-        'slug': env('BRANDING_SLUG', 'rapidpro'),
-        'name': env('BRANDING_NAME', 'RapidPro'),
-        'org': env('BRANDING_ORG', 'RapidPro'),
+    'pulse': {
+        'slug': env('BRANDING_SLUG', 'pulse'),
+        'name': env('BRANDING_NAME', 'Pulse'),
+        'org': env('BRANDING_ORG', 'Pulse'),
         'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
-        'styles': ['brands/rapidpro/font/style.css'],
+        'styles': ['brands/pulse/font/style.css'],
         'welcome_topup': 1000,
-        'email': env('BRANDING_EMAIL', 'join@rapidpro.io'),
-        'support_email': env('BRANDING_SUPPORT_EMAIL', 'join@rapidpro.io'),
+        'email': env('BRANDING_EMAIL', 'engage@istresearch.com'),
+        'support_email': env('BRANDING_SUPPORT_EMAIL', 'no-reply@istresearch.com'),
         'link': env('BRANDING_LINK', 'https://app.rapidpro.io'),
         'api_link': env('BRANDING_API_LINK', 'https://api.rapidpro.io'),
         'docs_link': env('BRANDING_DOCS_LINK', 'http://docs.rapidpro.io'),
         'domain': HOSTNAME,
-        'favico': env('BRANDING_FAVICO', 'brands/rapidpro/rapidpro.ico'),
-        'splash': env('BRANDING_SPLASH', '/brands/rapidpro/splash.jpg'),
-        'logo': env('BRANDING_LOGO', '/brands/rapidpro/logo.png'),
-        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
+        'favico': env('BRANDING_FAVICO', 'brands/pulse/pulse.ico'),
+        'splash': env('BRANDING_SPLASH', '/brands/pulse/splash.jpg'),
+        'logo': env('BRANDING_LOGO', '/brands/pulse/logo.png'),
+        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', False),
         'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
         'bundles': [],
-        'welcome_packs': [dict(size=5000, name="Demo Account"), dict(size=100000, name="UNICEF Account")],
-        'description': _("Visually build nationally scalable mobile applications from anywhere in the world."),
-        'credits': _("Copyright &copy; 2012-%s UNICEF, Nyaruka, and individual contributors. All Rights Reserved." % (
+        'welcome_packs': [dict(size=5000, name="Pulse Account"), dict(size=100000, name="Pulse Account")],
+        'description': _("Pulse lets you visually build interactive SMS applications and launch them anywhere in the world."),
+        'credits': _("Copyright &copy; 2012-{} IST Research Corp. All Rights Reserved.".format(
             datetime.now().strftime('%Y')
         ))
+    #    'redirect': "/msg/inbox/"
     }
 }
-DEFAULT_BRAND = 'rapidpro.io'
+DEFAULT_BRAND = 'pulse'
+if 'SUB_DIR' in locals(): 
+    BRANDING[DEFAULT_BRAND]["sub_dir"] = SUB_DIR
+    LOGIN_URL = "/" + SUB_DIR + "/users/login/"
+    LOGOUT_URL = "/" + SUB_DIR + "/users/logout/"
+    LOGIN_REDIRECT_URL = "/" + SUB_DIR + "/org/choose/"
+    LOGOUT_REDIRECT_URL = "/" + SUB_DIR + "/"
 
 # build up our offline compression context based on available brands
 COMPRESS_OFFLINE_CONTEXT = []
@@ -168,3 +182,47 @@ for brand in BRANDING.values():
     context = dict(STATIC_URL=STATIC_URL, base_template='frame.html', debug=False, testing=False)
     context['brand'] = dict(slug=brand['slug'], styles=brand['styles'])
     COMPRESS_OFFLINE_CONTEXT.append(context)
+
+CHANNEL_TYPES = [
+    "temba.channels.types.arabiacell.ArabiaCellType",
+    "temba.channels.types.whatsapp.WhatsAppType",
+    "temba.channels.types.twilio.TwilioType",
+    "temba.channels.types.twilio_messaging_service.TwilioMessagingServiceType",
+    "temba.channels.types.nexmo.NexmoType",
+    "temba.channels.types.africastalking.AfricasTalkingType",
+    "temba.channels.types.blackmyna.BlackmynaType",
+    "temba.channels.types.bongolive.BongoLiveType",
+    "temba.channels.types.burstsms.BurstSMSType",
+    "temba.channels.types.chikka.ChikkaType",
+    "temba.channels.types.clickatell.ClickatellType",
+    "temba.channels.types.dartmedia.DartMediaType",
+    "temba.channels.types.dmark.DMarkType",
+    "temba.channels.types.external.ExternalType",
+    "temba.channels.types.facebook.FacebookType",
+    "temba.channels.types.firebase.FirebaseCloudMessagingType",
+    "temba.channels.types.globe.GlobeType",
+    "temba.channels.types.highconnection.HighConnectionType",
+    "temba.channels.types.hub9.Hub9Type",
+    "temba.channels.types.infobip.InfobipType",
+    "temba.channels.types.line.LineType",
+    "temba.channels.types.m3tech.M3TechType",
+    "temba.channels.types.macrokiosk.MacrokioskType",
+    "temba.channels.types.mtarget.MtargetType",
+    "temba.channels.types.messangi.MessangiType",
+    "temba.channels.types.novo.NovoType",
+    "temba.channels.types.playmobile.PlayMobileType",
+    "temba.channels.types.plivo.PlivoType",
+    "temba.channels.types.redrabbit.RedRabbitType",
+    "temba.channels.types.shaqodoon.ShaqodoonType",
+    "temba.channels.types.smscentral.SMSCentralType",
+    "temba.channels.types.start.StartType",
+    "temba.channels.types.telegram.TelegramType",
+    "temba.channels.types.twiml_api.TwimlAPIType",
+    "temba.channels.types.twitter.TwitterType",
+    "temba.channels.types.twitter_activity.TwitterActivityType",
+    "temba.channels.types.verboice.VerboiceType",
+    "temba.channels.types.viber_public.ViberPublicType",
+    "temba.channels.types.wechat.WeChatType",
+    "temba.channels.types.yo.YoType",
+    "temba.channels.types.zenvia.ZenviaType",
+]
