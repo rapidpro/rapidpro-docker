@@ -26,6 +26,7 @@ if hasattr(settings, 'SUB_DIR'):
 urlpatterns = [
     url(r"^", include("temba.public.urls")),
     url(r"^", include("temba.msgs.urls")),
+    url(r"^", include("temba.apks.urls")),
     url(r"^", include("temba.archives.urls")),
     url(r"^", include("temba.policies.urls")),
     url(r"^", include("temba.contacts.urls")),
@@ -54,6 +55,7 @@ if 'VHOST_NAME' in locals():
         url(r'^$', RedirectView.as_view(url="/{}/".format(VHOST_NAME), permanent=False)),
         url(r"^{}/".format(VHOST_NAME), include("temba.public.urls")),
         url(r"^{}/".format(VHOST_NAME), include("temba.msgs.urls")),
+        url(r"^{}/".format(VHOST_NAME), include("temba.apks.urls")),
         url(r"^{}/".format(VHOST_NAME), include("temba.archives.urls")),
         url(r"^{}/".format(VHOST_NAME), include("temba.policies.urls")),
         url(r"^{}/".format(VHOST_NAME), include("temba.contacts.urls")),
