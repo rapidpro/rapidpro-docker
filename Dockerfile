@@ -65,10 +65,9 @@ RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.
               | sort -u \
     )" \
     && apk add --virtual .python-rundeps $runDeps \
+    # TODO should this be in startup.sh?
+    && cd /rapidpro && npm install npm@latest && npm install && bower install --allow-root \
     && apk del .build-deps
-
-# TODO should this be in startup.sh?
-RUN cd /rapidpro && npm install npm@latest && npm install && bower install --allow-root
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
 # Install `libmagic` (needed since rapidpro v3.0.64)
