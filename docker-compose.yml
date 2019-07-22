@@ -23,6 +23,7 @@ services:
       - redis
       - postgresql
       - courier
+      - mailroom
       - elasticsearch
     expose:
       - '8000'
@@ -38,20 +39,26 @@ services:
       - MANAGEPY_COMPRESS=on
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
+      - MAILROOM_URL=http://mailroom:8090
+      - MAILROOM_AUTH_TOKEN=Gqcqvi2PGkoZMpQi
       - ELASTICSEARCH_URL=http://elasticsearch:9200
   celery:
     image: praekeltfoundation/rapidpro:latest
     depends_on:
       - rapidpro
+      - mailroom
       - elasticsearch
     links:
       - redis
       - postgresql
+      - mailroom
       - elasticsearch
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=super-secret-key
+      - MAILROOM_URL=http://mailroom:8090
+      - MAILROOM_AUTH_TOKEN=Gqcqvi2PGkoZMpQi
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,msgs,flows,handler"]
   redis:
@@ -94,6 +101,22 @@ services:
       - 9200:9200
     volumes:
       - 'es_data:/usr/share/elasticsearch/data'
+  mailroom:
+    image: praekeltfoundation/mailroom:2.0.9
+    depends_on:
+      - postgresql
+      - redis
+    links:
+      - postgresql
+      - redis
+    environment:
+      - MAILROOM_DOMAIN=mailroom
+      - MAILROOM_AUTH_TOKEN=Gqcqvi2PGkoZMpQi
+      - MAILROOM_ATTACHMENT_DOMAIN=mailroom
+      - MAILROOM_DB=postgres://postgres:postgres@postgresql/rapidpro?sslmode=disable
+      - MAILROOM_REDIS=redis://redis:6379/0
+      - MAILROOM_LOG_LEVEL=debug
+    command: ["mailroom", "--address", "0.0.0.0"]
 
 volumes:
   es_data:
