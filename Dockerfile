@@ -61,9 +61,9 @@ ENV GITHUB_USER=${GITHUB_USER}
 ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 RUN  echo "Downloading PollsterPro $RAPIDPRO_VERSION from https://github.com/$RAPIDPRO_REPO" && \
     git init && \
-    git remote add -t rp-orig-merge -f origin/rapidpro https://$GITHUB_USER:$GITHUB_TOKEN@github.com/istresearch/rapidpro.git && \
+    git remote add -t $RAPIDPRO_VERSION -f origin/rapidpro https://$GITHUB_USER:$GITHUB_TOKEN@github.com/istresearch/rapidpro.git && \
     git fetch && \
-    git checkout origin/rapidpro/rp-orig-merge
+    git checkout origin/rapidpro/$RAPIDPRO_VERSION
 
 WORKDIR /rapidpro
 RUN set -ex \
