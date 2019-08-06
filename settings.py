@@ -15,7 +15,7 @@ from temba.settings_common import *  # noqa
 from django.urls import base
 
 AWS_QUERYSTRING_EXPIRE = '157784630'
-SUB_DIR = "somesub"
+SUB_DIR = env('SUB_DIR', required=False) 
 
 STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 MAILROOM_URL=env('MAILROOM_URL', 'http://localhost:8000')

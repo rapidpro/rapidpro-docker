@@ -5,8 +5,8 @@
 
 version: '2'
 services:
-  rapidpro:
-    image: istresearch/rapidpro 
+  engage:
+    image: istresearch/engage:v5.0.0
     build:
       context: .
       args:
@@ -14,18 +14,19 @@ services:
         - GITHUB_TOKEN
         - GITHUB_ORG
         - GITHUB_REPO
-        - GITHUB_BRANCH
+        - GITHUB_BRANCH=v5.0.0
     depends_on:
       - redis
       - postgresql
     ports:
       - '${HOSTPORT}:8000'
     environment:
+      - SUB_DIR=ist
       - RAPIDPRO_VERSION
       - RAPIDPRO_REPO
       - SEND_CALLS
       - DOMAIN_NAME
-      - ALLOWED_HOSTS
+      - ALLOWED_HOSTS=*
       - TEMBA_HOST
       - DJANGO_DEBUG
       - DATABASE_URL
@@ -66,9 +67,9 @@ services:
     networks:
       - pro-network
   celery_base:
-    image: istresearch/rapidpro 
+    image: istresearch/engage:v5.0.0
     depends_on:
-      - rapidpro
+      - engage 
     links:
       - redis
       - postgresql
@@ -85,9 +86,9 @@ services:
     networks:
       - pro-network
   celery_msgs:
-    image: istresearch/rapidpro
+    image: istresearch/engage:v5.0.0
     depends_on:
-      - rapidpro
+      - engage 
     links:
       - redis
       - postgresql
@@ -107,6 +108,8 @@ services:
     image: redis:alpine
     networks:
       - pro-network
+    ports:
+     - '6379:6379'
   postgresql:
     image: mdillon/postgis:9.6
     environment:
@@ -137,7 +140,7 @@ services:
   proxy:
    image: nginx
    depends_on:
-     - rapidpro
+     - engage 
      - courier
    volumes:
      - ./nginx.conf:/etc/nginx/nginx.conf
@@ -148,7 +151,7 @@ services:
   indexer:
     image: praekeltfoundation/rp-indexer
     depends_on:
-      - rapidpro
+      - engage 
       - celery_base
       - celery_msgs
     environment:
@@ -159,14 +162,21 @@ services:
   mailroom:
     image: praekeltfoundation/mailroom
     depends_on:
-      - rapidpro
+      - engage 
       - postgresql
       - redis
     ports:
-      - 8090:8090
+      - 8091:8091
     networks:
       - pro-network
     command: ["mailroom", "-redis=redis://redis:${REDIS_PORT}/15", "-db=${DATABASE_URL}","-s3-media-bucket=${AWS_STORAGE_BUCKET_NAME}","-aws-access-key-id=${AWS_ACCESS_KEY_ID}", "-aws-secret-access-key=${AWS_SECRET_ACCESS_KEY}"]
+  elasticsearch:
+    image: elasticsearch:6.5.4
+    restart: always
+    ports:
+      - "9200:9200"
+    networks:
+      - pro-network
 volumes:
   serverdb:
   webfiles:
