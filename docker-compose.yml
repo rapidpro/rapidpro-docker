@@ -82,7 +82,7 @@ services:
       - DATABASE_URL
       - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB_NUM}
       - SECRET_KEY
-    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,flows"]
+    command: ["/venv/bin/celery", "--beat", "--app=temba", "--uid=2", "worker", "--loglevel=INFO", "--queues=celery,flows"]
     networks:
       - pro-network
   celery_msgs:
@@ -101,7 +101,7 @@ services:
       - DATABASE_URL
       - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB_NUM}
       - SECRET_KEY
-    command: ["/venv/bin/celery", "--app=temba", "worker", "--loglevel=INFO", "--queues=msgs,handler"]
+    command: ["/venv/bin/celery", "--app=temba", "worker", "--uid=2",  "--loglevel=INFO", "--queues=msgs,handler"]
     networks:
       - pro-network
   redis:

@@ -169,7 +169,7 @@ BRANDING = {
     }
 }
 DEFAULT_BRAND = 'pulse'
-if 'SUB_DIR' in locals(): 
+if 'SUB_DIR' in locals() and SUB_DIR is not None: 
     BRANDING[DEFAULT_BRAND]["sub_dir"] = SUB_DIR
     LOGIN_URL = "/" + SUB_DIR + "/users/login/"
     LOGOUT_URL = "/" + SUB_DIR + "/users/logout/"
