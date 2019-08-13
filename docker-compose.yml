@@ -6,22 +6,14 @@
 version: '2'
 services:
   engage:
-    image: istresearch/engage:v5.0.0
-    build:
-      context: .
-      args:
-        - GITHUB_USER
-        - GITHUB_TOKEN
-        - GITHUB_ORG
-        - GITHUB_REPO
-        - GITHUB_BRANCH=v5.0.0
+    image: istresearch/p4-engage:4.0.0-a3-dev 
     depends_on:
       - redis
       - postgresql
     ports:
       - '${HOSTPORT}:8000'
     environment:
-      - SUB_DIR=ist
+      #- SUB_DIR=ist
       - RAPIDPRO_VERSION
       - RAPIDPRO_REPO
       - SEND_CALLS
@@ -67,7 +59,7 @@ services:
     networks:
       - pro-network
   celery_base:
-    image: istresearch/engage:v5.0.0
+    image: istresearch/p4-engage:4.0.0-a3-dev 
     depends_on:
       - engage 
     links:
@@ -82,11 +74,11 @@ services:
       - DATABASE_URL
       - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB_NUM}
       - SECRET_KEY
-    command: ["/venv/bin/celery", "--beat", "--app=temba", "--uid=2", "worker", "--loglevel=INFO", "--queues=celery,flows"]
+    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,flows"]
     networks:
       - pro-network
   celery_msgs:
-    image: istresearch/engage:v5.0.0
+    image: istresearch/p4-engage:4.0.0-a3-dev 
     depends_on:
       - engage 
     links:
@@ -101,7 +93,7 @@ services:
       - DATABASE_URL
       - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB_NUM}
       - SECRET_KEY
-    command: ["/venv/bin/celery", "--app=temba", "worker", "--uid=2",  "--loglevel=INFO", "--queues=msgs,handler"]
+    command: ["/venv/bin/celery", "--app=temba", "worker",  "--loglevel=INFO", "--queues=msgs,handler"]
     networks:
       - pro-network
   redis:

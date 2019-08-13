@@ -50,7 +50,7 @@ urlpatterns = [
         name="django.views.i18n.javascript_catalog"),
 ]
 
-if 'VHOST_NAME' in locals():
+if 'VHOST_NAME' in locals() and VHOST_NAME is not None:
     urlpatterns = [
         url(r'^$', RedirectView.as_view(url="/{}/".format(VHOST_NAME), permanent=False)),
         url(r"^{}/".format(VHOST_NAME), include("temba.public.urls")),
