@@ -21,8 +21,8 @@ jobs:
             else
               VERSION_TAG="ci-${VERSION}-${BRANCH}"
             fi
-            docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/p4-engage:${VERSION_TAG} .
             docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/p4-engage:${VERSION_TAG} .
             docker push istresearch/p4-engage:${VERSION_TAG}
       - run:
           name: Deploy
