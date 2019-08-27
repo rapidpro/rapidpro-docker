@@ -1,0 +1,54 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:18.03.0
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Build 
+          command: |
+            apk add --update python openssh git curl
+            BRANCH=${CIRCLE_BRANCH#*/}
+            VERSION=`cat VERSION`
+            FROM_RP_TAG=v5.0.0
+            if [[ ! -z $CIRCLE_TAG ]]; then
+              VERSION_TAG="${VERSION}"
+            elif [[ $BRANCH == develop ]]; then
+              VERSION_TAG="${VERSION}-dev"
+            else
+              VERSION_TAG="ci-${VERSION}-${BRANCH}"
+            fi
+            docker build -t istresearch/p4-engage:${VERSION_TAG} .
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push istresearch/p4-engage:${VERSION_TAG}
+      - run:
+          name: Deploy
+          command: |
+            BRANCH=${CIRCLE_BRANCH#*/}
+            if [[ $BRANCH == develop ]] || [[ $BRANCH == master ]]; then
+              curl --user ${CIRCLE_API_USER_TOKEN}: --data build_parameters[CIRCLE_JOB]=eks_deploy --data build_parameters[DEPLOY_PROJECT]=pulse-engage-docker https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/p4-deploy/tree/develop
+              WORKDIR="/tmp/circleci_rapidpro/${CIRCLE_SHA1}"
+              mkdir -p ~/.ssh
+              echo "Host *" > ~/.ssh/config
+              echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+              git clone -b develop git@github.com:istresearch/ansible-symphony-ist.git
+              echo $ANSIBLE_VAULT_KEY >> ansible-symphony-ist/vault.passwd
+              sed -i 's/control_path/#control_path/g' ansible-symphony-ist/ansible.cfg
+              tar -czpf - ansible-symphony-ist | ssh -l $ANSIBLE_EXECUTOR_USER $ANSIBLE_EXECUTOR_HOST "mkdir -p $WORKDIR ; tar -xzpf - -C $WORKDIR"
+              ssh -l $ANSIBLE_EXECUTOR_USER $ANSIBLE_EXECUTOR_HOST "cd ${WORKDIR}/ansible-symphony-ist ; ansible-playbook -i develop.inventory -t site-docker-pollsterpro-all -l docker-pollsterpro-nodes site-docker-infrastructure.yml"
+            else
+              echo "Skipping deploy step"
+            fi
+        
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      - build:
+          context: globalconfig
+          filters:
+            tags:
+              ignore: /^test-.*/
