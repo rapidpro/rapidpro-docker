@@ -1,7 +1,6 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
 ARG VERSION_TAG
-ENV VERSION_TAG $VERSION_TAG
 
 FROM istresearch/p4-engage:code-${VERSION_TAG}
  
