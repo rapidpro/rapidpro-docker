@@ -1,7 +1,7 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
-ARG CODE_VERSION
-FROM istresearch/p4-engage:code-${CODE_VERSION}
+ARG VERSION_TAG
+FROM istresearch/p4-engage:code-${VERSION_TAG}
  
 ARG RAPIDPRO_VERSION
 ENV PIP_RETRIES=120 \
