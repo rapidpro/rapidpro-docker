@@ -1,6 +1,9 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
-FROM rapidpro/rapidpro-base:v4
+ARG VERSION_TAG
+
+FROM istresearch/p4-engage:code-${VERSION_TAG}
+ 
 ARG RAPIDPRO_VERSION
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
@@ -48,10 +51,11 @@ ARG RAPIDPRO_VERSION
 ARG RAPIDPRO_REPO
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
 ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-rapidpro/rapidpro}
-RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    wget -O rapidpro.tar.gz "https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-    tar -xf rapidpro.tar.gz --strip-components=1 && \
-    rm rapidpro.tar.gz
+
+#RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+#    wget -O rapidpro.tar.gz "https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
+#    tar -xf rapidpro.tar.gz --strip-components=1 && \
+#    rm rapidpro.tar.gz
 
 # Build Python virtualenv
 COPY requirements.txt /app/requirements.txt
@@ -80,6 +84,7 @@ ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_
 ENV STARTUP_CMD="/venv/bin/uwsgi --http-auto-chunked --http-keepalive"
 ENV CELERY_CMD="/venv/bin/celery --beat --app=temba worker --loglevel=INFO --queues=celery,msgs,flows,handler"
 COPY settings.py /rapidpro/temba/
+COPY urls.py /rapidpro/temba/
 # 500.html needed to keep the missing template from causing an exception during error handling
 COPY stack/500.html /rapidpro/templates/
 COPY stack/init_db.sql /rapidpro/
@@ -98,4 +103,3 @@ LABEL org.label-schema.name="RapidPro" \
       org.label-schema.schema-version="1.0"
 
 CMD ["/startup.sh"]
-

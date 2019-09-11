@@ -1,31 +1,130 @@
-RapidPro Docker
-===============
-
-[![Build Status](https://travis-ci.org/rapidpro/rapidpro-docker.svg?branch=master)](https://travis-ci.org/rapidpro/rapidpro-docker)
-[![Docker Version](https://images.microbadger.com/badges/version/rapidpro/rapidpro.svg)](https://hub.docker.com/r/rapidpro/rapidpro/tags/ "Get the latest version from Docker Hub")
-
-This repository's sole purpose is to build docker images versioned off of
-git tags published in rapidpro/rapidpro and upload them to Docker Hub.
-
-The idea is:
-
-  1. Set up Travis Cron job to run every 24 hours
-  3. The Travis build script should download the latest rapidpro/rapidpro
-     tagged release matching `^v[0-9\.]$`
-  4. Build the docker image and tag with the latest git tag.
-  5. Push the docker image to Docker hub using credentials stored in
-     Travis' secrets vault.
-
-Running RapidPro in Docker
+Installing Pollsterpro
 --------------------------
 
-To run the latest cutting edge version:
+1. Clone the Pollsterpro rp-docker branch onto the target server.
+2. Configure the .env file. (An example configuration is provided below).
+    ```dockerfile
+    #DJANGO ENV VARS
+    DJANGO_DEBUG=on
+    IS_PROD=on
+    UWSGI_HARAKIRI=600
+    UWSGI_WORKERS=12
+    ADMIN_NAME=admin
+    ADMIN_EMAIL=admin@istresearch.com
+    ADMIN_PSWD=1zThIsh@rd2gu3ss?
+    DOMAIN_NAME=ppro.dev.istresearch.com
+    
+    #Callback host, used for twilio, nexmo, etc.
+    TEMBA_HOST=ppro.dev.istresearch.com
+    
+    #Host configs
+    HOSTNAME=ppro.dev.istresearch.com
+    HOSTPORT=8000
+    IS_PROD=on
+    SEND_CALLS=on
+    SEND_EMAILS=on
+    SEND_MESSAGES=on
+    SEND_WEBHOOKS=on
+    MANAGEPY_COLLECTSTATIC=on
+    MANAGEPY_COMPRESS=on
+    MANAGEPY_INIT_DB=on
+    MANAGEPY_MIGRATE=on
+    
+    #SMTP configs
+    EMAIL_HOST=smtp.gmail.com
+    EMAIL_PORT=587
+    EMAIL_HOST_USER=donotreply@istresearch.com
+    DEFAULT_FROM_EMAIL=donotreply@istresearch.com
+    EMAIL_HOST_PASSWORD=yeahNotReally
+    EMAIL_USE_TLS=on
+    SEND_EMAILS=on
+    
+    #AMAZON AWS S3 configs required for twilio and other service providers
+    AWS_STORAGE_BUCKET_NAME=ist-dev-bucket
+    AWS_ACCESS_KEY_ID=(required)
+    AWS_SECRET_ACCESS_KEY=(required)
+    COURIER_S3_REGION=us-east-1
+    
+    #Redis configs
+    REDIS_HOST=redis
+    REDIS_PORT=6379
+    REDIS_DB_NUM=1
+    ELASTICSEARCH_URL=https://user:password@elasticsearch.us-east-1.aws.found.io:9200
+    
+    #Postgres configs
+    DBCONN_DBNAME=rapidpro
+    DBCONN_NAME=postgres
+    DBCONN_PSWD=postgres
+    DBCONN_HOST=postgresql
+    DBCONN_PORT=5432
+    DATABASE_URL=postgres://postgres:postgres@postgresql/rapidpro?sslmode=disable
+    SECRET_KEY=UUID-OR-RND-STRING_SHARED-KEY-WITH-WORKER
+    
+    #Org branding configs
+    DEFAULT_BRAND=pulse
+    BRANDING_NAME=pulse
+    BRANDING_SLUG=pulse
+    BRANDING_ORG=ist
+    BRANDING_EMAIL=admin@istresearch.com
+    BRANDING_SUPPORT_EMAIL=admin@istresearch.com
+    BRANDING_LINK=https://ppro.dev.istresearch.com
+    BRANDING_API_LINK=https://api.ppro.dev.istresearch.com
+    BRANDING_DOCS_LINK=http://docs.ppro.dev.istresearch.com
+    BRANDING_FAVICO=brands/rapidpro/rapidpro.ico
+    BRANDING_SPLASH=/brands/rapidpro/splash.jpg
+    BRANDING_LOGO=/brands/rapidpro/logo.png
+    BRANDING_ALLOW_SIGNUPS=True
+    ```
+3. Configure the **server_name** in the nginx.conf file. ex:`server_name ppro.dev.istresearch.com;`
+    ```javascript
+    server {
+            # the port your site will be served on
+            listen      8001;
+            # the domain name it will serve forproxy_set_header
+            server_name ppro.dev.istresearch.com; # substitute your machine's IP address or FQDN
+            charset     utf-8;
+            # max upload size
+            client_max_body_size 75M;   # adjust to taste
+            # Finally, send all non-media requests to the Django server.
+            location / {
+                proxy_set_header Host $http_host;
+                proxy_pass http://rapidpro:8000;
+                proxy_read_timeout 600s;
+                proxy_send_timeout 600s;
+                break;
+            }
+       ...
+    }
+    ```
 
-> $ docker run --publish 8000:8000 rapidpro/rapidpro:master
+Running Pollsterpro Server.
+------------------------
+Once configured, you may run `docker-compose up -d` from the cloned repo’s directory.
 
-To run a specific version:
+Creating new Orgs
+------------------------
+1. To create an initial Org, the server must be configured to allow open signups. To enable open signups:
+2. In the **.env** file (or in the Rapidpro service in the **docker-compose.yml** file) set the environment variable **BRANDING_ALLOW_SIGNUPS**=True.
+3. Restart the Rapidpro docker container via docker-compose. (ex. `docker-compose stop rapidpro; docker-compose up -d rapidpro` OR `docker-compose restart rapidpro`)
 
-> $ docker run --publish 8000:8000 rapidpro/rapidpro:v2.0.478
+Create (DJANGO) ADMIN
+------------------------
+1. Ensure that the **ADMIN_NAME**, **ADMIN_EMAIL**, **ADMIN_PSWD** environment variables have been set for the Rapidpro docker service, in either the **.env** file or **docker-compose.yml** file. 
+(_You may ignore the first step and provide the credentials as direct parameters by simply replacing the entire **${VAR_NAME}** brace with the target credential_)
+2. Execute `sudo docker-compose exec rapidpro sh`
+3. Execute ```echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('${ADMIN_NAME}', '${ADMIN_EMAIL}', '${ADMIN_PSWD}')" | /venv/bin/python manage.py shell```
+
+Notes and Troubleshooting:
+--------------------------
+**BRANDING_LINK** is used in email notifications. Links will  be invalid if the proper protocol is not specified. For example, if https is enabled then ppro.dev.istresearch.com would result in an invalid link http://ppro.dev.istresearch.com being sent in generated emails. The proper link should therefore be: https://ppro.dev.istresearch.com.
+
+* Channel is configured, however messages are not being delivered to the message service.
+  * Check the courier logs for configuration errors:
+    > couriercourier_1      | time="2019-05-28T15:27:31Z" level=error msg="s3 bucket not reachable" comp=backend error="BadRequest: Bad Request\n\tstatus code: 400, request id: 545EE10EF02CD5DD, host id: XHIDHAHEIHER+VNWxcnbXHuae3283WXz77JvSCNBCBsgXH6hV3283u83DGHSJKW9ye83yr+de4V7Y=" state=starting
+    * (Fixed by providing proper AWS S3 Credentials AWS_STORAGE_BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+  * Check the celery logs for misconfigured workers:
+    > urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x7fee076cdac8>: Failed to establish a new connection: [Errno 111] Connection refused [celery_base_1    |ESC[0m [2019-05-19 19:06:43,826: WARNING/PoolWorker-5] GET http://localhost:9200/contacts/_search?size=1 [status:N/A request:0.001s]
+    * (Fixed by adding the proper ELASTICSEARCH_URL to the .env file)
 
 Environment variables
 ---------------------
