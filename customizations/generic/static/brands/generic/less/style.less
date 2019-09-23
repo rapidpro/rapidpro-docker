@@ -1,0 +1,67 @@
+@import "variables.less";
+
+#header, #footer {
+  background-color: @color-primary
+}
+
+#lead-form {
+  display: none !important;
+}
+
+#splash {
+  margin-top: -30px;
+  background: url("../images/splash.png") !important;
+  background-size: cover !important;
+  width: 100%;
+  height: 0px;
+  padding-bottom: 40%;
+
+  h1.description {
+    color: @color-secondary;
+    position:absolute;
+    font-weight: 100;
+    width: 350px;
+    font-size: 38px;
+    line-height: 110%;
+    padding-right:50px;
+    padding-top:50px;
+    text-shadow: 1px 1px 4px #000;
+    float: right;
+    text-align: right;
+  }
+}
+
+h5.contact-signup {
+  position: absolute;
+  width:100%;
+  color: @color-secondary;
+  text-shadow: 1px 1px #000;
+  text-align:right;
+  margin-top:-40px;
+  a {
+    color: #eee;
+  }
+}
+
+a.logo {
+  color: #fff;
+  font-size: 85px;
+  text-decoration: none;
+}
+
+#header {
+  height: 65px;
+}
+
+@media (max-width: 767px) {
+  #header {
+      height: 100px;
+  }
+}
+
+.btn-primary {
+  border: 1px solid #32638e;
+  background-color: @color-button-primary;
+  background-image: -webkit-linear-gradient(top, #4d8ac1, #3f73a2);
+  background: -moz-linear-gradient(top, #4d8ac1, #3f73a2);
+}

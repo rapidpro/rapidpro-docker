@@ -141,32 +141,32 @@ SECURE_PROXY_SSL_HEADER = (
 IS_PROD = env('IS_PROD', 'off') == 'on'
 
 BRANDING = {
-    "rapidpro.io": {
-        "slug": env('BRANDING_SLUG', "rapidpro"),
-        "name": env('BRANDING_NAME', "RapidPro"),
-        "org": env('BRANDING_ORG', "UNICEF"),
-        "colors": dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
-        "styles": ["brands/rapidpro/font/style.css"],
-        "welcome_topup": 1000,
-        "email": env('BRANDING_EMAIL', "join@rapidpro.io"),
-        "support_email": env('BRANDING_SUPPORT_EMAIL', "support@rapidpro.io"),
-        "link": env('BRANDING_LINK', "https://app.rapidpro.io"),
-        "api_link": env('BRANDING_API_LINK', "https://api.rapidpro.io"),
-        "docs_link": env('BRANDING_DOCS_LINK', "http://docs.rapidpro.io"),
-        "domain": HOSTNAME,
-        "favico": env('BRANDING_FAVICO', "brands/rapidpro/rapidpro.ico"),
-        "splash": env('BRANDING_SPLASH', "brands/rapidpro/splash.jpg"),
-        "logo": env('BRANDING_LOGO', "brands/rapidpro/logo.png"),
-        "allow_signups": env('BRANDING_ALLOW_SIGNUPS', True),
+    'generic': {
+        'slug': env('BRANDING_SLUG', 'engage'),
+        'name': env('BRANDING_NAME', 'Engage'),
+        'org': env('BRANDING_ORG', 'IST'),
+        'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
+        'styles': ['brands/rapidpro/font/style.css', 'brands/generic/less/style.less', ],
+        'welcome_topup': 1000,
+        'email': env('BRANDING_EMAIL', 'email@localhost.localdomain'),
+        'support_email': env('BRANDING_SUPPORT_EMAIL', 'email@localhost.localdomain'),
+        'link': env('BRANDING_LINK', 'https://localhost.localdomain'),
+        'api_link': env('BRANDING_API_LINK', 'https://api.localhost.localdomain'),
+        'docs_link': env('BRANDING_DOCS_LINK', 'http://docs.localhost.localdomain'),
+        'domain': HOSTNAME,
+        'favico': env('BRANDING_FAVICO', 'brands/generic/favicon.ico'),
+        'splash': env('BRANDING_SPLASH', 'brands/generic/splash.png'),
+        'logo': env('BRANDING_LOGO', 'brands/generic/logo.png'),
+        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
         "flow_types": ["M", "V", "S"],  # see Flow.TYPE_MESSAGE, Flow.TYPE_VOICE, Flow.TYPE_SURVEY
-        "tiers": dict(import_flows=0, multi_user=0, multi_org=0),
-        "bundles": [],
-        "welcome_packs": [dict(size=5000, name="Demo Account"), dict(size=100000, name="UNICEF Account")],
-        "description": _("Visually build nationally scalable mobile applications from anywhere in the world."),
-        "credits": _("Copyright &copy; 2012-2017 UNICEF, Nyaruka. All Rights Reserved."),
+        'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
+        'bundles': [],
+        'welcome_packs': [dict(size=5000, name="Demo Account"),],
+        'description': _("Enabling Global Conversations"),
+        'credits': _("")
     }
 }
-DEFAULT_BRAND = "rapidpro.io"
+DEFAULT_BRAND = 'generic'
 
 if 'SUB_DIR' in locals() and SUB_DIR is not None: 
     BRANDING[DEFAULT_BRAND]["sub_dir"] = SUB_DIR

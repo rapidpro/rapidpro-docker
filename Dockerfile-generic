@@ -83,7 +83,11 @@ ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_
 # These options don't appear to be configurable via environment variables, so pass them in here instead
 ENV STARTUP_CMD="/venv/bin/uwsgi --http-auto-chunked --http-keepalive"
 ENV CELERY_CMD="/venv/bin/celery --beat --app=temba worker --loglevel=INFO --queues=celery,msgs,flows,handler"
-COPY settings.py /rapidpro/temba/settings.py
+
+# Overlay the Engage brand and customizations
+COPY settings-generic.py /rapidpro/temba/settings.py
+COPY customizations/generic /rapidpro/
+
 COPY urls.py /rapidpro/temba/
 # 500.html needed to keep the missing template from causing an exception during error handling
 COPY stack/500.html /rapidpro/templates/
@@ -94,12 +98,9 @@ COPY Procfile /
 EXPOSE 8000
 COPY stack/startup.sh /
 
-LABEL org.label-schema.name="RapidPro" \
-      org.label-schema.description="RapidPro allows organizations to visually build scalable interactive messaging applications." \
-      org.label-schema.url="https://www.rapidpro.io/" \
-      org.label-schema.vcs-url="https://github.com/$RAPIDPRO_REPO" \
-      org.label-schema.vendor="Nyaruka, UNICEF, and individual contributors." \
-      org.label-schema.version=$RAPIDPRO_VERSION \
+LABEL org.label-schema.name="Engage" \
+      org.label-schema.description="Enabling Global Conversations." \
+      org.label-schema.version=$VERSION_TAG \
       org.label-schema.schema-version="1.0"
 
 CMD ["/startup.sh"]
