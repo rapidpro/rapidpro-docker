@@ -10,7 +10,7 @@
         {{ brand.name }} 
       {% endblock %}
     %link{href:'{{STATIC_URL}}fonts/roboto/stylesheet.css', rel:'stylesheet', type:'text/css'}
-    %link{href:'{{STATIC_URL}}brands/engage/images/pulse.ico', rel:'shortcut icon', type:'image/png'}
+    %link{href:'{{STATIC_URL}}brands/engage/images/engage.ico', rel:'shortcut icon', type:'image/png'}
     %meta{charset:"utf-8"}
     %meta{name:"viewport", content:"width=device-width, initial-scale=1.0"}
     %meta{name:"description", content:"{% block page-description %}Pulse Engage{% endblock %}"}
@@ -21,7 +21,7 @@
     :javascript
 
       window.supportEmail = '{{brand.support_email}}';
-
+      window.subdir = '{{brand.sub_dir}}';
       function conditionalLoad(local, remote) {
         if (local != null && (window.location.hostname == "localhost" || remote == null)) {
           loadResource("{{ STATIC_URL }}" + local);
@@ -189,7 +189,8 @@
         {{brand.name}}
       %img{ src:"{{ STATIC_URL }}brands/engage/images/logo.png" }
 
-    -include 'includes/nav.html'
+    -block nav
+      -include 'includes/nav.html'
 
     -if user_org
       .org-header
@@ -355,10 +356,12 @@
           over:function() {
             // $('.submenu').hide();
             $(this).find('.submenu-container').slideDown(250);
+            $(this).parents("#top-menu").addClass('expanded');
             // $(this).find('.submenu').show();
           },
           out:function() {
           $(this).find('.submenu-container').slideUp(200);
+          $(this).parents("#top-menu").removeClass('expanded');
             //$(this).find('.submenu').hide();
           },
           timeout:300
