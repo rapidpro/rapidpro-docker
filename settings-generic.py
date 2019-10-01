@@ -140,32 +140,36 @@ SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
 IS_PROD = env('IS_PROD', 'off') == 'on'
 
-BRANDING = {
-    'generic': {
-        'slug': env('BRANDING_SLUG', 'engage'),
-        'name': env('BRANDING_NAME', 'Engage'),
-        'org': env('BRANDING_ORG', 'IST'),
-        'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
-        'styles': ['brands/rapidpro/font/style.css', 'brands/generic/less/style.less', ],
-        'welcome_topup': 1000,
-        'email': env('BRANDING_EMAIL', 'email@localhost.localdomain'),
-        'support_email': env('BRANDING_SUPPORT_EMAIL', 'email@localhost.localdomain'),
-        'link': env('BRANDING_LINK', 'https://localhost.localdomain'),
-        'api_link': env('BRANDING_API_LINK', 'https://api.localhost.localdomain'),
-        'docs_link': env('BRANDING_DOCS_LINK', 'http://docs.localhost.localdomain'),
-        'domain': HOSTNAME,
-        'favico': env('BRANDING_FAVICO', 'brands/generic/favicon.ico'),
-        'splash': env('BRANDING_SPLASH', 'brands/generic/splash.png'),
-        'logo': env('BRANDING_LOGO', 'brands/generic/logo.png'),
-        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
-        "flow_types": ["M", "V", "S"],  # see Flow.TYPE_MESSAGE, Flow.TYPE_VOICE, Flow.TYPE_SURVEY
-        'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
-        'bundles': [],
-        'welcome_packs': [dict(size=5000, name="Demo Account"),],
-        'description': _("Enabling Global Conversations"),
-        'credits': _("")
-    }
+try:
+    BRANDING
+except NameError:
+    BRANDING = {}
+
+BRANDING['generic'] = {
+    'slug': env('BRANDING_SLUG', 'engage'),
+    'name': env('BRANDING_NAME', 'Engage'),
+    'org': env('BRANDING_ORG', 'IST'),
+    'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
+    'styles': ['brands/rapidpro/font/style.css', 'brands/generic/less/style.less', ],
+    'welcome_topup': 1000,
+    'email': env('BRANDING_EMAIL', 'email@localhost.localdomain'),
+    'support_email': env('BRANDING_SUPPORT_EMAIL', 'email@localhost.localdomain'),
+    'link': env('BRANDING_LINK', 'https://localhost.localdomain'),
+    'api_link': env('BRANDING_API_LINK', 'https://api.localhost.localdomain'),
+    'docs_link': env('BRANDING_DOCS_LINK', 'http://docs.localhost.localdomain'),
+    'domain': HOSTNAME,
+    'favico': env('BRANDING_FAVICO', 'brands/generic/favicon.ico'),
+    'splash': env('BRANDING_SPLASH', 'brands/generic/splash.png'),
+    'logo': env('BRANDING_LOGO', 'brands/generic/logo.png'),
+    'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
+    "flow_types": ["M", "V", "S"],  # see Flow.TYPE_MESSAGE, Flow.TYPE_VOICE, Flow.TYPE_SURVEY
+    'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
+    'bundles': [],
+    'welcome_packs': [dict(size=5000, name="Demo Account"),],
+    'description': _("Enabling Global Conversations"),
+    'credits': _("")
 }
+
 DEFAULT_BRAND = 'generic'
 
 if 'SUB_DIR' in locals() and SUB_DIR is not None: 
@@ -228,3 +232,14 @@ CHANNEL_TYPES = [
 
 # how many sequential contacts on import triggers suspension
 SEQUENTIAL_CONTACTS_THRESHOLD = env('SEQUENTIAL_CONTACTS_THRESHOLD', 5000)
+
+# -----------------------------------------------------------------------------------
+# Django-rest-framework configuration
+# -----------------------------------------------------------------------------------
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
+    "v2": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.contacts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.messages": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.runs": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.api": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+}
