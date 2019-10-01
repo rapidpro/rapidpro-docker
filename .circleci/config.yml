@@ -24,7 +24,7 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
             # Build the container with default branding
-            docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/p4-engage:${VERSION_TAG}-rapidpro -f Dockerfile .
+            docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/rapidpro:${VERSION_TAG} -f Dockerfile .
             docker push istresearch/rapidpro:${VERSION_TAG}
 
             # Build the container with Engage branding
@@ -32,7 +32,7 @@ jobs:
             docker push istresearch/p4-engage:${VERSION_TAG}
 
             # Build the container with generic branding
-            docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/p4-engage:${VERSION_TAG}-generic -f Dockerfile-generic .
+            docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/rapidpro:${VERSION_TAG}-generic -f Dockerfile-generic .
             docker push istresearch/rapidpro:${VERSION_TAG}-generic
       - run:
           name: Deploy
