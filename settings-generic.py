@@ -225,3 +225,6 @@ CHANNEL_TYPES = [
     "temba.channels.types.yo.YoType",
     "temba.channels.types.zenvia.ZenviaType",
 ]
+
+# how many sequential contacts on import triggers suspension
+SEQUENTIAL_CONTACTS_THRESHOLD = env('SEQUENTIAL_CONTACTS_THRESHOLD', 5000)
