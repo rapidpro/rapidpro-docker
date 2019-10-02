@@ -1,0 +1,389 @@
+<!DOCTYPE HTML>
+-load humanize
+{% block html-tag %}
+<!--[if lte IE 8]><html class="ie" lang="en">    <![endif]-->
+<!--[if !IE]><!--><html lang="en">              <!--<![endif]-->
+{% endblock %}
+  %head
+    %title
+      {% block page-title %}
+        {{ brand.name }} 
+      {% endblock %}
+    %link{href:'{{STATIC_URL}}fonts/roboto/stylesheet.css', rel:'stylesheet', type:'text/css'}
+    %link{href:'{{STATIC_URL}}brands/generic/images/engage.ico', rel:'shortcut icon', type:'image/png'}
+    %meta{charset:"utf-8"}
+    %meta{name:"viewport", content:"width=device-width, initial-scale=1.0"}
+    %meta{name:"description", content:"{% block page-description %}Engage{% endblock %}"}
+    %meta{name:"author", content:""}
+    %meta{http-equiv:"X-UA-Compatible", content:"IE=10"}
+
+    -load compress
+    :javascript
+
+      window.supportEmail = '{{brand.support_email}}';
+      window.subdir = '{{brand.sub_dir}}';
+      function conditionalLoad(local, remote) {
+        if (local != null && (window.location.hostname == "localhost" || remote == null)) {
+          loadResource("{{ STATIC_URL }}" + local);
+        } else if (remote != null) {
+          loadResource(remote);
+        }
+      }
+
+      function loadResource(src) {
+        (function() { document.write(unescape('%3Cscript src="' + src + '"%3E%3C/script%3E')); })();
+      }
+
+
+    // ==== JQUERY ====
+    :javascript
+      conditionalLoad('bower/jquery/jquery.js', '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.js');
+      conditionalLoad('bower/jquery-migrate/jquery-migrate.min.js', null);
+
+    // ==== ANGULAR ====
+    :javascript
+
+      // this has to be loaded before angular
+      conditionalLoad('lib/angular-file-upload-1.6.12/angular-file-upload-shim.js', null);
+
+      // our angular scripts
+      conditionalLoad('bower/angular/angular.js', null);
+      conditionalLoad('bower/angular-animate/angular-animate.js', null);
+
+      // this must be loaded after angular
+      conditionalLoad('lib/angular-file-upload-1.6.12/angular-file-upload.js', null)
+
+
+    -# this view make it possible to process translations from javascript land
+    <script src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+
+    -compress js
+      :javascript
+         var static_url = '{{STATIC_URL}}';
+
+      %script{src:"{{ STATIC_URL }}bower/toastr/toastr.js"}
+      %script{src:"{{ STATIC_URL }}bower/select2/select2.js"}
+      %script{src:"{{ STATIC_URL }}bower/Caret.js/dist/jquery.caret.js"}
+      %script{src:"{{ STATIC_URL }}bower/At.js/dist/js/jquery.atwho.js"}
+      %script{src:"{{ STATIC_URL }}bower/bootstrap/js/bootstrap-modal.js"}
+      %script{src:"{{ STATIC_URL }}bower/bootstrap/js/bootstrap-dropdown.js"}
+      %script{src:"{{ STATIC_URL }}bower/bootstrap/js/bootstrap-tooltip.js"}
+      %script{src:"{{ STATIC_URL }}bower/bootstrap/js/bootstrap-tab.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-pjax/jquery.pjax.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-ui/ui/jquery.ui.core.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-ui/ui/jquery.ui.widget.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-ui/ui/jquery.ui.mouse.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-ui/ui/jquery.ui.draggable.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-ui/ui/jquery.ui.droppable.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-ui/ui/jquery.ui.sortable.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-ui/ui/jquery.ui.datepicker.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-ui/ui/jquery.ui.slider.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-sparkline/dist/jquery.sparkline.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-history/scripts/jquery.history.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-easing/jquery.easing.js"}
+      %script{src:"{{ STATIC_URL }}bower/jquery-hoverintent/jquery.hoverIntent.js"}
+      %script{src:"{{ STATIC_URL }}bower/intercooler-js/src/intercooler.js"}
+      %script{src:"{{ STATIC_URL }}bower/moment/moment.js"}
+      %script{src:"{{ STATIC_URL }}bower/moment-timezone/builds/moment-timezone-with-data.js"}
+      %script{src:"{{ STATIC_URL }}bower/featherlight/src/featherlight.js"}
+      %script{src:"{{ STATIC_URL }}bower/video.js/dist/video.js"}
+      %script{src:"{{ STATIC_URL }}bower/videojs-vjsdownload/dist/videojs-vjsdownload.js"}
+      %script{src:"{{ STATIC_URL }}bower/xregexp/xregexp-all.js"}
+      %script{src:"{{ STATIC_URL }}bower/sticky-kit/jquery.sticky-kit.js"}
+
+      // Non-bower packages
+      %script{src:"{{ STATIC_URL }}lib/uuid.js"}
+      %script{src:"{{ STATIC_URL }}lib/bootstrap-limit.js"}
+      %script{src:"{{ STATIC_URL }}lib/jquery-ui-timepicker-addon.js"}
+
+      -if not debug and not testing
+        %script{src:"{{ STATIC_URL }}lib/raven.min.js"}
+
+    -compress js
+      %script{src:"{{ STATIC_URL }}js/omnibox.js"}
+      %script{src:"{{ STATIC_URL }}js/temba.js"}
+      %script{src:"{{ STATIC_URL }}js/excellent.js"}
+      %script{src:"{{ STATIC_URL }}js/labels.js"}
+      %script{src:"{{ STATIC_URL }}coffee/temba.coffee", type:'text/coffeescript'}
+      %script{src:"{{ STATIC_URL }}coffee/formax.coffee", type:'text/coffeescript'}
+      %script{src:"{{ STATIC_URL }}coffee/completions.coffee", type:'text/coffeescript'}
+
+
+    -include "includes/frame_top.html"
+
+    -if brand.favico
+      %link{type:"image/ico", rel:"shortcut icon", href:"{{ STATIC_URL }}{{ brand.favico }}"}
+    -else
+      %link{type:"image/ico", rel:"shortcut icon", href:"{{ STATIC_URL }}images/favicon.ico"}
+
+    -load smartmin sms
+    -load i18n
+
+    -block styles
+      -compress css
+        %link{type:'text/css', rel:'stylesheet', href:'{{ STATIC_URL }}bower/bootstrap-css/css/bootstrap.css',  media:'all' }
+        %link{type:'text/css', rel:'stylesheet', href:'{{ STATIC_URL }}bower/animate.css/animate.css',  media:'all' }
+
+      -compress css
+        %link{type:'text/css', rel:'stylesheet', href:'{{ STATIC_URL }}bower/bootstrap-css/css/bootstrap-responsive.css',
+              media:'all and (min-width: 1200px), all and (max-width: 767px), all and (max-width: 480px), all and (min-width: 980px)' }
+
+      -compress css
+        %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}bower/toastr/toastr.css", media:'all'}
+        %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}bower/select2/select2.css", media:'all'}
+        %link{type:'text/css', rel:'stylesheet', href:'{{ STATIC_URL }}bower/At.js/dist/css/jquery.atwho.css', media:'all'}
+        %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}bower/jquery-ui/themes/redmond/jquery-ui.css", media:'all'}
+        %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}bower/jquery-ui/themes/redmond/jquery.ui.theme.css", media:'all'}
+        %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}bower/featherlight/src/featherlight.css", media:'all'}
+        %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}bower/video.js/dist/video-js.css", media:'all'}
+        %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}bower/videojs-vjsdownload/dist/videojs-vjsdownload.css", media:'all'}
+
+      -compress css
+        %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}fonts/temba/style.css", media:'all'}
+        %link{type:'text/less', rel:'stylesheet', href:'{{STATIC_URL}}less/print.less', media:'print'}
+
+      -compress css
+
+        {% lessblock %}
+          :plain
+            @import "formax.less";
+            @import "style.less";
+
+            // any brand styling tweaks
+            @import (optional, reference) "../brands/style.less";
+            @import (optional) "../brands/{{brand.slug}}/less/style.less";
+
+        {% endlessblock %}
+
+        // any additional brand styling such as fonts, etc
+        -for style in brand.styles
+          -if 'less' in style
+            %link{type:'text/less', rel:'stylesheet', href:'{{STATIC_URL}}{{style}}', media:'all'}
+          -else
+            %link{type:'text/css', rel:'stylesheet', href:"{{ STATIC_URL }}{{style}}", media:'all'}
+
+      -block extra-less
+      -block extra-style
+
+    -for incl in brand.head_includes
+      -include incl
+
+    <!--[if lt IE 9]>
+      %script{src:"//html5shim.googlecode.com/svn/trunk/html5.js"}
+    <![endif]-->
+
+-load smartmin
+{% block body %}
+%body#pageBody
+  .page-wrap
+
+    <!-- Header -->
+    #print-header
+      %span.logo.icon-logo
+
+    #header
+      &nbsp;
+
+    %a#big-logo.logo{href:"/", title:"{{brand.name}}"}
+      .name
+        {{brand.name}}
+      %img{ src:"{{ STATIC_URL }}brands/generic/images/logo.png" }
+
+    -block nav
+      -include 'includes/nav.html'
+
+    -if user_org
+      .org-header
+        -if user_orgs|length > 1
+          .pull-right.toggle
+            .icon-menu-2
+
+        .org
+          {{ user_org.name|truncatechars:30 }}
+
+        .other-orgs.hide
+          -for org in user_orgs
+            -if org != user_org
+              .org
+                %a.posterize{href:'{% url "orgs.org_choose"%}?organization={{org.pk}}'}
+                  {{ org.name }}
+
+    -block post-header
+    <!-- Content -->
+    -block page-container
+      #page-container.container-fluid
+        .page-content
+          -block page-top
+            .row-fluid
+              .span9
+                -block title
+                  -block title-icon
+                  -block title-text
+                    .title-text
+                      %h1
+                        {{title}}
+
+              .span3.top-form
+                .pull-right
+
+                  -block above-bar
+                    -block gear-menu
+                      -include "gear_links_include.haml"
+                    -block top-form
+
+            -block top-bar
+              %hr.top-bar
+
+          - if messages
+            .row-fluid
+              .span12
+                - block messages
+                  - if messages
+                    -for msg in messages
+                      %div{class:"alert alert-{{ message.tags }}"}
+                        {{ msg }}
+
+          -block content
+          -block post-content
+
+    #footerInnerSeperator
+    #footerOuterSeparator
+
+  -include "includes/frame_bottom.html"
+
+  // media associated with any form we are displaying
+  -if form
+    {{ form.media }}
+
+  -block script
+
+    {{block.super}}
+
+    :javascript
+      {% if user_org %}
+        {% if user_org.is_anon %}
+          var anon_org = true;
+        {% else %}
+          var anon_org = false;
+        {% endif %}
+      {% endif %}
+
+      function removalConfirmation(removal, buttonName) {
+        modal = new ConfirmationModal($('.' + removal + ' > .title').html(), $('.' + removal + ' > .body').html());
+        modal.addClass('alert');
+        modal.setListeners({onPrimary: function(){
+          $('#' + removal + '-form').click();
+        }}, false);
+        modal.setPrimaryButton(buttonName);
+        modal.show();
+      }
+
+      function formatContact(item) {
+        if (item.text.indexOf(" (") > -1) {
+         var name = item.text.split("(")[0];
+         if (name.indexOf(")") == name.length - 1) {
+           name = name.substring(0, name.length - 1);
+         }
+         return name;
+       }
+       return item.text;
+      }
+
+      function createContactChoice(term, data) {
+        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+          if (!isNaN(parseFloat(term)) && isFinite(term)) {
+            return {id:"number-" + term, text:term};
+          }
+        }
+      }
+
+      function initSelect2Fields() {
+        $('.select2tag').select2({
+          containerCssClass: 'select2-container',
+          tags:[], tokenSeparators: [","], formatNoMatches:function(term){return '';}
+        });
+
+        $('.select2tag').find("ul.select2-choices").sortable({
+          start: function() { $(".select2tag").select2("onSortStart"); },
+          update: function() { $(".select2tag").select2("onSortEnd"); }
+        });
+      }
+
+
+    -block modals
+      -include 'modal.haml'
+
+    -block extra-script
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/jquery.url.js"></script>
+
+    <form id="posterizer" method="post">
+      {% csrf_token %}
+    </form>
+
+    :javascript
+      $(document).ready(function() {
+        if (navigator.appVersion.indexOf("Win")!=-1) {
+          $("html").addClass("windows");
+        }
+
+        initSelect2Fields();
+
+        $(".btn").tooltip();
+
+        $('.org-header > .toggle').live('click', function(evt) {
+          evt.stopPropagation();
+          var header = $('.org-header');
+          if (header.hasClass('expanded')) {
+            header.removeClass('expanded');
+          } else {
+            header.addClass('expanded');
+          }
+        });
+
+        $('.org-header').live('click', function(evt) {
+          url = '{% url "orgs.org_home" %}';
+          evt.stopPropagation();
+          if (evt.ctrlKey || evt.metaKey){
+            window.open(url,'_blank')
+          } else {
+            window.location = url;
+          }
+
+        });
+
+        $('#top-menu li').hoverIntent({
+          over:function() {
+            // $('.submenu').hide();
+            $(this).find('.submenu-container').slideDown(250);
+            $(this).parents("#top-menu").addClass('expanded');
+            // $(this).find('.submenu').show();
+          },
+          out:function() {
+          $(this).find('.submenu-container').slideUp(200);
+          $(this).parents("#top-menu").removeClass('expanded');
+            //$(this).find('.submenu').hide();
+          },
+          timeout:300
+        });
+
+
+        $("a.posterize").click(function(event){
+          event.preventDefault();
+          event.stopPropagation();
+
+          var href = $(this).attr("href");
+          var url = $.url(href);
+
+          $("#posterizer").attr("action", url.attr("path"));
+
+          for (var key in url.param()){
+            $("#posterizer").append("<input type='hidden' name='" + key + "' value='" + url.param(key) + "'></input>");
+          }
+
+          $("#posterizer").submit();
+        });
+      });
+{% endblock body %}
+
+</html>
