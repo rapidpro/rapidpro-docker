@@ -161,7 +161,7 @@ services:
       - 8091:8091
     networks:
       - pro-network
-    command: ["mailroom", "-redis=redis://redis:${REDIS_PORT}/15", "-db=${DATABASE_URL}","-s3-media-bucket=${AWS_STORAGE_BUCKET_NAME}","-aws-access-key-id=${AWS_ACCESS_KEY_ID}", "-aws-secret-access-key=${AWS_SECRET_ACCESS_KEY}", "-fcm-key=${FCM_API_KEY}", "-elastic=${ELASTICSEARCH_URL}", "-address=mailroom"]
+    command: ["mailroom", "-redis=redis://redis:${REDIS_PORT}/15", "-db=${DATABASE_URL}","-s3-media-bucket=${AWS_STORAGE_BUCKET_NAME}","-aws-access-key-id=${AWS_ACCESS_KEY_ID}", "-aws-secret-access-key=${AWS_SECRET_ACCESS_KEY}", "-fcm-key=${FCM_API_KEY}", "-elastic=${ELASTICSEARCH_URL}", "-address=0.0.0.0", "-port=8091"]
   elasticsearch:
     image: elasticsearch:6.5.4
     restart: always
