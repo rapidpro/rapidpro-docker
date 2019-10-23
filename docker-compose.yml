@@ -17,7 +17,7 @@ services:
       - ALLOWED_HOSTS=192.168.29.192
       - TEMBA_HOST=192.168.29.192
       - DJANGO_DEBUG=off
-      - MAILROOM_URL=http://192.168.29.192:8090
+      - MAILROOM_URL=http://mailroom:8090
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=super-secret-key
@@ -56,17 +56,17 @@ services:
     environment:
       - POSTGRES_DB=rapidpro
   courier:
-   image: praekeltfoundation/courier
-   depends_on:
-     - rapidpro
-   links:
-     - redis
-     - postgresql
-   environment:
-     - COURIER_DOMAIL=192.168.29.192
-     - COURIER_SPOOL_DIR=/tmp/courier/
-     - COURIER_DB=postgres://postgres:postgres@postgresql/rapidpro
-     - COURIER_REDIS=redis://redis:6379/8
+    image: praekeltfoundation/courier
+    depends_on:
+      - rapidpro
+    links:
+      - redis
+      - postgresql
+    environment:
+      - COURIER_DOMAIN=${RAPIDPRO_HOST:-locahost}
+      - COURIER_SPOOL_DIR=/tmp/courier/
+      - COURIER_DB=postgres://postgres:postgres@postgresql/rapidpro
+      - COURIER_REDIS=redis://redis:6379/8
   mailroom:
     container_name: mailroom
     build:
@@ -76,8 +76,8 @@ services:
       - redis
       - postgresql
     environment:
-      - MAILROOM_ADDRESS=192.168.29.192
-      - MAILROOM_DOMAIN=192.168.29.192
+      - MAILROOM_ADDRESS=0.0.0.0
+      - MAILROOM_DOMAIN=${RAPIDPRO_HOST:-localhost}
       - MAILROOM_REDIS=redis://redis:6379/15
       - MAILROOM_DB=postgres://postgres:postgres@postgresql/rapidpro?sslmode=disable
       - MAILROOM_LOG_LEVEL=debug
