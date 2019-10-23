@@ -63,7 +63,7 @@ services:
       - redis
       - postgresql
     environment:
-      - COURIER_DOMAIN=${RAPIDPRO_HOST:-locahost}
+      - COURIER_DOMAIN=192.168.29.192
       - COURIER_SPOOL_DIR=/tmp/courier/
       - COURIER_DB=postgres://postgres:postgres@postgresql/rapidpro
       - COURIER_REDIS=redis://redis:6379/8
@@ -77,7 +77,7 @@ services:
       - postgresql
     environment:
       - MAILROOM_ADDRESS=0.0.0.0
-      - MAILROOM_DOMAIN=${RAPIDPRO_HOST:-localhost}
+      - MAILROOM_DOMAIN=192.168.29.192
       - MAILROOM_REDIS=redis://redis:6379/15
       - MAILROOM_DB=postgres://postgres:postgres@postgresql/rapidpro?sslmode=disable
       - MAILROOM_LOG_LEVEL=debug
