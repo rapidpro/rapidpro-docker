@@ -13,9 +13,9 @@ services:
     ports:
       - '8000:8000'
     environment:
-      - DOMAIN_NAME=192.168.29.192
-      - ALLOWED_HOSTS=192.168.29.192
-      - TEMBA_HOST=192.168.29.192
+      - DOMAIN_NAME=${RAPIDPRO_IP_ADDRESS}
+      - ALLOWED_HOSTS=${RAPIDPRO_IP_ADDRESS}
+      - TEMBA_HOST=${RAPIDPRO_IP_ADDRESS}
       - DJANGO_DEBUG=off
       - MAILROOM_URL=http://mailroom:8090
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
@@ -111,7 +111,7 @@ services:
       - redis
       - postgresql
     environment:
-      - COURIER_DOMAIN=192.168.29.192
+      - COURIER_DOMAIN=${RAPIDPRO_IP_ADDRESS}
       - COURIER_SPOOL_DIR=/tmp/courier/
       - COURIER_DB=postgres://postgres:postgres@postgresql/rapidpro
       - COURIER_REDIS=redis://redis:6379/8
@@ -127,7 +127,7 @@ services:
       - postgresql
     environment:
       - MAILROOM_ADDRESS=0.0.0.0
-      - MAILROOM_DOMAIN=192.168.29.192
+      - MAILROOM_DOMAIN=${RAPIDPRO_IP_ADDRESS}
       - MAILROOM_REDIS=redis://redis:6379/15
       - MAILROOM_DB=postgres://postgres:postgres@postgresql/rapidpro?sslmode=disable
       - MAILROOM_LOG_LEVEL=debug
