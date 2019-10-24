@@ -6,7 +6,7 @@
 version: '2'
 services:
   rapidpro:
-    image: sdehaan/rapidpro:v4
+    image: praekeltfoundation/rapidpro:v5.0.9
     depends_on:
       - redis
       - postgresql
@@ -26,24 +26,28 @@ services:
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
   celery_base:
-    image: sdehaan/rapidpro:v4
+    image: praekeltfoundation/rapidpro:v5.0.9
     depends_on:
       - rapidpro
     links:
       - redis
       - postgresql
+      - mailroom
+      - elasticsearch
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=super-secret-key
     command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,flows"]
   celery_msgs:
-    image: sdehaan/rapidpro:v4
+    image: praekeltfoundation/rapidpro:v5.0.9
     depends_on:
       - rapidpro
     links:
       - redis
       - postgresql
+      - mailroom
+      - elasticsearch
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
       - REDIS_URL=redis://redis:6379/0
@@ -55,8 +59,52 @@ services:
     image: mdillon/postgis:9.6
     environment:
       - POSTGRES_DB=rapidpro
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.0
+    environment:
+      - bootstrap.memory_lock=true
+      - ES_HEAP_SIZE=128m
+      - ES_JAVA_OPTS=-Xms128m -Xmx128m
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+  rp-indexer:
+    container_name: rp-indexer
+    build:
+      context: .
+      dockerfile: rp-indexer.dockerfile
+      args:
+        - RP_INDEXER_VERSION=2.0.0
+    depends_on:
+     - rapidpro
+    links:
+      - postgresql
+      - elasticsearch
+    environment:
+      - INDEXER_DB=postgresql://postgres:postgres@postgresql/rapidpro?sslmode=disable
+      - INDEXER_ELASTIC_URL=http://elastic:changeme@elasticsearch:9200
+  rp-archiver:
+    container_name: rp-archiver
+    build:
+      context: .
+      dockerfile: rp-archiver.dockerfile
+      args:
+        - RP_ARCHIVER_VERSION=2.0.0
+    depends_on:
+      - rapidpro
+    links:
+      - postgresql
+    environment:
+      - ARCHIVER_DB=postgresql://postgres:postgres@postgresql/rapidpro?sslmode=disable
   courier:
-    image: praekeltfoundation/courier
+    container_name: courier
+    build:
+      context: .
+      dockerfile: courier.dockerfile
+      args:
+        - COURIER_VERSION=2.0.2
     depends_on:
       - rapidpro
     links:
@@ -72,6 +120,8 @@ services:
     build:
       context: .
       dockerfile: mailroom.dockerfile
+      args:
+        - MAILROOM_VERSION=2.0.9
     links:
       - redis
       - postgresql
