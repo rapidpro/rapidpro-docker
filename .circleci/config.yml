@@ -31,6 +31,7 @@ jobs:
             docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/p4-engage:${VERSION_TAG} -f Dockerfile-engage .
             docker push istresearch/p4-engage:${VERSION_TAG}
             if [[ $BRANCH == develop ]]; then
+              docker tag istresearch/p4-engage:${VERSION_TAG} istresearch/p4-engage:ci-develop
               docker push istresearch/p4-engage:ci-develop
             fi
 
