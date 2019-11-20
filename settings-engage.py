@@ -247,3 +247,29 @@ REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
     "v2.runs": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.api": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    "root": {"level": "WARNING", "handlers": ["default"]},
+    'formatters': {
+        'json': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            'format': '%(created)f %(asctime)s %(levelname)s %(name)s %(message)s',
+        },
+    },
+    'handlers': {
+        'default': {
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'json'
+        },
+    },
+    "loggers": {
+        'django': {'handlers': ['default'],'level': 'INFO'},
+        '': {'handlers': ['default'], 'level': 'INFO'},
+        "pycountry": {"level": "ERROR", "handlers": ["default"], "propagate": False},
+        "django.security.DisallowedHost": {"handlers": ["default"], "propagate": False},
+        "django.db.backends": {"level": "ERROR", "handlers": ["default"], "propagate": False},
+    },
+}
