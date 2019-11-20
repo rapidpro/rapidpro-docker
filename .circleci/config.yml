@@ -30,6 +30,9 @@ jobs:
             # Build the container with Engage branding
             docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/p4-engage:${VERSION_TAG} -f Dockerfile-engage .
             docker push istresearch/p4-engage:${VERSION_TAG}
+            if [[ $BRANCH == develop ]]; then
+              docker push istresearch/p4-engage:ci-develop
+            fi
 
             # Build the container with generic branding
             docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/rapidpro:${VERSION_TAG}-generic -f Dockerfile-generic .
