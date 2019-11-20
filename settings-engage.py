@@ -106,7 +106,10 @@ if AWS_STORAGE_BUCKET_NAME:
         DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 if not AWS_STATIC:
-    STATIC_URL = '/sitestatic/'
+    if SUB_DIR is not None:
+        STATIC_URL = '/' + SUB_DIR + '/sitestatic/'
+    else:
+        STATIC_URL = '/sitestatic/'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     MIDDLEWARE = list(MIDDLEWARE) + ['whitenoise.middleware.WhiteNoiseMiddleware']
 
