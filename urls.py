@@ -20,8 +20,13 @@ from temba.utils.analytics import init_analytics
 # javascript translation packages
 js_info_dict = {"packages": ()}  # this is empty due to the fact that all translation are in one folder
 
-if hasattr(settings, 'SUB_DIR'):
-    VHOST_NAME = settings.SUB_DIR
+VHOST_NAME = ""
+SUB_DIR = getattr(settings, 'SUB_DIR', None)
+if SUB_DIR is not None and len(SUB_DIR) > 0:
+    if settings.SUB_DIR[-1:] == "/":
+        VHOST_NAME = SUB_DIR
+    else:
+        VHOST_NAME = SUB_DIR + "/"
 
 urlpatterns = [
     url(r"^", include("temba.public.urls")),
