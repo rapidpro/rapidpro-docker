@@ -17,6 +17,9 @@ from django.urls import base
 AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
 
+if SUB_DIR is not None and len(SUB_DIR) > 0:
+    MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
+
 STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 MAILROOM_URL=env('MAILROOM_URL', 'http://localhost:8000')
 
