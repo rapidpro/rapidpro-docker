@@ -245,6 +245,7 @@ REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
     "v2": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.contacts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.messages": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.broadcasts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.runs": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.api": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
 }
