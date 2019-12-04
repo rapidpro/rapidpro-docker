@@ -29,7 +29,6 @@ if SUB_DIR is not None and len(SUB_DIR) > 0:
         VHOST_NAME = SUB_DIR + "/"
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url="/{}/".format(VHOST_NAME), permanent=False)),
     url(r"^{}".format(VHOST_NAME), include("temba.public.urls")),
     url(r"^{}".format(VHOST_NAME), include("temba.msgs.urls")),
     url(r"^{}".format(VHOST_NAME), include("temba.apks.urls")),
@@ -55,9 +54,12 @@ urlpatterns = [
     url(r"^{}jsi18n/$".format(VHOST_NAME), JavaScriptCatalog.as_view(), js_info_dict, name="django.views.i18n.javascript_catalog"),
 ]
 
+# add a root url redirect when SUB_DIR not empty
+if len(VHOST_NAME) > 1:
+    url(r'^$', RedirectView.as_view(url="/{}/".format(VHOST_NAME), permanent=False)),
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
 
 # import any additional urls
 for app in settings.APP_URLS:  # pragma: needs cover
