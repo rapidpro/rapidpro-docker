@@ -17,6 +17,9 @@ from django.urls import base
 AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
 
+if SUB_DIR is not None and len(SUB_DIR) > 0:
+    MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
+
 STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 MAILROOM_URL=env('MAILROOM_URL', 'http://localhost:8000')
 
@@ -106,7 +109,10 @@ if AWS_STORAGE_BUCKET_NAME:
         DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 if not AWS_STATIC:
-    STATIC_URL = '/sitestatic/'
+    if SUB_DIR is not None:
+        STATIC_URL = '/' + SUB_DIR + '/sitestatic/'
+    else:
+        STATIC_URL = '/sitestatic/'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     MIDDLEWARE = list(MIDDLEWARE) + ['whitenoise.middleware.WhiteNoiseMiddleware']
 
@@ -140,34 +146,38 @@ SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
 IS_PROD = env('IS_PROD', 'off') == 'on'
 
-BRANDING = {
-    'engage': {
-        'slug': env('BRANDING_SLUG', 'pulse'),
-        'name': env('BRANDING_NAME', 'Pulse'),
-        'org': env('BRANDING_ORG', 'IST'),
-        'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
-        'styles': ['brands/rapidpro/font/style.css', 'brands/engage/less/style.less', ],
-        'welcome_topup': 1000,
-        'email': env('BRANDING_EMAIL', 'pulse@istresearch.com'),
-        'support_email': env('BRANDING_SUPPORT_EMAIL', 'pulse@istresearch.com'),
-        'link': env('BRANDING_LINK', 'https://istresearch.com'),
-        'api_link': env('BRANDING_API_LINK', 'https://api.rapidpro.io'),
-        'docs_link': env('BRANDING_DOCS_LINK', 'http://docs.rapidpro.io'),
-        'domain': HOSTNAME,
-        'favico': env('BRANDING_FAVICO', 'brands/engage/favicon.ico'),
-        'splash': env('BRANDING_SPLASH', 'brands/engage/splash.png'),
-        'logo': env('BRANDING_LOGO', 'brands/engage/logo.png'),
-        'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
-        "flow_types": ["M", "V", "S"],  # see Flow.TYPE_MESSAGE, Flow.TYPE_VOICE, Flow.TYPE_SURVEY
-        'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
-        'bundles': [],
-        'welcome_packs': [dict(size=5000, name="Demo Account"), dict(size=100000, name="UNICEF Account")],
-        'description': _("Addressing the most urgent human security issues faced by the world’s vulnerable populations."),
-        'credits': _("Copyright &copy; 2012-%s IST Research Corp, and others. All Rights Reserved." % (
-            datetime.now().strftime('%Y')
-        ))
-    }
+try:
+    BRANDING
+except NameError:
+    BRANDING = {}
+    
+BRANDING['engage'] = {
+    'slug': env('BRANDING_SLUG', 'pulse'),
+    'name': env('BRANDING_NAME', 'Pulse'),
+    'org': env('BRANDING_ORG', 'IST'),
+    'colors': dict([rule.split('=') for rule in env('BRANDING_COLORS', 'primary=#0c6596').split(';')]),
+    'styles': ['brands/rapidpro/font/style.css', 'brands/engage/less/style.less', ],
+    'welcome_topup': 1000,
+    'email': env('BRANDING_EMAIL', 'pulse@istresearch.com'),
+    'support_email': env('BRANDING_SUPPORT_EMAIL', 'pulse@istresearch.com'),
+    'link': env('BRANDING_LINK', 'https://istresearch.com'),
+    'api_link': env('BRANDING_API_LINK', 'https://api.rapidpro.io'),
+    'docs_link': env('BRANDING_DOCS_LINK', 'http://docs.rapidpro.io'),
+    'domain': HOSTNAME,
+    'favico': env('BRANDING_FAVICO', 'brands/engage/favicon.ico'),
+    'splash': env('BRANDING_SPLASH', 'brands/engage/splash.png'),
+    'logo': env('BRANDING_LOGO', 'brands/engage/logo.png'),
+    'allow_signups': env('BRANDING_ALLOW_SIGNUPS', True),
+    "flow_types": ["M", "V", "S"],  # see Flow.TYPE_MESSAGE, Flow.TYPE_VOICE, Flow.TYPE_SURVEY
+    'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
+    'bundles': [],
+    'welcome_packs': [dict(size=5000, name="Demo Account"), dict(size=100000, name="UNICEF Account")],
+    'description': _("Addressing the most urgent human security issues faced by the world’s vulnerable populations."),
+    'credits': _("Copyright &copy; 2012-%s IST Research Corp, and others. All Rights Reserved." % (
+        datetime.now().strftime('%Y')
+    ))
 }
+
 DEFAULT_BRAND = 'engage'
 
 if 'SUB_DIR' in locals() and SUB_DIR is not None: 
@@ -185,6 +195,8 @@ for brand in BRANDING.values():
     COMPRESS_OFFLINE_CONTEXT.append(context)
 
 CHANNEL_TYPES = [
+    "temba.channels.types.bandwidth_international.BandwidthInternationalType",
+    "temba.channels.types.bandwidth.BandwidthType",
     "temba.channels.types.arabiacell.ArabiaCellType",
     "temba.channels.types.whatsapp.WhatsAppType",
     "temba.channels.types.twilio.TwilioType",
@@ -230,3 +242,41 @@ CHANNEL_TYPES = [
 
 # how many sequential contacts on import triggers suspension
 SEQUENTIAL_CONTACTS_THRESHOLD = env('SEQUENTIAL_CONTACTS_THRESHOLD', 5000)
+
+# -----------------------------------------------------------------------------------
+# Django-rest-framework configuration
+# -----------------------------------------------------------------------------------
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
+    "v2": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.contacts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.messages": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.broadcasts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.runs": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.api": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    "root": {"level": "WARNING", "handlers": ["default"]},
+    'formatters': {
+        'json': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            'format': '%(created)f %(asctime)s %(levelname)s %(name)s %(message)s',
+        },
+    },
+    'handlers': {
+        'default': {
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'json'
+        },
+    },
+    "loggers": {
+        'django': {'handlers': ['default'],'level': 'INFO'},
+        '': {'handlers': ['default'], 'level': 'INFO'},
+        "pycountry": {"level": "ERROR", "handlers": ["default"], "propagate": False},
+        "django.security.DisallowedHost": {"handlers": ["default"], "propagate": False},
+        "django.db.backends": {"level": "ERROR", "handlers": ["default"], "propagate": False},
+    },
+}

@@ -30,6 +30,10 @@ jobs:
             # Build the container with Engage branding
             docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/p4-engage:${VERSION_TAG} -f Dockerfile-engage .
             docker push istresearch/p4-engage:${VERSION_TAG}
+            if [[ $BRANCH == develop ]]; then
+              docker tag istresearch/p4-engage:${VERSION_TAG} istresearch/p4-engage:ci-develop
+              docker push istresearch/p4-engage:ci-develop
+            fi
 
             # Build the container with generic branding
             docker build --build-arg VERSION_TAG=$VERSION_TAG -t istresearch/rapidpro:${VERSION_TAG}-generic -f Dockerfile-generic .
@@ -39,7 +43,7 @@ jobs:
           command: |
             BRANCH=${CIRCLE_BRANCH#*/}
             if [[ $BRANCH == develop ]] || [[ $BRANCH == master ]]; then
-              curl --user ${CIRCLE_API_USER_TOKEN}: --data build_parameters[CIRCLE_JOB]=eks_deploy --data build_parameters[DEPLOY_PROJECT]=pulse-engage-docker https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/p4-deploy/tree/develop
+              curl --user ${CIRCLE_API_USER_TOKEN}: --data build_parameters[CIRCLE_JOB]=eks_deploy --data build_parameters[DEPLOY_PROJECT]=pulse-engage https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/p4-deploy/tree/develop
             else
               echo "Skipping deploy step"
             fi

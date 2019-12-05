@@ -17,6 +17,9 @@ from django.urls import base
 AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
 
+if SUB_DIR is not None and len(SUB_DIR) > 0:
+    MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
+
 STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 MAILROOM_URL=env('MAILROOM_URL', 'http://localhost:8000')
 
@@ -106,7 +109,10 @@ if AWS_STORAGE_BUCKET_NAME:
         DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 if not AWS_STATIC:
-    STATIC_URL = '/sitestatic/'
+    if SUB_DIR is not None:
+        STATIC_URL = '/' + SUB_DIR + '/sitestatic/'
+    else:
+        STATIC_URL = '/sitestatic/'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     MIDDLEWARE = list(MIDDLEWARE) + ['whitenoise.middleware.WhiteNoiseMiddleware']
 
@@ -183,6 +189,8 @@ for brand in BRANDING.values():
     COMPRESS_OFFLINE_CONTEXT.append(context)
 
 CHANNEL_TYPES = [
+    "temba.channels.types.bandwidth_international.BandwidthInternationalType",
+    "temba.channels.types.bandwidth.BandwidthType",
     "temba.channels.types.arabiacell.ArabiaCellType",
     "temba.channels.types.whatsapp.WhatsAppType",
     "temba.channels.types.twilio.TwilioType",
@@ -228,3 +236,41 @@ CHANNEL_TYPES = [
 
 # how many sequential contacts on import triggers suspension
 SEQUENTIAL_CONTACTS_THRESHOLD = env('SEQUENTIAL_CONTACTS_THRESHOLD', 5000)
+
+# -----------------------------------------------------------------------------------
+# Django-rest-framework configuration
+# -----------------------------------------------------------------------------------
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
+    "v2": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.contacts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.messages": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.broadcasts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.runs": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.api": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    "root": {"level": "WARNING", "handlers": ["default"]},
+    'formatters': {
+        'json': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            'format': '%(created)f %(asctime)s %(levelname)s %(name)s %(message)s',
+        },
+    },
+    'handlers': {
+        'default': {
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'json'
+        },
+    },
+    "loggers": {
+        'django': {'handlers': ['default'],'level': 'INFO'},
+        '': {'handlers': ['default'], 'level': 'INFO'},
+        "pycountry": {"level": "ERROR", "handlers": ["default"], "propagate": False},
+        "django.security.DisallowedHost": {"handlers": ["default"], "propagate": False},
+        "django.db.backends": {"level": "ERROR", "handlers": ["default"], "propagate": False},
+    },
+}
