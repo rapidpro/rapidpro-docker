@@ -133,10 +133,11 @@ SEND_AIRTIME = env('SEND_AIRTIME', 'off') == 'on'
 SEND_CALLS = env('SEND_CALLS', 'off') == 'on'
 IP_ADDRESSES = tuple(filter(None, env('IP_ADDRESSES', '').split(',')))
 
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'server@temba.io')
+FLOW_FROM_EMAIL = env('FLOW_FROM_EMAIL', "no-reply@temba.io")
 EMAIL_HOST = env('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', 'server@temba.io')
 EMAIL_PORT = int(env('EMAIL_PORT', 25))
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'server@temba.io')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
 SECURE_PROXY_SSL_HEADER = (
