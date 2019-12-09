@@ -56,7 +56,7 @@ urlpatterns = [
 
 # add a root url redirect when SUB_DIR not empty
 if len(VHOST_NAME) > 1:
-    url(r'^$', RedirectView.as_view(url="/{}/".format(VHOST_NAME), permanent=False)),
+    url(r'^$', RedirectView.as_view(url="/{}/".format(VHOST_NAME), permanent=True)),
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
