@@ -138,8 +138,10 @@ EMAIL_HOST = env('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', 'server@temba.io')
 EMAIL_PORT = int(env('EMAIL_PORT', 25))
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'server@temba.io')
+FLOW_FROM_EMAIL = env('FLOW_FROM_EMAIL', "no-reply@temba.io")
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
+EMAIL_USE_SSL = env('EMAIL_USE_SSL', 'off') == 'on'
 SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
 IS_PROD = env('IS_PROD', 'off') == 'on'
