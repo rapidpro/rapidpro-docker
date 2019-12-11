@@ -17,6 +17,9 @@ from django.urls import base
 AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
 
+if SUB_DIR is not None and len(SUB_DIR) > 0:
+    MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
+
 STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 MAILROOM_URL=env('MAILROOM_URL', 'http://localhost:8000')
 
@@ -248,6 +251,7 @@ REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
     "v2": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.contacts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.messages": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2.broadcasts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.runs": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
     "v2.api": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
 }
