@@ -283,3 +283,5 @@ LOGGING = {
         "django.db.backends": {"level": "ERROR", "handlers": ["default"], "propagate": False},
     },
 }
+
+ORG_SEARCH_CONTEXT = []
