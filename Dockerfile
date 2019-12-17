@@ -52,11 +52,6 @@ ARG RAPIDPRO_REPO
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
 ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-rapidpro/rapidpro}
 
-#RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-#    wget -O rapidpro.tar.gz "https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-#    tar -xf rapidpro.tar.gz --strip-components=1 && \
-#    rm rapidpro.tar.gz
-
 # Build Python virtualenv
 COPY requirements.txt /app/requirements.txt
 RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.1.1" \
