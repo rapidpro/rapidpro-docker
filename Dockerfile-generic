@@ -50,12 +50,7 @@ RUN set -ex \
 ARG RAPIDPRO_VERSION
 ARG RAPIDPRO_REPO
 ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
-ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-rapidpro/rapidpro}
-
-#RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-#    wget -O rapidpro.tar.gz "https://github.com/$RAPIDPRO_REPO/archive/${RAPIDPRO_VERSION}.tar.gz" && \
-#    tar -xf rapidpro.tar.gz --strip-components=1 && \
-#    rm rapidpro.tar.gz
+ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-istresearch/rapidpro}
 
 # Build Python virtualenv
 COPY requirements.txt /app/requirements.txt
@@ -72,7 +67,7 @@ RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.
     && apk del .build-deps && rm -rf /var/cache/apk/*
 
 # TODO should this be in startup.sh?
-RUN cd /rapidpro && npm install npm@latest && npm install && bower install --allow-root
+RUN cd /rapidpro && npm install npm@latest && npm install
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
 # Install `libmagic` (needed since rapidpro v3.0.64)
