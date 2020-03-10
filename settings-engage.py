@@ -248,12 +248,12 @@ SEQUENTIAL_CONTACTS_THRESHOLD = env('SEQUENTIAL_CONTACTS_THRESHOLD', 5000)
 # Django-rest-framework configuration
 # -----------------------------------------------------------------------------------
 REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
-    "v2": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
-    "v2.contacts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
-    "v2.messages": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
-    "v2.broadcasts": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
-    "v2.runs": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
-    "v2.api": str(env('API_THROTTLE_RATE', 250000)) + "/hour",
+    "v2": str(env('API_DEFAULT_THROTTLE_RATE', 2500)) + "/hour",
+    "v2.contacts": str(env('API_CONTACTS_THROTTLE_RATE', 2500)) + "/hour",
+    "v2.messages": str(env('API_MESSAGES_THROTTLE_RATE', 2500)) + "/hour",
+    "v2.broadcasts": str(env('API_BROADCAST_THROTTLE_RATE', 36000)) + "/hour",
+    "v2.runs": str(env('API_RUNS_THROTTLE_RATE', 2500)) + "/hour",
+    "v2.api": str(env('API_API_THROTTLE_RATE', 2500)) + "/hour",
 }
 
 LOGGING = {
