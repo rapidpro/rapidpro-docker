@@ -23,7 +23,6 @@ CHAT_MODE_CHOICES = (("WA", _("WhatsApp")), ("TG", _("Telegram")), ("SMS", _("SM
 if SUB_DIR is not None and len(SUB_DIR) > 0:
     MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
 
-STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 MAILROOM_URL=env('MAILROOM_URL', 'http://localhost:8000')
 
 INSTALLED_APPS = (
@@ -80,6 +79,7 @@ AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', '')
 AWS_LOCATION = env('AWS_LOCATION', '')
 AWS_STATIC = env('AWS_STATIC', bool(AWS_STORAGE_BUCKET_NAME))
 AWS_MEDIA = env('AWS_MEDIA', bool(AWS_STORAGE_BUCKET_NAME))
+STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 
 if AWS_STORAGE_BUCKET_NAME:
     # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
