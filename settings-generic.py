@@ -17,6 +17,9 @@ from django.urls import base
 AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
 
+#Use CHAT_MODE_CHOICES to configure the chatmodes that are available to the Postmaster channel
+CHAT_MODE_CHOICES = (("WA", _("WhatsApp")), ("TG", _("Telegram")), ("SMS", _("SMS")))
+
 if SUB_DIR is not None and len(SUB_DIR) > 0:
     MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
 
