@@ -3,7 +3,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'temba.settings'
 import django
 django.setup()
 from django.contrib.auth.management.commands.createsuperuser import get_user_model
-from django.contrib.auth.models import DoesNotExist
+from django.core.exceptions import DoesNotExist
 from temba.orgs.models import Org
 
 try:
