@@ -3,13 +3,31 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'temba.settings'
 import django
 django.setup()
 from django.contrib.auth.management.commands.createsuperuser import get_user_model
-if get_user_model().objects.filter(username=os.environ.get('ADMIN_NAME')): 
+from temba.orgs.models import Org
+
+superuser = get_user_model().objects.get(username=os.getenv('ADMIN_EMAIL'))
+if superuser:
     print('Super user already exists. SKIPPING.')
-elif os.environ.get('ADMIN_NAME') and os.environ.get('ADMIN_EMAIL') and os.environ.get('ADMIN_PSWD'):
+elif os.getenv('ADMIN_NAME') and os.getenv('ADMIN_EMAIL') and os.getenv('ADMIN_PSWD') and os.getenv('ADMIN_ORG'):
     print('Creating super user...')
-    get_user_model()._default_manager.db_manager('default').create_superuser(
-            username=os.environ.get('ADMIN_NAME'),
-            email=os.environ.get('ADMIN_EMAIL'),
-            password=os.environ.get('ADMIN_PSWD')
+    superuser = get_user_model()._default_manager.db_manager('default').create_superuser(
+            username=os.getenv('ADMIN_EMAIL'),
+            email=os.getenv('ADMIN_EMAIL'),
+            first_name=os.getenv('ADMIN_NAME'),
+            password=os.getenv('ADMIN_PSWD')
     )
     print('Super user created.')
+    
+if org.objects.filter(name=os.getenv('ADMIN_ORG')):
+    print('Admin org already exists. SKIPPING.')
+elif os.getenv('ADMIN_ORG'):
+    print('Creating admin org...')
+    org = Org.objects.create(
+        name=os.getenv('ADMIN_ORG'),
+        timezone='UTC',
+        created_by=superuser,
+        modified_by=superuser
+    )
+    org.administrators.add(superuser)
+    print('Admin org created.')
+
