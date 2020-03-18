@@ -102,3 +102,6 @@ LABEL org.label-schema.name="Engage" \
       org.label-schema.schema-version="1.0"
 
 CMD ["/startup.sh"]
+
+COPY stack/startup.py /rapidpro/
+
