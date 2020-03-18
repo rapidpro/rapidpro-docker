@@ -20,7 +20,7 @@ except ObjectDoesNotExist:
         )
         print('Super user created.')
     
-if org.objects.filter(name=os.getenv('ADMIN_ORG')):
+if Org.objects.filter(name=os.getenv('ADMIN_ORG')):
     print('Admin org already exists. SKIPPING.')
 elif superuser and os.getenv('ADMIN_ORG'):
     print('Creating admin org...')
