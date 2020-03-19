@@ -34,6 +34,8 @@ TYPE=${1:-rapidpro}
 if [ "$TYPE" = "celery" ]; then
 	$CELERY_CMD
 elif [ "$TYPE" = "rapidpro" ]; then
-	/venv/bin/python /rapidpro/startup.py
+    echo 'MANAGEPY_STARTUP_TASKS?' ; if [ "x$MANAGEPY_STARTUP_TASKS" = "xon" ]; then
+	    /venv/bin/python /rapidpro/startup.py
+    fi
 	$STARTUP_CMD
 fi

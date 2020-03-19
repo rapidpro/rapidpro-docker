@@ -31,5 +31,6 @@ elif superuser and os.getenv('ADMIN_ORG'):
         modified_by=superuser
     )
     org.administrators.add(superuser)
+    org.initialize()
     print('Admin org created.')
 
