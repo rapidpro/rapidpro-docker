@@ -17,10 +17,12 @@ from django.urls import base
 AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
 
+#Use CHAT_MODE_CHOICES to configure the chatmodes that are available to the Postmaster channel
+CHAT_MODE_CHOICES = (("WA", _("WhatsApp")), ("TG", _("Telegram")), ("SMS", _("SMS")))
+
 if SUB_DIR is not None and len(SUB_DIR) > 0:
     MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
 
-STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 MAILROOM_URL=env('MAILROOM_URL', 'http://localhost:8000')
 
 INSTALLED_APPS = (
@@ -77,6 +79,7 @@ AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', '')
 AWS_LOCATION = env('AWS_LOCATION', '')
 AWS_STATIC = env('AWS_STATIC', bool(AWS_STORAGE_BUCKET_NAME))
 AWS_MEDIA = env('AWS_MEDIA', bool(AWS_STORAGE_BUCKET_NAME))
+STORAGE_URL = "https://"+AWS_BUCKET_DOMAIN
 
 if AWS_STORAGE_BUCKET_NAME:
     # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
@@ -193,6 +196,7 @@ for brand in BRANDING.values():
     COMPRESS_OFFLINE_CONTEXT.append(context)
 
 CHANNEL_TYPES = [
+    #"temba.channels.types.postmaster.PostmasterType",
     "temba.channels.types.bandwidth_international.BandwidthInternationalType",
     "temba.channels.types.bandwidth.BandwidthType",
     "temba.channels.types.arabiacell.ArabiaCellType",
