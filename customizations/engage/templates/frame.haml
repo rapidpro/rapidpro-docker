@@ -266,7 +266,7 @@
     #header
       &nbsp;
 
-    %a#big-logo.logo{href:"{% if brand.logo_link %}{{brand.logo_link}}{%else%}{%endif%}", title:"{{brand.name}}"}
+    %a#big-logo.logo{href:"{% if brand.logo_link %}{{brand.logo_link}}{%else%}/{%endif%}", title:"{{brand.name}}"}
       .name
         {{brand.name}}
       %img{ src:"{{ STATIC_URL }}brands/engage/images/logo.png" }
