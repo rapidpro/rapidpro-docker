@@ -155,6 +155,7 @@ except NameError:
     BRANDING = {}
     
 BRANDING['engage'] = {
+    'logo_link': env('BRANDING_LOGO_LINK', '/'),
     'slug': env('BRANDING_SLUG', 'pulse'),
     'name': env('BRANDING_NAME', 'Pulse'),
     'org': env('BRANDING_ORG', 'IST'),
