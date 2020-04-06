@@ -155,7 +155,7 @@ except NameError:
     BRANDING = {}
     
 BRANDING['engage'] = {
-    'logo_link': env('BRANDING_LOGO_LINK', '/{}/'.format(SUBDIR) if SUB_DIR is not None else '/'),
+    'logo_link': env('BRANDING_LOGO_LINK', '/{}/'.format(SUB_DIR) if SUB_DIR is not None else '/'),
     'slug': env('BRANDING_SLUG', 'pulse'),
     'name': env('BRANDING_NAME', 'Pulse'),
     'org': env('BRANDING_ORG', 'IST'),

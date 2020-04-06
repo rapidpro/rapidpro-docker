@@ -151,7 +151,7 @@ IS_PROD = env('IS_PROD', 'off') == 'on'
 
 BRANDING = {
     "rapidpro.io": {
-	"logo_link": env('BRANDING_LOGO_LINK', '/'),
+	"logo_link": env('BRANDING_LOGO_LINK', '/{}/'.format(SUB_DIR) if SUB_DIR is not None else '/'),
         "slug": env('BRANDING_SLUG', "rapidpro"),
         "name": env('BRANDING_NAME', "RapidPro"),
         "org": env('BRANDING_ORG', "UNICEF"),
