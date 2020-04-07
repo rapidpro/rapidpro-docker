@@ -13,6 +13,7 @@ services:
     ports:
       - '${HOSTPORT}:8000'
     environment:
+      - BRANDING_LOGO_LINK
       #- SUB_DIR=ist
       - RAPIDPRO_VERSION
       - RAPIDPRO_REPO

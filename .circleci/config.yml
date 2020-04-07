@@ -2,11 +2,15 @@ version: 2
 jobs:
   build:
     docker:
-      - image: docker:18.03.0
+      - image: docker:19.03.0 
     steps:
+      - run:
+            name: Install Prereqs
+            command: |
+              apk add --update git
       - checkout
       - setup_remote_docker:
-          docker_layer_caching: false
+          docker_layer_caching: true
       - run:
           name: Build 
           command: |

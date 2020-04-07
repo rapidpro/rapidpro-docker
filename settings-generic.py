@@ -17,6 +17,9 @@ from django.urls import base
 AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
 
+#Use CHAT_MODE_CHOICES to configure the chatmodes that are available to the Postmaster channel
+CHAT_MODE_CHOICES = (("WA", _("WhatsApp")), ("TG", _("Telegram")), ("SMS", _("SMS")))
+
 if SUB_DIR is not None and len(SUB_DIR) > 0:
     MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
 
@@ -155,6 +158,7 @@ except NameError:
     BRANDING = {}
 
 BRANDING['generic'] = {
+    'logo_link': env('BRANDING_LOGO_LINK', '/{}/'.format(SUB_DIR) if SUB_DIR is not None else '/'), 
     'slug': env('BRANDING_SLUG', 'engage'),
     'name': env('BRANDING_NAME', 'Engage'),
     'org': env('BRANDING_ORG', 'IST'),
@@ -196,6 +200,7 @@ for brand in BRANDING.values():
     COMPRESS_OFFLINE_CONTEXT.append(context)
 
 CHANNEL_TYPES = [
+    #"temba.channels.types.postmaster.PostmasterType",
     "temba.channels.types.bandwidth_international.BandwidthInternationalType",
     "temba.channels.types.bandwidth.BandwidthType",
     "temba.channels.types.arabiacell.ArabiaCellType",
@@ -233,7 +238,7 @@ CHANNEL_TYPES = [
     "temba.channels.types.telegram.TelegramType",
     "temba.channels.types.twiml_api.TwimlAPIType",
     "temba.channels.types.twitter.TwitterType",
-    "temba.channels.types.twitter_activity.TwitterActivityType",
+    "temba.channels.types.twitter_legacy.TwitterLegacyType",
     "temba.channels.types.verboice.VerboiceType",
     "temba.channels.types.viber_public.ViberPublicType",
     "temba.channels.types.wechat.WeChatType",
@@ -243,6 +248,9 @@ CHANNEL_TYPES = [
 
 # how many sequential contacts on import triggers suspension
 SEQUENTIAL_CONTACTS_THRESHOLD = env('SEQUENTIAL_CONTACTS_THRESHOLD', 5000)
+
+# Org search filters
+ORG_SEARCH_CONTEXT = env('ORG_SEARCH_CONTEXT', '').split(',')
 
 # -----------------------------------------------------------------------------------
 # Django-rest-framework configuration
