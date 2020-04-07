@@ -75,6 +75,7 @@ CDN_DOMAIN_NAME = env('CDN_DOMAIN_NAME', '')
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', '')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', '')
+AWS_SIGNED_URL_DURATION = int(env('AWS_SIGNED_URL_DURATION', '1800'))
 AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', '')
 AWS_LOCATION = env('AWS_LOCATION', '')
 AWS_STATIC = env('AWS_STATIC', bool(AWS_STORAGE_BUCKET_NAME))
@@ -145,6 +146,8 @@ EMAIL_PORT = int(env('EMAIL_PORT', 25))
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'server@temba.io')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'mypassword')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', 'on') == 'on'
+EMAIL_USE_SSL = env('EMAIL_USE_SSL', 'off') == 'on'
+FLOW_FROM_EMAIL = env('FLOW_FROM_EMAIL', "no-reply@temba.io")
 SECURE_PROXY_SSL_HEADER = (
     env('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO'), 'https')
 IS_PROD = env('IS_PROD', 'off') == 'on'
@@ -279,3 +282,7 @@ LOGGING = {
         "django.db.backends": {"level": "ERROR", "handlers": ["default"], "propagate": False},
     },
 }
+
+ORG_SEARCH_CONTEXT = []
+
+MSG_FIELD_SIZE = env('MSG_FIELD_SIZE', 4096)
