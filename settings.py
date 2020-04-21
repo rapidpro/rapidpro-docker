@@ -18,7 +18,8 @@ AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
 
 #Use CHAT_MODE_CHOICES to configure the chatmodes that are available to the Postmaster channel
-CHAT_MODE_CHOICES = (("WA", _("WhatsApp")), ("TG", _("Telegram")), ("SMS", _("SMS")))
+CHAT_MODE_CHOICES = (("WA", _("WhatsApp")), ("TG", _("Telegram")),  ("LIN", _("LINE")), ("SIG", _("SIGNAL")),
+                     ("SMS", _("SMS")))
 
 if SUB_DIR is not None and len(SUB_DIR) > 0:
     MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
@@ -240,6 +241,7 @@ CHANNEL_TYPES = [
     "temba.channels.types.wechat.WeChatType",
     "temba.channels.types.yo.YoType",
     "temba.channels.types.zenvia.ZenviaType",
+    "temba.channels.types.android.AndroidType",
 ]
 
 # how many sequential contacts on import triggers suspension
