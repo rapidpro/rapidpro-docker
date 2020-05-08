@@ -19,7 +19,9 @@ SUB_DIR = env('SUB_DIR', required=False)
 
 #Use CHAT_MODE_CHOICES to configure the chatmodes that are available to the Postmaster channel
 CHAT_MODE_CHOICES = (("WA", _("WhatsApp")), ("TG", _("Telegram")),  ("LIN", _("LINE")), ("SIG", _("SIGNAL")),
-                     ("SMS", _("SMS")))
+                     ("SMS", _("TEL")))
+POST_OFFICE_QR_URL = env('POST_OFFICE_QR_URL', 'https://localhost:8088/postoffice/relayer/claim')
+POST_OFFICE_API_KEY = env('POST_OFFICE_API_KEY', 'abc123')
 
 if SUB_DIR is not None and len(SUB_DIR) > 0:
     MEDIA_URL = "{}{}".format(SUB_DIR, MEDIA_URL)
