@@ -243,6 +243,7 @@ CHANNEL_TYPES = [
     "temba.channels.types.wechat.WeChatType",
     "temba.channels.types.yo.YoType",
     "temba.channels.types.zenvia.ZenviaType",
+    "temba.channels.types.android.AndroidType",
 ]
 
 # how many sequential contacts on import triggers suspension
