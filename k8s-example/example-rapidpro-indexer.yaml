@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rapidpro-indexer
+  namespace: example-rapidpro
+  labels:
+    app: rapidpro-indexer
+spec:
+  replicas: 1
+  serviceName: rapidpro-indexer
+  selector:
+    matchLabels:
+      app: rapidpro-indexer
+  template:
+    metadata:
+      namespace: example-rapidpro
+      labels:
+        app: rapidpro-indexer
+    spec:
+      containers:
+      - env:
+        - name: INDEXER_DB
+          valueFrom:
+            secretKeyRef:
+              name: example-rapidpro-indexer-environment
+              key: INDEXER_DB
+        - name: INDEXER_ELASTIC_URL
+          valueFrom:
+            secretKeyRef:
+              name: example-rapidpro-indexer-environment
+              key: INDEXER_ELASTIC_URL
+        - name: INDEXER_SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: example-rapidpro-indexer-environment
+              key: INDEXER_SENTRY_DSN
+        image: praekeltfoundation/rp-indexer:5.4.0
+        command: ["/usr/local/bin/rp-indexer"]
+        name: rp-indexer-1-0
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi

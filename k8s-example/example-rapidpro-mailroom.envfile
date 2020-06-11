@@ -1,0 +1,16 @@
+# Upload this file to google cloud as a secret with:
+# kubectl --namespace=example-rapidpro create secret generic example-rapidpro-mailroom-environment --from-env-file=k8s-example/example-rapidpro-mailroom.envfile
+
+MAILROOM_AUTH_TOKEN=mailr00m-auth
+MAILROOM_DB=postgres://example_rapidpro:password@localhost:5432/example_rapidpro?sslmode=disable
+MAILROOM_REDIS=redis://localhost:6379/0
+
+
+MAILROOM_AWS_ACCESS_KEY_ID=MAILROOM_AWS_ACCESS_KEY_ID
+MAILROOM_AWS_SECRET_ACCESS_KEY=MAILROOM_AWS_SECRET_ACCESS_KEY
+MAILROOM_S3_MEDIA_BUCKET=example-rapidpro
+MAILROOM_S3_REGION=eu-west-1
+MAILROOM_SENTRY_DSN=https://sentry.io/123
+MAILROOM_SMTP_SERVER=smtp://user@domain.org.za:password@localhost:587/?from=hello%domain.org.za
+
+MAILROOM_ELASTIC=http://localhost:9200

@@ -1,0 +1,110 @@
+kind: Elasticsearch
+apiVersion: elasticsearch.k8s.elastic.co/v1
+metadata:
+  name: example-prod
+  namespace: example-rapidpro
+spec:
+  version: 6.8.8
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+  - name: master-nodes
+    count: 3
+    config:
+      node.master: true
+      node.data: false
+      node.ingest: false
+      xpack.security.authc:
+        anonymous:
+          authz_exception: true
+          roles: superuser
+    podTemplate:
+      spec:
+        initContainers:
+        - name: init-sysctl
+          image: busybox:1.27.2
+          command:
+          - sysctl
+          - -w
+          - vm.max_map_count=2621441
+          securityContext:
+            privileged: true
+        - name: install-plugins
+          command:
+          - sh
+          - -c
+          - |
+            bin/elasticsearch-plugin install --batch repository-gcs
+        containers:
+        - name: elasticsearch
+          env:
+          - name: ES_JAVA_OPTS
+            value: -Xms512m -Xmx512m
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 1
+            limits:
+              memory: 1Gi
+              cpu: 1
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: example-gce-ssd
+  - name: data-nodes
+    count: 2
+    config:
+      node.master: false
+      node.data: true
+      node.ingest: true
+      xpack.security.authc:
+        anonymous:
+          authz_exception: true
+          roles: superuser
+    podTemplate:
+      spec:
+        initContainers:
+        - name: init-sysctl
+          image: busybox:1.27.2
+          command:
+          - sysctl
+          - -w
+          - vm.max_map_count=2621441
+          securityContext:
+            privileged: true
+        - name: install-plugins
+          command:
+          - sh
+          - -c
+          - |
+            bin/elasticsearch-plugin install --batch repository-gcs
+        containers:
+        - name: elasticsearch
+          env:
+          - name: ES_JAVA_OPTS
+            value: -Xms1g -Xmx1g
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 2
+            limits:
+              memory: 2Gi
+              cpu: 2
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: example-gce-ssd
