@@ -60,7 +60,7 @@ services:
       - MAILROOM_URL=http://mailroom:8090
       - MAILROOM_AUTH_TOKEN=Gqcqvi2PGkoZMpQi
       - ELASTICSEARCH_URL=http://elasticsearch:9200
-    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,msgs,flows,handler"]
+    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery"]
   redis:
     image: redis:alpine
   postgresql:
