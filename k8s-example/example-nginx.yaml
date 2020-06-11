@@ -20,30 +20,19 @@ spec:
         deployment: example-nginx
     spec:
       containers:
-        - name: nginx
-          resources:
-            requests:
-              cpu: 100m
-              memory: 512Mi
-          # This image doesn't exist and should be replaced with one built
-          # with a config for your deploy.
-          # See the /nginx folder for a example of the config
-          image: praekeltfoundation/example-nginx-prod:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 80
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: example-rapidpro
-  name: example-nginx
-spec:
-  type: LoadBalancer
-  selector:
-    deployment: example-nginx
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
+      - name: nginx
+        image: nginx:1.18.0
+        ports:
+        - name: http
+          containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx
+          readOnly: true
+          name: example-nginx-conf
+      volumes:
+      - name: example-nginx-conf
+        configMap:
+          name: example-nginx-conf
+          items:
+          - key: nginx.conf
+            path: nginx.conf
