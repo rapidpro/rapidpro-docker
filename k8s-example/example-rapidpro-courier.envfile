@@ -1,0 +1,13 @@
+# Upload this file to google cloud as a secret with:
+# kubectl --namespace=example-rapidpro create secret generic example-rapidpro-courier-environment --from-env-file=k8s-example/example-rapidpro-courier.envfile
+
+COURIER_DB=postgres://example_rapidpro:password@localhost:5432/example_rapidpro?sslmode=disable
+COURIER_REDIS=redis://localhost:6379/0
+
+COURIER_S3_REGION=eu-west-1
+COURIER_S3_MEDIA_BUCKET=example-rapidpro
+COURIER_S3_MEDIA_PREFIX=attachments
+COURIER_AWS_ACCESS_KEY_ID=COURIER_AWS_ACCESS_KEY_ID
+COURIER_AWS_SECRET_ACCESS_KEY=COURIER_AWS_SECRET_ACCESS_KEY
+
+COURIER_SENTRY_DSN=https://sentry.io/123

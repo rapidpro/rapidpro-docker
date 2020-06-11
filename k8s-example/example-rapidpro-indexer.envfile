@@ -1,0 +1,6 @@
+# Upload this file to google cloud as a secret with:
+# kubectl --namespace=example-rapidpro create secret generic example-rapidpro-indexer-environment --from-env-file=k8s-example/example-rapidpro-indexer.envfile
+
+INDEXER_DB=postgres://example_rapidpro:password@localhost:5432/example_rapidpro?sslmode=disable
+INDEXER_ELASTIC_URL=http://localhost:9200
+INDEXER_SENTRY_DSN=https://sentry.io/123

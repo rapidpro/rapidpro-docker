@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rapidpro-mailroom
+  namespace: example-rapidpro
+  labels:
+    app: rapidpro-mailroom
+spec:
+  replicas: 1
+  serviceName: rapidpro-mailroom
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: rapidpro-mailroom
+  template:
+    metadata:
+      namespace: example-rapidpro
+      labels:
+        app: rapidpro-mailroom
+    spec:
+      containers:
+        - env:
+            - name: MAILROOM_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_AUTH_TOKEN
+            - name: MAILROOM_DOMAIN
+              value: rapidpro.example.org
+            - name: MAILROOM_DB
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_DB
+            - name: MAILROOM_REDIS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_REDIS
+            - name: MAILROOM_AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_AWS_ACCESS_KEY_ID
+            - name: MAILROOM_AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_AWS_SECRET_ACCESS_KEY
+            - name: MAILROOM_S3_MEDIA_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_S3_MEDIA_BUCKET
+            - name: MAILROOM_S3_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_S3_REGION
+            - name: MAILROOM_SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_SENTRY_DSN
+            - name: MAILROOM_SMTP_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_SMTP_SERVER
+            - name: MAILROOM_ELASTIC
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-mailroom-environment
+                  key: MAILROOM_ELASTIC
+          image: praekeltfoundation/mailroom:5.5.0
+          name: mailroom-latest
+          command: ['mailroom', '--address', '0.0.0.0']
+          args: ['-debug-conf']
+          resources:
+            requests:
+              cpu: 500m
+              memory: 256Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: rapidpro-mailroom-volume
+        namespace: example-rapidpro
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: example-gce-ssd
+        resources:
+          requests:
+            storage: 100Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rapidpro-mailroom
+  namespace: example-rapidpro
+spec:
+  ports:
+    - port: 8090
+      protocol: TCP
+      targetPort: 8090
+  selector:
+    app: rapidpro-mailroom
+  type: ClusterIP
