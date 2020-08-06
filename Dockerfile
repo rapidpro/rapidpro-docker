@@ -1,9 +1,15 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
+
 ARG VERSION_TAG
 
 FROM istresearch/p4-engage:code-${VERSION_TAG}
- 
+
+RUN addgroup engage
+RUN adduser -D -S -s /bin/false -u 1717 engage -g engage
+
+USER root
+
 ARG RAPIDPRO_VERSION
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
@@ -97,4 +103,7 @@ LABEL org.label-schema.name="RapidPro" \
       org.label-schema.version=$RAPIDPRO_VERSION \
       org.label-schema.schema-version="1.0"
 
+RUN chown -R engage /rapidpro
+RUN chgrp -R engage /rapidpro
+USER engage
 CMD ["/startup.sh"]
