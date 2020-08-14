@@ -106,11 +106,10 @@ LABEL org.label-schema.name="Engage" \
       org.label-schema.version=$VERSION_TAG \
       org.label-schema.schema-version="1.0"
 
-COPY stack/startup.py /rapidpro/
-RUN mkdir /rapidpro/media
 RUN chown -R engage /rapidpro
 RUN chgrp -R engage /rapidpro
 USER engage
 CMD ["/startup.sh"]
 
+COPY stack/startup.py /rapidpro/
 
