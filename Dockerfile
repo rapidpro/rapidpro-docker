@@ -103,6 +103,7 @@ LABEL org.label-schema.name="RapidPro" \
       org.label-schema.version=$RAPIDPRO_VERSION \
       org.label-schema.schema-version="1.0"
 
+RUN mkdir /rapidpro/media
 RUN chown -R engage /rapidpro
 RUN chgrp -R engage /rapidpro
 USER engage
