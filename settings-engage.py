@@ -21,7 +21,7 @@ MAX_ORG_LABELS = int(env('MAX_ORG_LABELS', 500))
 
 #Use CHAT_MODE_CHOICES to configure the chatmodes that are available to the Postmaster channel
 CHAT_MODE_CHOICES = (("WA", _("WhatsApp")), ("TG", _("Telegram")),  ("LN", _("LINE")), ("SIG", _("SIGNAL")),
-                     ("SMS", _("TEL")), ("VK", _("VK")), ("VB", _("VIBER")))
+                     ("SMS", _("TEL")), ("VK", _("VK")), ("VB", _("VIBER")), ("TWTR", _("TWITTER")))
 POST_OFFICE_QR_URL = env('POST_OFFICE_QR_URL', 'https://localhost:8088/postoffice/engage/claim')
 POST_OFFICE_API_KEY = env('POST_OFFICE_API_KEY', 'abc123')
 
