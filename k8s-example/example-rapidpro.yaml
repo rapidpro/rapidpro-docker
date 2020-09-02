@@ -1,0 +1,615 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rapidpro
+  namespace: example-rapidpro
+  labels:
+    app: rapidpro
+spec:
+  replicas: 1
+  serviceName: rapidpro
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: rapidpro
+  template:
+    metadata:
+      namespace: example-rapidpro
+      labels:
+        app: rapidpro
+    spec:
+      containers:
+        - env:
+            - name: MANAGEPY_COLLECTSTATIC
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MANAGEPY_COLLECTSTATIC
+            - name: MANAGEPY_MIGRATE
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MANAGEPY_MIGRATE
+            - name: MANAGEPY_INIT_DB
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MANAGEPY_INIT_DB
+            - name: MANAGEPY_COMPRESS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MANAGEPY_COMPRESS
+            - name: CLEAR_COMPRESSOR_CACHE
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: CLEAR_COMPRESSOR_CACHE
+            - name: AWS_S3_REGION_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_S3_REGION_NAME
+            - name: AWS_MEDIA
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_MEDIA
+            - name: AWS_STORAGE_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_STORAGE_BUCKET_NAME
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_ACL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_DEFAULT_ACL
+            - name: EMAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_PORT
+            - name: EMAIL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST
+            - name: EMAIL_HOST_USER
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST_USER
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST_PASSWORD
+            - name: DEFAULT_FROM_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DEFAULT_FROM_EMAIL
+            - name: BRANDING_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: BRANDING_LINK
+            - name: BRANDING_ALLOW_SIGNUPS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: BRANDING_ALLOW_SIGNUPS
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SECRET_KEY
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: REDIS_URL
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DATABASE_URL
+            - name: IP_ADDRESSES
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: IP_ADDRESSES
+            - name: MAILROOM_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MAILROOM_URL
+            - name: MAILROOM_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MAILROOM_AUTH_TOKEN
+            - name: SEND_CALLS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_CALLS
+            - name: SEND_AIRTIME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_AIRTIME
+            - name: SEND_EMAILS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_EMAILS
+            - name: SEND_WEBHOOKS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_WEBHOOKS
+            - name: SEND_MESSAGES
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_MESSAGES
+            - name: DJANGO_DEBUG
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DJANGO_DEBUG
+            - name: TEMBA_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: TEMBA_HOST
+            - name: ALLOWED_HOSTS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: ALLOWED_HOSTS
+            - name: DOMAIN_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DOMAIN_NAME
+            - name: RAVEN_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: RAPIDPRO_RAVEN_DSN
+            - name: IS_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: IS_PROD
+            - name: ELASTICSEARCH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: ELASTICSEARCH_URL
+            - name: EMAIL_USE_TLS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_USE_TLS
+          image: praekeltfoundation/rapidpro:v5.5.0
+          imagePullPolicy: Always
+          name: rapidpro
+          resources:
+            requests:
+              cpu: 100m
+              memory: 2Gi
+          volumeMounts:
+            - mountPath: /rapidpro/media/
+              name: rapidpro-media-volume
+            - mountPath: /rapidpro/sitestatic/
+              name: rapidpro-sitestatic-volume
+        - env:
+            - name: AWS_S3_REGION_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_S3_REGION_NAME
+            - name: AWS_MEDIA
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_MEDIA
+            - name: AWS_STORAGE_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_STORAGE_BUCKET_NAME
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_ACL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_DEFAULT_ACL
+            - name: EMAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_PORT
+            - name: EMAIL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST
+            - name: EMAIL_HOST_USER
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST_USER
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST_PASSWORD
+            - name: DEFAULT_FROM_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DEFAULT_FROM_EMAIL
+            - name: BRANDING_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: BRANDING_LINK
+            - name: BRANDING_ALLOW_SIGNUPS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: BRANDING_ALLOW_SIGNUPS
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SECRET_KEY
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: REDIS_URL
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DATABASE_URL
+            - name: IP_ADDRESSES
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: IP_ADDRESSES
+            - name: MAILROOM_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MAILROOM_URL
+            - name: MAILROOM_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MAILROOM_AUTH_TOKEN
+            - name: SEND_CALLS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_CALLS
+            - name: SEND_AIRTIME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_AIRTIME
+            - name: SEND_EMAILS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_EMAILS
+            - name: SEND_WEBHOOKS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_WEBHOOKS
+            - name: SEND_MESSAGES
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_MESSAGES
+            - name: DJANGO_DEBUG
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DJANGO_DEBUG
+            - name: TEMBA_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: TEMBA_HOST
+            - name: ALLOWED_HOSTS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: ALLOWED_HOSTS
+            - name: DOMAIN_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DOMAIN_NAME
+            - name: RAVEN_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: CELERY_RAVEN_DSN
+            - name: IS_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: IS_PROD
+            - name: ELASTICSEARCH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: ELASTICSEARCH_URL
+            - name: EMAIL_USE_TLS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_USE_TLS
+          image: praekeltfoundation/rapidpro:v5.5.0
+          name: rapidpro-celery-base
+          command: ['/venv/bin/celery']
+          args:
+            [
+              '--app=temba',
+              'worker',
+              '--loglevel=INFO',
+              '--queues=celery',
+              '--max-tasks-per-child=10',
+              '--autoscale=1,5',
+            ]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1024Mi
+          volumeMounts:
+            - mountPath: /rapidpro/media/
+              name: rapidpro-media-volume
+            - mountPath: /rapidpro/sitestatic/
+              name: rapidpro-sitestatic-volume
+        - env:
+            - name: AWS_S3_REGION_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_S3_REGION_NAME
+            - name: AWS_MEDIA
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_MEDIA
+            - name: AWS_STORAGE_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_STORAGE_BUCKET_NAME
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_ACL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: AWS_DEFAULT_ACL
+            - name: EMAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_PORT
+            - name: EMAIL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST
+            - name: EMAIL_HOST_USER
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST_USER
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_HOST_PASSWORD
+            - name: DEFAULT_FROM_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DEFAULT_FROM_EMAIL
+            - name: BRANDING_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: BRANDING_LINK
+            - name: BRANDING_ALLOW_SIGNUPS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: BRANDING_ALLOW_SIGNUPS
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SECRET_KEY
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: REDIS_URL
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DATABASE_URL
+            - name: IP_ADDRESSES
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: IP_ADDRESSES
+            - name: MAILROOM_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MAILROOM_URL
+            - name: MAILROOM_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: MAILROOM_AUTH_TOKEN
+            - name: SEND_CALLS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_CALLS
+            - name: SEND_AIRTIME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_AIRTIME
+            - name: SEND_EMAILS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_EMAILS
+            - name: SEND_WEBHOOKS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_WEBHOOKS
+            - name: SEND_MESSAGES
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: SEND_MESSAGES
+            - name: DJANGO_DEBUG
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DJANGO_DEBUG
+            - name: TEMBA_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: TEMBA_HOST
+            - name: ALLOWED_HOSTS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: ALLOWED_HOSTS
+            - name: DOMAIN_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: DOMAIN_NAME
+            - name: RAVEN_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: CELERY_RAVEN_DSN
+            - name: IS_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: IS_PROD
+            - name: ELASTICSEARCH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: ELASTICSEARCH_URL
+            - name: EMAIL_USE_TLS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-environment
+                  key: EMAIL_USE_TLS
+          image: praekeltfoundation/rapidpro:v5.5.0
+          name: rapidpro-celery-beat
+          command: ['/venv/bin/celery']
+          args:
+            [
+              "beat",
+              "--app=temba",
+              "--loglevel=info",
+            ]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          volumeMounts:
+            - mountPath: /rapidpro/media/
+              name: rapidpro-media-volume
+            - mountPath: /rapidpro/sitestatic/
+              name: rapidpro-sitestatic-volume
+  volumeClaimTemplates:
+    - metadata:
+        name: rapidpro-media-volume
+        namespace: example-rapidpro
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: example-gce-ssd
+        resources:
+          requests:
+            storage: 10Gi
+    - metadata:
+        name: rapidpro-sitestatic-volume
+        namespace: example-rapidpro
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: example-gce-ssd
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rapidpro
+  namespace: example-rapidpro
+spec:
+  ports:
+    - port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    app: rapidpro
+  type: ClusterIP

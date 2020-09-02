@@ -1,6 +1,6 @@
 # python:2.7-alpine with GEOS, GDAL, and Proj installed (built as a separate image
 # because it takes a long time to build)
-FROM rapidpro/rapidpro-base
+FROM rapidpro/rapidpro-base:v4
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
@@ -10,7 +10,7 @@ ENV PIP_RETRIES=120 \
 # TODO determine if a more recent version of Node is needed
 # TODO extract openssl and tar to their own upgrade/install line
 RUN set -ex \
-  && apk add --no-cache nodejs-lts openssl tar \
+  && apk add --no-cache nodejs-lts nodejs-npm openssl tar \
   && npm install -g coffee-script less bower
 
 WORKDIR /rapidpro
@@ -41,6 +41,7 @@ RUN set -ex \
                 ncurses-dev \
                 libzmq \
                 && pip install -U virtualenv \
+                && pip install -U pip \
                 && virtualenv /venv
 
 ARG RAPIDPRO_VERSION
@@ -64,10 +65,9 @@ RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.
               | sort -u \
     )" \
     && apk add --virtual .python-rundeps $runDeps \
+    # TODO should this be in startup.sh?
+    && cd /rapidpro && npm install npm@latest && npm install && bower install --allow-root \
     && apk del .build-deps
-
-# TODO should this be in startup.sh?
-RUN cd /rapidpro && bower install --allow-root
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
 # Install `libmagic` (needed since rapidpro v3.0.64)

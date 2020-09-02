@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-nginx
+  namespace: example-rapidpro
+  labels:
+    deployment: example-nginx
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      deployment: example-nginx
+  template:
+    metadata:
+      namespace: example-rapidpro
+      labels:
+        deployment: example-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.18.0
+        ports:
+        - name: http
+          containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx
+          readOnly: true
+          name: example-nginx-conf
+      volumes:
+      - name: example-nginx-conf
+        configMap:
+          name: example-nginx-conf
+          items:
+          - key: nginx.conf
+            path: nginx.conf

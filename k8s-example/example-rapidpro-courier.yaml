@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rapidpro-courier
+  namespace: example-rapidpro
+  labels:
+    app: rapidpro-courier
+spec:
+  replicas: 1
+  serviceName: rapidpro-courier
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: rapidpro-courier
+  template:
+    metadata:
+      namespace: example-rapidpro
+      labels:
+        app: rapidpro-courier
+    spec:
+      initContainers:
+        - command:
+            [
+              'sh',
+              '-c',
+              'mkdir -p /home/courier/spool/persisted/; chmod 777 /home/courier/spool/persisted/',
+            ]
+          image: debian:stretch-slim
+          volumeMounts:
+            - mountPath: /home/courier/spool/
+              name: rapidpro-courier-volume
+          name: rapidpro-courier-init-0
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+      containers:
+        - env:
+            - name: COURIER_DOMAIN
+              value: rapidpro.example.org
+            - name: COURIER_SPOOL_DIR
+              value: /home/courier/spool/persisted/
+            - name: COURIER_DB
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-courier-environment
+                  key: COURIER_DB
+            - name: COURIER_REDIS
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-courier-environment
+                  key: COURIER_REDIS
+            - name: COURIER_S3_MEDIA_PREFIX
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-courier-environment
+                  key: COURIER_S3_MEDIA_PREFIX
+            - name: COURIER_S3_MEDIA_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-courier-environment
+                  key: COURIER_S3_MEDIA_BUCKET
+            - name: COURIER_S3_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-courier-environment
+                  key: COURIER_S3_REGION
+            - name: COURIER_AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-courier-environment
+                  key: COURIER_AWS_ACCESS_KEY_ID
+            - name: COURIER_AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-courier-environment
+                  key: COURIER_AWS_SECRET_ACCESS_KEY
+            - name: COURIER_SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: example-rapidpro-courier-environment
+                  key: COURIER_SENTRY_DSN
+          image: praekeltfoundation/courier:5.5.9
+          name: courier-1-3
+          command: ['courier']
+          args: ['-debug-conf']
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - mountPath: /home/courier/spool/
+              name: rapidpro-courier-volume
+  volumeClaimTemplates:
+    - metadata:
+        name: rapidpro-courier-volume
+        namespace: example-rapidpro
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: example-gce-ssd
+        resources:
+          requests:
+            storage: 100Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rapidpro-courier
+  namespace: example-rapidpro
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: rapidpro-courier
+  type: ClusterIP
