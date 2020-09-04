@@ -23,8 +23,9 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-ce coreutils
 
-before_cache:
-  - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
+# Commented the below out as we removed cached postgresql dump
+# before_cache:
+#  - docker exec --user=postgres postgresql pg_dump rapidpro > $HOME/postgresql/rapidpro.sql
 
 before_script:
   - 'curl -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" -s https://api.github.com/repos/$REPO/tags | tee ./tags.json'
@@ -39,8 +40,8 @@ script:
   - docker pull mdillon/postgis:9.6
   - docker run -d --name postgresql -e POSTGRES_DB=rapidpro mdillon/postgis:9.6
   - timeout $GREP_TIMEOUT grep -m 1 'PostgreSQL init process complete; ready for start up.' <(docker logs --follow postgresql 2>&1)
-  # Load the cached postgresql dump to speed up migrations
-  - if [[ -f $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker exec -i --user=postgres postgresql psql rapidpro; fi
+  # Load the cached postgresql dump to speed up migrations -- this is commented out for now
+  # - if [[ -f $HOME/postgresql/rapidpro.sql ]]; then cat $HOME/postgresql/rapidpro.sql | docker exec -i --user=postgres postgresql psql rapidpro; fi
 
   # Setup redis
   - docker pull redis:alpine
