@@ -16,6 +16,7 @@ from django.urls import base
 
 AWS_QUERYSTRING_EXPIRE = '157784630'
 SUB_DIR = env('SUB_DIR', required=False) 
+COURIER_URL = env('COURIER_URL', 'http://localhost:8080')
 
 MAX_ORG_LABELS = int(env('MAX_ORG_LABELS', 500))
 
