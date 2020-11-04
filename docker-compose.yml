@@ -6,7 +6,7 @@
 version: '2'
 services:
   engage:
-    image: istresearch/p4-engage:4.0.0-a3-dev 
+    image: istresearch/p4-engage:4.0.5-dev
     depends_on:
       - redis
       - postgresql
@@ -60,7 +60,7 @@ services:
     networks:
       - pro-network
   celery_base:
-    image: istresearch/p4-engage:4.0.0-a3-dev 
+    image: istresearch/p4-engage:4.0.5-dev
     depends_on:
       - engage 
     links:
@@ -79,7 +79,7 @@ services:
     networks:
       - pro-network
   celery_msgs:
-    image: istresearch/p4-engage:4.0.0-a3-dev 
+    image: istresearch/p4-engage:4.0.5-dev 
     depends_on:
       - engage 
     links:
