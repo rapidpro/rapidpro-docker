@@ -104,12 +104,11 @@
       %script{src:"{{ STATIC_URL }}js/temba.js"}
       %script{src:"{{ STATIC_URL }}js/excellent.js"}
       %script{src:"{{ STATIC_URL }}js/labels.js"}
-      %script{src:"{{ STATIC_URL }}coffee/temba.coffee", type:'text/coffeescript'}
-      %script{src:"{{ STATIC_URL }}coffee/formax.coffee", type:'text/coffeescript'}
-      %script{src:"{{ STATIC_URL }}coffee/completions.coffee", type:'text/coffeescript'}
-
-
-    -include "includes/components-head.html"
+      %script{src:"{{ STATIC_URL }}coffee/temba.coffee", type:"text/coffeescript"}
+      %script{src:"{{ STATIC_URL }}coffee/formax.coffee", type:"text/coffeescript"}
+      %script{src:"{{ STATIC_URL }}coffee/completions.coffee", type:"text/coffeescript"}
+    
+    -include "components-head.html"
     -include "includes/frame_top.html"
 
     -if brand.favico
@@ -195,12 +194,20 @@
           font-weight: 200;
           font-family: var(--font-family);
 
+          --button-y: 8px;
+          --button-x: 14px;
+
+          --color-nav-unselected: #fff;
+          --color-nav-selected-bg: #fff;
+          --color-nav-selected-text: var(--color-primary-dark);
+
         }
 
-        rp-select:focus {
+        temba-select:focus {
           outline: none;
           box-shadow: none;
         }
+
       -compress css
         %link{type:'text/css', rel:'stylesheet', href:'{{ STATIC_URL }}bower/bootstrap-css/css/bootstrap.css',  media:'all' }
         %link{type:'text/css', rel:'stylesheet', href:'{{ STATIC_URL }}bower/animate.css/animate.css',  media:'all' }
@@ -255,7 +262,7 @@
 
 -load smartmin
 {% block body %}
--include "includes/components-body.html"
+-include "components-body.html"
 %body#pageBody
   .page-wrap
 
@@ -434,16 +441,16 @@
 
         });
 
-        $('#top-menu li').hoverIntent({
+        $('#menu .more').hoverIntent({
           over:function() {
             // $('.submenu').hide();
             $(this).find('.submenu-container').slideDown(250);
-            $(this).parents("#top-menu").addClass('expanded');
+            $(this).parents("#menu").addClass('expanded');
             // $(this).find('.submenu').show();
           },
           out:function() {
           $(this).find('.submenu-container').slideUp(200);
-          $(this).parents("#top-menu").removeClass('expanded');
+          $(this).parents("#menu").removeClass('expanded');
             //$(this).find('.submenu').hide();
           },
           timeout:300
