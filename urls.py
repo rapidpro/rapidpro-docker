@@ -48,6 +48,7 @@ urlpatterns = [
     url(r"^{}".format(VHOST_NAME), include("temba.public.urls")),
     url(r"^{}".format(VHOST_NAME), include("temba.request_logs.urls")),
     url(r"^{}".format(VHOST_NAME), include("temba.schedules.urls")),
+    url(r"^{}".format(VHOST_NAME), include("temba.tickets.urls")),
     url(r"^{}".format(VHOST_NAME), include("temba.triggers.urls")),
     url(r"^{}relayers/relayer/sync/(\d+)/$".format(VHOST_NAME), sync, {}, "sync"),
     url(r"^{}relayers/relayer/register/$".format(VHOST_NAME), register, {}, "register"),
