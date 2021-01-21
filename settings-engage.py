@@ -302,3 +302,8 @@ LOGGING = {
 ORG_SEARCH_CONTEXT = []
 
 MSG_FIELD_SIZE = env('MSG_FIELD_SIZE', 4096)
+
+try:
+    from temba.local_settings import *  
+except ImportError:
+    pass
