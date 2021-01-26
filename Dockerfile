@@ -72,8 +72,7 @@ RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install setuptools==33.
     && apk --no-cache add --virtual .python-rundeps $runDeps \
     && apk del .build-deps && rm -rf /var/cache/apk/*
 
-# TODO should this be in startup.sh?
-RUN cd /rapidpro && npm install npm@latest && npm install 
+RUN cd /rapidpro && npm install npm@latest
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
 # Install `libmagic` (needed since rapidpro v3.0.64)
@@ -105,5 +104,9 @@ LABEL org.label-schema.name="RapidPro" \
 
 RUN chown -R engage /rapidpro
 RUN chgrp -R engage /rapidpro
-USER engage
+USER engage:engage
+
+# Run this after switching from root so prepare will run on packages
+RUN npm install
+
 CMD ["/startup.sh"]
