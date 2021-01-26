@@ -78,6 +78,13 @@ RUN cd /rapidpro && npm install npm@latest
 # Install `libmagic` (needed since rapidpro v3.0.64)
 RUN apk add --no-cache postgresql-client libmagic
 
+RUN chown -R engage /rapidpro
+RUN chgrp -R engage /rapidpro
+USER engage:engage
+
+# Run this after switching from root so prepare will run on packages
+RUN npm install
+
 ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_WORKERS=8 UWSGI_HARAKIRI=20
 # Enable HTTP 1.1 Keep Alive options for uWSGI (http-auto-chunked needed when ConditionalGetMiddleware not installed)
 # These options don't appear to be configurable via environment variables, so pass them in here instead
@@ -101,12 +108,5 @@ LABEL org.label-schema.name="RapidPro" \
       org.label-schema.vendor="Nyaruka, UNICEF, and individual contributors." \
       org.label-schema.version=$RAPIDPRO_VERSION \
       org.label-schema.schema-version="1.0"
-
-RUN chown -R engage /rapidpro
-RUN chgrp -R engage /rapidpro
-USER engage:engage
-
-# Run this after switching from root so prepare will run on packages
-RUN npm install
 
 CMD ["/startup.sh"]
