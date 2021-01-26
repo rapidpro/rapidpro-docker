@@ -78,8 +78,7 @@ RUN cd /rapidpro && npm install npm@latest
 # Install `libmagic` (needed since rapidpro v3.0.64)
 RUN apk add --no-cache postgresql-client libmagic
 
-RUN chown -R engage /rapidpro
-RUN chgrp -R engage /rapidpro
+RUN chown -R engage:engage /rapidpro
 USER engage:engage
 
 # Run this after switching from root so prepare will run on packages
