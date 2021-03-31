@@ -1,6 +1,7 @@
 -r /rapidpro/pip-freeze.txt
 
 # configuration related dependencies
+dicttoxml==1.7.4
 django-getenv==1.3.1
 django-cache-url==1.3.1
 uwsgi==2.0.18
