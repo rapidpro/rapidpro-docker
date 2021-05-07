@@ -16,6 +16,7 @@ env:
     - secure: KwcHx5aUsgtmkqC0mt06di9kuqskbvsrbjnVU/YvFz1mwB2vw5v7keAWcnpglB1gb99GKGVx9H5FzmZBqStl5pILbnIIpf5+UhHKSG4kEHXoG/amZApiI0Aks9Iq87DdYlSknCtz/Q66zZlxaHx4GNJCtcRI6wQyEngQhYYeobPJTg040BLIoXVBP7qnqd3yGMwSgLAg+/M6Ro6f2ZkMEXAit48bxQNhG1YyjDevGQnvZIGW/FnAszfNkuBp59ivMSsNp8fb2B4+Xn3RHs3Vdz4m6zqyLsHx/ZFonHynlrsQk0cIQ4xyN1KpzvgzdXVeo8f1IzXqCNczo6FsiGnSAJq0WPrRU77ie9nsCYlsiB7KescUJ3xHNPHxCFflfV6SBsgLLyAmA6gFZP+uLRovVDJpuATc6VJrFRkMTH9fLhbNdg+uBlz2v4zlfDmmfm8pxtXV7CZNnHM2LODUzNKv7pVYLezXmQUe9c1Kj3Q57rgG7rsY4OSZZM0B6Qn82SDI77hm7i3dZVloMxaEMuj0v1c7v5BFEL0Bfr2qSjdGgYJmWiL5lgH6eFc23NficE13SAlc7UeY/ZWNuAfn/LMI1M3NfIDhjTY5rDByfeOKzf9It9fSFjiYZFoRH7RHkbGUvGtBsycMKqG7kt+V6XoOx2kUcaQQc9KH8KJ4b+fBrFA=
   matrix:
     - IMAGE="praekeltfoundation/rapidpro" VERSION="v6.0.8" REPO="praekeltfoundation/rapidpro"
+    - IMAGE="praekeltfoundation/rapidpro" VERSION="v5.6.5" REPO="praekeltfoundation/rapidpro"
     # - IMAGE="praekeltfoundation/rapidpro" VERSION="master" REPO="praekeltfoundation/rapidpro"
 
 # Update Docker Engine
