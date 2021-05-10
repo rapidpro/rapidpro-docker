@@ -80,6 +80,7 @@ AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', '')
 AWS_LOCATION = env('AWS_LOCATION', '')
 AWS_STATIC = env('AWS_STATIC', False)
 AWS_MEDIA = env('AWS_MEDIA', False)
+AWS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL', None)
 
 if AWS_STORAGE_BUCKET_NAME:
     # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
