@@ -53,14 +53,10 @@ RUN echo "Downloading RapidPro ${RAPIDPRO_VERSION} from https://github.com/$RAPI
     rm rapidpro.tar.gz
 
 # Install Rust, it's required to build poetry on this version of alpine
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-
-# Install poetry
-RUN pip install -U pip && pip install -U poetry
-
-# Uninstall Rust
-RUN rustup self uninstall -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+        pip install -U pip && pip install -U poetry && \
+        rustup self uninstall -y
 
 # Build Python virtualenv
 RUN python3 -m venv /venv
@@ -68,7 +64,7 @@ ENV PATH="/venv/bin:${PATH}"
 ENV VIRTUAL_ENV="/venv"
 
 # Install configuration related dependencies
-RUN /venv/bin/pip install --upgrade pip && poetry install --no-interaction && poetry add \
+RUN /venv/bin/pip install --upgrade pip && poetry install --no-interaction --no-dev && poetry add \
         "django-getenv==1.3.1" \
         "django-cache-url==1.3.1" \
         "uwsgi==2.0.14" \
