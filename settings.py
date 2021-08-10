@@ -184,3 +184,9 @@ MAILROOM_AUTH_TOKEN = env('MAILROOM_AUTH_TOKEN', '')
 
 FLOW_SESSION_TRIM_DAYS = env('FLOW_SESSION_TRIM_DAYS', 7)
 MAX_ACTIVE_CONTACTFIELDS_PER_ORG = env('MAX_ACTIVE_CONTACTFIELDS_PER_ORG', 250)
+
+# set of ISO-639-3 codes of languages to allow in addition to all ISO-639-1 languages
+iso_3_languages = env('NON_ISO6391_LANGUAGES', '')
+NON_ISO6391_LANGUAGES = {}
+if iso_3_languages:
+    NON_ISO6391_LANGUAGES = set(iso_3_languages.split(','))
