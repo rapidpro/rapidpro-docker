@@ -256,3 +256,9 @@ To add a pipeline:
 To trigger and watch a build:
 
     > $ fly -t <target> trigger-job -j <pipeline-name>/build-image -w
+
+Notes on Upgrading RapidPro
+---------------------------
+
+v6.0 to v6.2:
+> change RAVEN_DSN setting to SENTRY_DSN

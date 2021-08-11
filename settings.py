@@ -13,11 +13,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from temba.settings_common import *  # noqa
 
-INSTALLED_APPS = (
-    INSTALLED_APPS +
-    tuple(filter(None, env('EXTRA_INSTALLED_APPS', '').split(','))) +
-    ('raven.contrib.django.raven_compat',))
-
 ROOT_URLCONF = env('ROOT_URLCONF', 'temba.urls')
 
 DEBUG = env('DJANGO_DEBUG', 'off') == 'on'
@@ -52,10 +47,6 @@ if CACHES['default']['BACKEND'] == 'django_redis.cache.RedisCache':
         CACHES['default']['OPTIONS'] = {}
     CACHES['default']['OPTIONS']['CLIENT_CLASS'] = 'django_redis.client.DefaultClient'
 
-RAVEN_CONFIG = {
-    'dsn': env('RAVEN_DSN'),
-    'release': env('RAPIDPRO_VERSION'),
-}
 
 # -----------------------------------------------------------------------------------
 # Used when creating callbacks for Twilio, Nexmo etc..
