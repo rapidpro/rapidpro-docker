@@ -261,4 +261,5 @@ Notes on Upgrading RapidPro
 ---------------------------
 
 v6.0 to v6.2:
+> Indexer and Mailroom require Elasticsearch > 7. Upgrading to v7.10.1 has been successful
 > change RAVEN_DSN setting to SENTRY_DSN
