@@ -10,7 +10,7 @@ RUN apt-get-install.sh curl sudo && \
     apt-get-install.sh build-essential openssl tar wget nodejs openssl tar && \
     npm install -g less
 
-WORKDIR /rapidpro
+
 
 ARG RAPIDPRO_VERSION
 ARG RAPIDPRO_REPO
@@ -25,8 +25,6 @@ RUN pip install -U pip && pip install -U poetry
 
 # Build Python virtualenv
 RUN python3 -m venv /venv
-ENV PATH="/venv/bin:${PATH}"
-ENV VIRTUAL_ENV="/venv"
 
 # Install configuration related dependencies
 RUN /venv/bin/pip install --upgrade pip && poetry install --no-interaction --no-dev && poetry add \
@@ -42,6 +40,10 @@ RUN cd /rapidpro && npm install npm@6.14.11 && npm install
 FROM ghcr.io/praekeltfoundation/python-base:3.9.6
 COPY --from=builder /venv /venv
 COPY --from=builder /rapidpro /rapidpro
+
+WORKDIR /rapidpro
+ENV PATH="/venv/bin:${PATH}"
+ENV VIRTUAL_ENV="/venv"
 
 # Install `psql` command (needed for `manage.py dbshell` in stack/init_db.sql)
 # Install `libmagic` (needed since rapidpro v3.0.64)
