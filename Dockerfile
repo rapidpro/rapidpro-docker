@@ -10,7 +10,7 @@ RUN apt-get-install.sh curl sudo && \
     apt-get-install.sh build-essential openssl tar wget nodejs openssl tar && \
     npm install -g less
 
-
+WORKDIR /rapidpro
 
 ARG RAPIDPRO_VERSION
 ARG RAPIDPRO_REPO
