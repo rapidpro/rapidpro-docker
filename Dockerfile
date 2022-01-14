@@ -44,6 +44,11 @@ FROM ghcr.io/praekeltfoundation/python-base:3.9.6
 ENV PATH="/venv/bin:$PATH"
 ENV VIRTUAL_ENV="/venv"
 
+ARG RAPIDPRO_VERSION
+ARG RAPIDPRO_REPO
+ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
+ENV RAPIDPRO_REPO=${RAPIDPRO_REPO:-rapidpro/rapidpro}
+
 COPY --from=builder /venv /venv
 COPY --from=builder /rapidpro /rapidpro
 
