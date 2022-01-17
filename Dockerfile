@@ -7,7 +7,17 @@ ENV PIP_RETRIES=120 \
 
 RUN apt-get-install.sh curl sudo && \
     curl -sL https://deb.nodesource.com/setup_10.x | sudo bash - && \
-    apt-get-install.sh build-essential openssl tar wget nodejs openssl tar && \
+    apt-get-install.sh \
+        build-essential \
+        openssl \
+        tar \
+        wget \
+        nodejs \
+        openssl \
+        tar \
+        libproj-dev \
+        libgdal-dev \
+        libgeos-dev && \
     npm install -g less
 
 WORKDIR /rapidpro
