@@ -17,9 +17,9 @@ RUN apt-get-install.sh curl sudo && \
         binutils \
         libproj-dev \
         gdal-bin && \
-    wget https://download.osgeo.org/geos/geos-3.4.3.tar.bz2 && \
-    tar xjf geos-3.4.3.tar.bz2 && \
-    cd geos-3.4.3 && \
+    wget https://download.osgeo.org/geos/geos-3.9.2.tar.bz2 && \
+    tar xjf geos-3.9.2.tar.bz2 && \
+    cd geos-3.9.2 && \
     ./configure && \
     make && \
     sudo make install && \
