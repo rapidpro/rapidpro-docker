@@ -13,7 +13,10 @@ RUN apt-get-install.sh curl sudo && \
         wget \
         nodejs \
         openssl \
-        tar && \
+        tar \
+        binutils \
+        libproj-dev \
+        gdal-bin && \
     wget https://download.osgeo.org/geos/geos-3.4.3.tar.bz2 && \
     tar xjf geos-3.4.3.tar.bz2 && \
     cd geos-3.4.3 && \
