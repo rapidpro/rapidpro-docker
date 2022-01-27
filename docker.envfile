@@ -1,4 +1,4 @@
-DATABASE_URL=postgresql://postgres:postgres@postgis/rapidpro
+DATABASE_URL=postgresql://temba:temba@postgis/temba
 REDIS_URL=redis://redis:6379/0
 SECRET_KEY=super-secret-key
 MANAGEPY_COLLECTSTATIC=on
