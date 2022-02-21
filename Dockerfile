@@ -59,7 +59,7 @@ RUN apt-get-install.sh \
 
 RUN apt-get-install.sh curl && \
     curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get-install.sh nodejs npm && \
+    apt-get-install.sh nodejs && \
     apt-get-purge.sh curl
 
 WORKDIR /rapidpro
