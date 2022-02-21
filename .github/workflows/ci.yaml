@@ -67,7 +67,7 @@ jobs:
         with:
           images: |
             praekeltfoundation/rapidpro
-            ghcr.io/praekeltfoundaton/rapidpro-docker
+            ghcr.io/praekeltfoundation/rapidpro-docker
           tags: |
             type=pep440,pattern=v{{major}},value=${{matrix.VERSION}}
             type=pep440,pattern=v{{major}}.{{minor}},value=${{matrix.VERSION}}
