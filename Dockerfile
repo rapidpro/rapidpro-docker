@@ -31,7 +31,7 @@ RUN /venv/bin/pip install --upgrade pip && poetry install --no-interaction --no-
         "django-cache-url==3.2.3" \
         "uwsgi==2.0.20" \
         "whitenoise==5.3.0" \
-        "flower"
+        "flower==1.0.0"
 
 FROM ghcr.io/praekeltfoundation/python-base-nw:3.9-bullseye
 
