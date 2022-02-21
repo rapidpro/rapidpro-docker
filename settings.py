@@ -17,8 +17,8 @@ ROOT_URLCONF = env('ROOT_URLCONF', 'temba.urls')
 
 DEBUG = env('DJANGO_DEBUG', 'off') == 'on'
 
-GEOS_LIBRARY_PATH = '/usr/local/lib/libgeos_c.so'
-GDAL_LIBRARY_PATH = '/usr/local/lib/libgdal.so'
+GEOS_LIBRARY_PATH = '/usr/local/lib/libgeos_c.so.1'
+GDAL_LIBRARY_PATH = '/usr/lib/libgdal.so.20'
 
 SECRET_KEY = env('SECRET_KEY', required=True)
 

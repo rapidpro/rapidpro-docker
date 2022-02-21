@@ -1,0 +1,58 @@
+name: Docker Image Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      python_version: '3.9.x'
+      IMAGE: praekeltfoundation/rapidpro
+      REGISTRY_USER: rapidproautomation
+      REPO: praekeltfoundation/rapidpro
+      GREP_TIMEOUT: 360
+    strategy:
+      matrix:
+        VERSION: [v6.5.71]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Install PostgreSQL and PostGIS
+        uses: nyaruka/postgis-action@v2.1.0
+        with:
+          postgresql version: 13
+          postgis version: 3.1
+          postgresql db: temba
+          postgresql user: temba
+          postgresql password: temba
+          postgresql arguments: '--jit=off'
+      - name: Install Redis
+        uses: zhulik/redis-action@v1.0.0
+        with:
+          redis version: 5
+      # - name: Update Docker Engine
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-ce coreutils
+      - name: Build Rapidpro
+        run: |
+          docker pull "${{ env.IMAGE }}"
+          docker build --tag "${{ env.IMAGE }}" --build-arg RAPIDPRO_VERSION=${{ matrix.VERSION }} --build-arg RAPIDPRO_REPO=${{ env.REPO }} .
+      - name: Check Rapidpro Image
+        run: |
+          docker run --name rapidpro --env-file docker.envfile --link postgis --publish 8000:8000 --detach "${{ env.IMAGE }}"
+          timeout ${{ env.GREP_TIMEOUT }} grep -m 1 'static files copied' <(docker logs --follow rapidpro 2>&1)
+          timeout ${{ env.GREP_TIMEOUT }} grep -m 1 'Running migrations' <(docker logs --follow rapidpro 2>&1)
+          timeout ${{ env.GREP_TIMEOUT }} grep -m 1 'spawned uWSGI http 1' <(docker logs --follow rapidpro 2>&1)
+          docker exec rapidpro /venv/bin/python /rapidpro/manage.py check
+      - name: Some debug outputs
+        if: always()
+        run: |
+          docker ps
+          docker images
+      - name: Rapidpro Container Logs
+        if: always()
+        run: |
+          docker logs rapidpro
