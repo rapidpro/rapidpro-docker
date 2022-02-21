@@ -45,6 +45,10 @@ COPY --from=builder /venv /venv
 ENV PATH="/venv/bin:$PATH"
 ENV VIRTUAL_ENV="/venv"
 
+# Install `psql` for `manage.py dbshell`
+# `magic` is needed since rapidpro v3.0.64
+# `pcre` is needed for uwsgi
+# `geos`, `gdal`, and `proj` are needed for `manage.py download_geojson` and `manage.py import_geojson`
 RUN apt-get-install.sh \
         postgresql-client \
         libmagic-dev \
