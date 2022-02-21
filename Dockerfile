@@ -49,18 +49,15 @@ ENV VIRTUAL_ENV="/venv"
 # `magic` is needed since rapidpro v3.0.64
 # `pcre` is needed for uwsgi
 # `geos`, `gdal`, and `proj` are needed for `manage.py download_geojson` and `manage.py import_geojson`
+# `nodejs` for static file generation
 RUN apt-get-install.sh \
         postgresql-client \
         libmagic-dev \
         libpcre3 \
         libgeos-c1v5 \
         libgdal28 \
-        libproj19
-
-RUN apt-get-install.sh curl && \
-    curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get-install.sh nodejs && \
-    apt-get-purge.sh curl
+        libproj19 \
+        nodejs
 
 WORKDIR /rapidpro
 
