@@ -1,29 +1,11 @@
-FROM ghcr.io/praekeltfoundation/python-base:3.9.6
+FROM ghcr.io/praekeltfoundation/python-base-nw:3.9-bullseye as builder
 
 ENV PIP_RETRIES=120 \
     PIP_TIMEOUT=400 \
     PIP_DEFAULT_TIMEOUT=400 \
     C_FORCE_ROOT=1
 
-RUN apt-get-install.sh curl sudo && \
-    curl -sL https://deb.nodesource.com/setup_10.x | sudo bash - && \
-    apt-get-install.sh \
-        build-essential \
-        openssl \
-        wget \
-        nodejs \
-        openssl \
-        tar \
-        binutils \
-        libproj-dev \
-        gdal-bin && \
-    wget https://download.osgeo.org/geos/geos-3.9.2.tar.bz2 && \
-    tar xjf geos-3.9.2.tar.bz2 && \
-    cd geos-3.9.2 && \
-    ./configure && \
-    make && \
-    sudo make install && \
-    npm install -g less
+RUN apt-get-install.sh wget tar build-essential
 
 WORKDIR /rapidpro
 
@@ -52,12 +34,34 @@ RUN /venv/bin/pip install --upgrade pip && poetry install --no-interaction --no-
         "flower==1.0.0" \
         "tornado==6.1"
 
-RUN cd /rapidpro && npm install npm@6.14.11 && npm install
+FROM ghcr.io/praekeltfoundation/python-base-nw:3.9-bullseye
 
+ARG RAPIDPRO_VERSION
+ENV RAPIDPRO_VERSION=${RAPIDPRO_VERSION:-master}
+
+# Copy rapidpro and venv from builder
+COPY --from=builder /rapidpro /rapidpro
+COPY --from=builder /venv /venv
+ENV PATH="/venv/bin:$PATH"
+ENV VIRTUAL_ENV="/venv"
+
+# Install `psql` for `manage.py dbshell`
+# `magic` is needed since rapidpro v3.0.64
+# `pcre` is needed for uwsgi
+# `geos`, `gdal`, and `proj` are needed for `manage.py download_geojson` and `manage.py import_geojson`
+# `npm` for static file generation
 RUN apt-get-install.sh \
         postgresql-client \
         libmagic-dev \
-        libpcre3
+        libpcre3 \
+        libgeos-c1v5 \
+        libgdal28 \
+        libproj19 \
+        npm
+
+WORKDIR /rapidpro
+
+RUN npm install -g less && npm install
 
 ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=temba/wsgi.py UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_WORKERS=8 UWSGI_HARAKIRI=20
 # Enable HTTP 1.1 Keep Alive options for uWSGI (http-auto-chunked needed when ConditionalGetMiddleware not installed)
