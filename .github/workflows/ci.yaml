@@ -42,6 +42,7 @@ jobs:
         with:
           push: false
           load: true
+          context: .
           tags: ${{ env.IMAGE }}
           build-args: |
             RAPIDPRO_VERSION=${{matrix.VERSION}}
@@ -89,6 +90,7 @@ jobs:
         with:
           push: ${{github.event_name != 'pull_request'}}
           tags: ${{steps.meta.outputs.tags}}
+          context: .
           build-args: |
             RAPIDPRO_VERSION=${{matrix.VERSION}}
             RAPIDPRO_REPO=${{env.REPO}}
