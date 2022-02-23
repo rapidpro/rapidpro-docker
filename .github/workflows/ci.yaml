@@ -89,5 +89,5 @@ jobs:
           push: ${{github.event_name != 'pull_request'}}
           tags: ${{steps.meta.outputs.tags}}
           build-args: |
-            RAPIDPRO_VERSION: ${{matrix.VERSION}}
-            RAPIDPRO_REPO: ${{env.REPO}}
+            RAPIDPRO_VERSION=${{matrix.VERSION}}
+            RAPIDPRO_REPO=${{env.REPO}}
