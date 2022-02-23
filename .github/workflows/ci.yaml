@@ -32,19 +32,18 @@ jobs:
           postgresql user: temba
           postgresql password: temba
           postgresql arguments: '--jit=off'
-      - name: Install Redis
-        uses: zhulik/redis-action@v1.0.0
+      - uses: docker/setup-buildx-action@v1
+      - name: Build Rapidpro Image
+        uses: docker/build-push-action@v2
         with:
-          redis version: 5
-      # - name: Update Docker Engine
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -qy -o Dpkg::Options::="--force-confold" docker-ce coreutils
-      - name: Build Rapidpro
-        run: |
-          docker pull "${{ env.IMAGE }}"
-          docker build --tag "${{ env.IMAGE }}" --build-arg RAPIDPRO_VERSION=${{ matrix.VERSION }} --build-arg RAPIDPRO_REPO=${{ env.REPO }} .
-      - name: Check Rapidpro Image
+          push: false
+          load: true
+          context: .
+          tags: ${{ env.IMAGE }}
+          build-args: |
+            RAPIDPRO_VERSION=${{matrix.VERSION}}
+            RAPIDPRO_REPO=${{env.REPO}}
+      - name: Test Rapidpro Image
         run: |
           docker run --name rapidpro --env-file docker.envfile --link postgis --publish 8000:8000 --detach "${{ env.IMAGE }}"
           timeout ${{ env.GREP_TIMEOUT }} grep -m 1 'static files copied' <(docker logs --follow rapidpro 2>&1)
@@ -60,7 +59,6 @@ jobs:
         if: always()
         run: |
           docker logs rapidpro
-      - uses: docker/setup-buildx-action@v1
       - name: construct image metadata
         uses: docker/metadata-action@v3
         id: meta
@@ -88,6 +86,7 @@ jobs:
         with:
           push: ${{github.event_name != 'pull_request'}}
           tags: ${{steps.meta.outputs.tags}}
+          context: .
           build-args: |
             RAPIDPRO_VERSION=${{matrix.VERSION}}
             RAPIDPRO_REPO=${{env.REPO}}
