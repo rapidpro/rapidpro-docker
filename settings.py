@@ -33,9 +33,12 @@ _default_database_config['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 _direct_database_config = _default_database_config.copy()
 _default_database_config['DISABLE_SERVER_SIDE_CURSORS'] = True
 
+_readonly_database_config = _default_database_config.copy()
+
 DATABASES = {
     'default': _default_database_config,
-    'direct': _direct_database_config
+    'direct': _direct_database_config,
+    'readonly': _readonly_database_config
 }
 
 REDIS_URL = env('REDIS_URL', required=True)
