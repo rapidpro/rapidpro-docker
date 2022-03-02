@@ -263,3 +263,6 @@ Notes on Upgrading RapidPro
 v6.0 to v6.2:
   - Indexer and Mailroom require Elasticsearch > 7. Upgrading to v7.10.1 has been successful
   - change RAVEN_DSN setting to SENTRY_DSN
+v6.4 to v7.0:
+  - Clear the sitestatic folder/S3 bucket and regenerate static files (otherwise icons don't work)
+  - Ensure you're calling celery in the new CLI format, ie. `celery --app=temba beat`, not `celery beat --app=temba`
