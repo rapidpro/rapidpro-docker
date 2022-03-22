@@ -9,7 +9,7 @@ from getenv import env
 import dj_database_url
 import django_cache_url
 from datetime import datetime
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from temba.settings_common import *  # noqa
 
@@ -163,10 +163,12 @@ BRANDING = {
         'tiers': dict(import_flows=0, multi_user=0, multi_org=0),
         'bundles': [],
         'welcome_packs': [dict(size=5000, name="Demo Account"), dict(size=100000, name="UNICEF Account")],
+        'title': _("Visually build nationally scalable mobile applications"),
         'description': _("Visually build nationally scalable mobile applications from anywhere in the world."),
         'credits': _("Copyright &copy; 2012-%s UNICEF, Nyaruka, and individual contributors. All Rights Reserved." % (
             datetime.now().strftime('%Y')
-        ))
+        )),
+        'support_widget': env('BRANDING_SUPPORT_WIDGET', 'off') == 'on',
     }
 }
 DEFAULT_BRAND = 'rapidpro.io'

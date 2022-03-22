@@ -10,14 +10,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      python_version: '3.9.x'
+      python_version: "3.9.x"
       IMAGE: praekeltfoundation/rapidpro
       REGISTRY_USER: rapidproautomation
-      REPO: praekeltfoundation/rapidpro
+      REPO: rapidpro/rapidpro
       GREP_TIMEOUT: 360
     strategy:
       matrix:
-        VERSION: [v7.0.4]
+        VERSION: [v7.0.4, v7.2.4]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -31,7 +31,7 @@ jobs:
           postgresql db: temba
           postgresql user: temba
           postgresql password: temba
-          postgresql arguments: '--jit=off'
+          postgresql arguments: "--jit=off"
       - uses: docker/setup-buildx-action@v1
       - name: Build Rapidpro Image
         uses: docker/build-push-action@v2
