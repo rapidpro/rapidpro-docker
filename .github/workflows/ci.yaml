@@ -13,7 +13,7 @@ jobs:
       python_version: "3.9.x"
       IMAGE: praekeltfoundation/rapidpro
       REGISTRY_USER: rapidproautomation
-      REPO: praekeltfoundation/rapidpro
+      REPO: rapidpro/rapidpro
       GREP_TIMEOUT: 360
     strategy:
       matrix:
