@@ -9,7 +9,7 @@ from getenv import env
 import dj_database_url
 import django_cache_url
 from datetime import datetime
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from temba.settings_common import *  # noqa
 
